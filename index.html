@@ -528,6 +528,7 @@ var levelSystem = {
     blue: { name: 'BLUE', exp: 10000, max: 15000, class: 'level-blue' },
     brown: { name: 'BROWN', exp: 15000, max: 25000, class: 'level-brown' },
     black: { name: 'BLACK', exp: 25000, max: 50000, class: 'level-black' },
+    blackplus: { name: 'BLACK+', exp: 25000, max: 50000, class: 'level-black' },
     red: { name: 'RED', exp: 50000, max: 100000, class: 'level-red' }
 };
 
@@ -558,8 +559,11 @@ function checkAutoLogin() {
         if (savedUser) {
             var userData = JSON.parse(savedUser);
             if (userData.id) {
+                // 특별 계정 확인
+                var isSpecialAccount = (userData.id === 'test' && userData.level === 'blackplus');
+                
                 // 자동 로그인 실행
-                showMainScreen(userData.id);
+                showMainScreen(userData.id, isSpecialAccount);
                 return true;
             }
         }
@@ -588,7 +592,10 @@ function performLogin() {
             return;
         }
         
-        showMainScreen(userIdValue);
+        // 특별 계정 확인: ID와 PW가 모두 "test"인 경우 Black+ 등급 부여
+        var isSpecialAccount = (userIdValue === 'test' && passwordValue === 'test');
+        
+        showMainScreen(userIdValue, isSpecialAccount);
     } catch (error) {
         console.error('로그인 오류:', error);
         alert('로그인 중 오류가 발생했습니다.');
@@ -596,10 +603,10 @@ function performLogin() {
 }
 
 // 메인 화면 표시
-function showMainScreen(userId) {
+function showMainScreen(userId, isSpecialAccount) {
     try {
         if (userId) {
-            setupUser(userId);
+            setupUser(userId, isSpecialAccount);
         }
         
         var loginScreen = document.getElementById('loginScreen');
@@ -620,16 +627,16 @@ function showMainScreen(userId) {
 }
 
 // 사용자 초기화
-function setupUser(userId) {
+function setupUser(userId, isSpecialAccount) {
     try {
         currentUser = {
             id: userId,
             name: userId,
-            level: 'yellow',
-            exp: 0,
+            level: isSpecialAccount ? 'blackplus' : 'yellow',
+            exp: isSpecialAccount ? 25000 : 0,
             assets: {},
-            totalAssets: 10000000,
-            cash: 10000000
+            totalAssets: isSpecialAccount ? 50000000 : 10000000,
+            cash: isSpecialAccount ? 50000000 : 10000000
         };
         
         // 기존 사용자 데이터 불러오기
@@ -637,11 +644,27 @@ function setupUser(userId) {
         if (savedData) {
             var userData = JSON.parse(savedData);
             currentUser = Object.assign(currentUser, userData);
-            userLevel = currentUser.level || 'yellow';
-            userExp = currentUser.exp || 0;
-            totalAssets = currentUser.totalAssets || 10000000;
-            cash = currentUser.cash || 10000000;
+            
+            // 특별 계정의 경우 레벨과 자산을 강제로 설정
+            if (isSpecialAccount) {
+                currentUser.level = 'blackplus';
+                currentUser.exp = Math.max(currentUser.exp, 25000);
+                currentUser.totalAssets = Math.max(currentUser.totalAssets, 50000000);
+                currentUser.cash = Math.max(currentUser.cash, 50000000);
+            }
+            
+            userLevel = currentUser.level || (isSpecialAccount ? 'blackplus' : 'yellow');
+            userExp = currentUser.exp || (isSpecialAccount ? 25000 : 0);
+            totalAssets = currentUser.totalAssets || (isSpecialAccount ? 50000000 : 10000000);
+            cash = currentUser.cash || (isSpecialAccount ? 50000000 : 10000000);
             userAssets = currentUser.assets || {};
+        } else {
+            // 새 사용자인 경우
+            userLevel = currentUser.level;
+            userExp = currentUser.exp;
+            totalAssets = currentUser.totalAssets;
+            cash = currentUser.cash;
+            userAssets = currentUser.assets;
         }
         
         // 현재 사용자 저장

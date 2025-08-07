@@ -109,6 +109,89 @@
             max-height: 90vh;
             overflow-y: auto;
         }
+        
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 12px 0 8px 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 28rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            align-items: end;
+            position: relative;
+            height: 60px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-1px);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .nav-item.active i {
+            color: #3B82F6;
+        }
+
+        .nav-item.active span {
+            color: #3B82F6;
+        }
+
+        .nav-center {
+            grid-column: 3;
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            height: 100%;
+            position: relative;
+        }
+        
+        .level-badge-nav {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 12px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -199,7 +282,7 @@
         </div>
 
         <!-- 등급별 자산운용 섹션 -->
-        <div class="bg-white rounded-2xl p-6 card-shadow mb-6">
+        <div class="bg-white rounded-2xl p-6 card-shadow mb-24">
             <h2 class="text-xl font-bold mb-4">
                 <i class="fas fa-chart-pie text-purple-500 mr-2"></i>자산운용
             </h2>
@@ -528,6 +611,7 @@ var levelSystem = {
     blue: { name: 'BLUE', exp: 10000, max: 15000, class: 'level-blue' },
     brown: { name: 'BROWN', exp: 15000, max: 25000, class: 'level-brown' },
     black: { name: 'BLACK', exp: 25000, max: 50000, class: 'level-black' },
+    blackplus: { name: 'BLACK+', exp: 25000, max: 50000, class: 'level-black' },
     red: { name: 'RED', exp: 50000, max: 100000, class: 'level-red' }
 };
 
@@ -1429,6 +1513,26 @@ function goToIndex() {
     window.location.href = 'index.html?v=' + APP_VERSION;
 }
 
+// 페이지 이동 함수 (캐시 무력화 적용)
+function navigateToPage(page) {
+    try {
+        // 현재 시간을 이용한 캐시 버스터
+        var cacheBuster = '?v=' + new Date().getTime();
+        var currentHost = window.location.origin;
+        var targetUrl = currentHost + '/' + page + cacheBuster;
+        
+        // 사용자 데이터 저장
+        saveUserData();
+        
+        // 페이지 이동
+        window.location.href = targetUrl;
+    } catch (error) {
+        console.error('페이지 이동 오류:', error);
+        // 오류 시 기본 이동
+        window.location.href = page;
+    }
+}
+
 // 모달 외부 클릭 시 닫기
 document.getElementById('incomeModal').addEventListener('click', function(e) {
     if (e.target === this) {
@@ -1466,7 +1570,68 @@ window.addEventListener('beforeunload', function() {
         clearInterval(priceUpdateInterval);
     }
 });
+
+// 사용자 데이터와 레벨 동기화
+function syncUserDataWithMain() {
+    try {
+        var mainUserData = localStorage.getItem('fineu_current_user');
+        if (mainUserData) {
+            var userData = JSON.parse(mainUserData);
+            if (userData.level) {
+                currentUser.level = userData.level;
+                currentUser.exp = userData.exp || 0;
+                updateLevelDisplay();
+                updateNavLevelDisplay();
+            }
+        }
+    } catch (error) {
+        console.error('사용자 데이터 동기화 오류:', error);
+    }
+}
+
+// 네비게이션 레벨 표시 업데이트
+function updateNavLevelDisplay() {
+    var level = levelSystem[currentUser.level] || levelSystem.yellow;
+    var navLevelBadge = document.getElementById('navLevelBadge');
+    
+    if (navLevelBadge) {
+        navLevelBadge.className = 'level-badge-nav ' + level.class;
+        navLevelBadge.textContent = level.name;
+    }
+}
+
+// 페이지 로드 시 동기화 실행
+document.addEventListener('DOMContentLoaded', function() {
+    syncUserDataWithMain();
+});
 </script>
+
+<!-- 하단 네비게이션 -->
+<div class="bottom-navigation">
+    <div class="nav-container">
+        <button onclick="navigateToPage('index.html')" class="nav-item">
+            <i class="fas fa-home text-gray-400"></i>
+            <span class="text-gray-400">홈</span>
+        </button>
+        <button onclick="navigateToPage('a2.html')" class="nav-item">
+            <i class="fas fa-newspaper text-gray-400"></i>
+            <span class="text-gray-400">뉴스</span>
+        </button>
+        <div class="nav-center">
+            <div id="navLevelBadge" class="level-badge-nav level-yellow">
+                YELLOW
+            </div>
+        </div>
+        <button onclick="navigateToPage('a4.html')" class="nav-item">
+            <i class="fas fa-gamepad text-gray-400"></i>
+            <span class="text-gray-400">게임</span>
+        </button>
+        <button onclick="navigateToPage('a3.html')" class="nav-item">
+            <i class="fas fa-ellipsis-h text-gray-400"></i>
+            <span class="text-gray-400">더보기</span>
+        </button>
+    </div>
+</div>
 
 </body>
 </html>
