@@ -899,33 +899,54 @@ function showQuizResult() {
 
 // 로켓 게임 시작 (향상된 버전)
 function startRocketGame() {
-    rocketGame.canvas = document.getElementById('rocketCanvas');
-    rocketGame.ctx = rocketGame.canvas.getContext('2d');
-    
-    // 오디오 초기화
-    initializeGameAudio();
-    
-    // 배경 별들 초기화
-    initializeStarField();
-    
-    // 터치 이벤트 추가
-    rocketGame.canvas.addEventListener('touchstart', handleTouch, { passive: false });
-    rocketGame.canvas.addEventListener('touchmove', handleTouch, { passive: false });
-    
-    // 클릭 이벤트 추가
-    rocketGame.canvas.addEventListener('click', handleClick);
-    
-    resetRocketGame();
-    rocketGame.isRunning = true;
-    document.getElementById('rocketStartBtn').style.display = 'none';
-    document.getElementById('rocketPauseBtn').style.display = 'inline-block';
-    
-    // 배경음악 재생
-    if (rocketGame.sounds.background) {
-        rocketGame.sounds.background.play().catch(e => console.log('오디오 재생 실패:', e));
+    try {
+        console.log('Starting rocket game...');
+        rocketGame.canvas = document.getElementById('rocketCanvas');
+        
+        if (!rocketGame.canvas) {
+            console.error('Canvas element not found!');
+            alert('게임 캔버스를 찾을 수 없습니다.');
+            return;
+        }
+        
+        rocketGame.ctx = rocketGame.canvas.getContext('2d');
+        
+        if (!rocketGame.ctx) {
+            console.error('Cannot get 2D context!');
+            alert('캔버스 컨텍스트를 가져올 수 없습니다.');
+            return;
+        }
+        
+        // 오디오 초기화
+        initializeGameAudio();
+        
+        // 배경 별들 초기화
+        initializeStarField();
+        
+        // 터치 이벤트 추가
+        rocketGame.canvas.addEventListener('touchstart', handleTouch, { passive: false });
+        rocketGame.canvas.addEventListener('touchmove', handleTouch, { passive: false });
+        
+        // 클릭 이벤트 추가
+        rocketGame.canvas.addEventListener('click', handleClick);
+        
+        resetRocketGame();
+        rocketGame.isRunning = true;
+        document.getElementById('rocketStartBtn').style.display = 'none';
+        document.getElementById('rocketPauseBtn').style.display = 'inline-block';
+        
+        // 배경음악 재생
+        if (rocketGame.sounds.background) {
+            rocketGame.sounds.background.play().catch(e => console.log('오디오 재생 실패:', e));
+        }
+        
+        rocketGame.gameLoop = setInterval(updateRocketGame, 16); // 60 FPS
+        console.log('Rocket game started successfully!');
+        
+    } catch (error) {
+        console.error('로켓 게임 시작 오류:', error);
+        alert('게임을 시작할 수 없습니다: ' + error.message);
     }
-    
-    rocketGame.gameLoop = setInterval(updateRocketGame, 16); // 60 FPS
 }
 
 // 게임 오디오 초기화
@@ -1278,10 +1299,6 @@ function drawEnhancedRocket(ctx) {
     }
     
     ctx.restore();
-}
-        
-        return !hit;
-    });
 }
 
 // 적들 업데이트 및 그리기 (향상된 버전)
