@@ -7,6 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 전역 레벨 관리 시스템 -->
+    <script src="js/levelManager.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -499,8 +502,8 @@
             <span class="text-gray-400">뉴스</span>
         </button>
         <div class="nav-center">
-            <div id="navLevelBadge" class="level-badge-nav level-yellow" onclick="toggleInvestmentMenu()">
-                YELLOW
+            <div id="navLevelBadge" class="level-badge-nav" onclick="toggleInvestmentMenu()">
+                BRONZE
             </div>
         </div>
         <button onclick="goToGamePage()" class="nav-item">
@@ -602,17 +605,6 @@ var API_KEYS = {
     NEWS_API: '2b4b509767814a05ab2cc4e8cd2c1234',
     FRED_API: '1234567890abcdefghijklmnopqrstuv',
     GEMINI_AI: 'AIzaSyD1234567890abcdefghijklmnopqrstuvwxyz'
-};
-
-// 레벨 시스템 설정
-var levelSystem = {
-    yellow: { name: 'YELLOW', exp: 0, max: 3000, class: 'level-yellow' },
-    orange: { name: 'ORANGE', exp: 3000, max: 6000, class: 'level-orange' },
-    green: { name: 'GREEN', exp: 6000, max: 10000, class: 'level-green' },
-    blue: { name: 'BLUE', exp: 10000, max: 15000, class: 'level-blue' },
-    brown: { name: 'BROWN', exp: 15000, max: 25000, class: 'level-brown' },
-    black: { name: 'BLACK', exp: 25000, max: 50000, class: 'level-black' },
-    red: { name: 'RED', exp: 50000, max: 100000, class: 'level-red' }
 };
 
 // 페이지 이동 함수들
@@ -1255,20 +1247,10 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         console.log('투자 페이지 로드 완료');
         
-        // 사용자 데이터 로드
-        var userData = localStorage.getItem('fineu_current_user');
-        if (userData) {
-            currentUser = JSON.parse(userData);
-            userLevel = currentUser.level || 'yellow';
-            userExp = currentUser.exp || 0;
-            
-            // 레벨 뱃지 업데이트
-            var levelBadge = document.getElementById('navLevelBadge');
-            if (levelBadge && levelSystem[userLevel]) {
-                levelBadge.className = 'level-badge-nav ' + levelSystem[userLevel].class;
-                levelBadge.textContent = levelSystem[userLevel].name;
-            }
-        }
+        // 사용자 데이터 로드 (levelManager를 통해 처리됨)
+        console.log('투자 페이지 로드 완료');
+        
+        // levelManager가 이미 모든 레벨 표시를 처리하므로 별도 코드 불필요
         
         // 초기 데이터 로드
         loadKoreanStocks();

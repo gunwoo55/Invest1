@@ -3,15 +3,71 @@
  * 모든 페이지에서 사용자 등급 정보를 공유하는 중앙화된 관리 시스템
  */
 
-// 레벨 시스템 정의
+// 레벨 시스템 정의 (금속 효과 포함)
 const LEVEL_SYSTEM = {
-    yellow: { name: 'YELLOW', exp: 0, max: 3000, class: 'level-yellow', order: 1 },
-    orange: { name: 'ORANGE', exp: 3000, max: 6000, class: 'level-orange', order: 2 },
-    green: { name: 'GREEN', exp: 6000, max: 10000, class: 'level-green', order: 3 },
-    blue: { name: 'BLUE', exp: 10000, max: 15000, class: 'level-blue', order: 4 },
-    brown: { name: 'BROWN', exp: 15000, max: 25000, class: 'level-brown', order: 5 },
-    black: { name: 'BLACK', exp: 25000, max: 50000, class: 'level-black', order: 6 },
-    red: { name: 'RED', exp: 50000, max: 100000, class: 'level-red', order: 7 }
+    yellow: { 
+        name: 'BRONZE', 
+        exp: 0, 
+        max: 3000, 
+        class: 'level-bronze level-metal-bronze', 
+        order: 1,
+        metalType: 'bronze',
+        displayName: 'BRONZE'
+    },
+    orange: { 
+        name: 'SILVER', 
+        exp: 3000, 
+        max: 6000, 
+        class: 'level-silver level-metal-silver', 
+        order: 2,
+        metalType: 'silver',
+        displayName: 'SILVER'
+    },
+    green: { 
+        name: 'GOLD', 
+        exp: 6000, 
+        max: 10000, 
+        class: 'level-gold level-metal-gold', 
+        order: 3,
+        metalType: 'gold',
+        displayName: 'GOLD'
+    },
+    blue: { 
+        name: 'PLATINUM', 
+        exp: 10000, 
+        max: 15000, 
+        class: 'level-platinum level-metal-platinum', 
+        order: 4,
+        metalType: 'platinum',
+        displayName: 'PLATINUM'
+    },
+    brown: { 
+        name: 'DIAMOND', 
+        exp: 15000, 
+        max: 25000, 
+        class: 'level-diamond level-metal-diamond', 
+        order: 5,
+        metalType: 'diamond',
+        displayName: 'DIAMOND'
+    },
+    black: { 
+        name: 'BLACK DIAMOND', 
+        exp: 25000, 
+        max: 50000, 
+        class: 'level-black-diamond level-metal-black-diamond', 
+        order: 6,
+        metalType: 'black-diamond',
+        displayName: 'BLACK DIAMOND'
+    },
+    red: { 
+        name: 'RUBY MASTER', 
+        exp: 50000, 
+        max: 100000, 
+        class: 'level-ruby level-metal-ruby', 
+        order: 7,
+        metalType: 'ruby',
+        displayName: 'RUBY MASTER'
+    }
 };
 
 // 전역 레벨 관리자 클래스
@@ -161,58 +217,322 @@ class LevelManager {
         });
     }
 
-    // 레벨 표시 업데이트 (공통 함수)
+    // 금속 효과 CSS 생성
+    generateMetallicCSS() {
+        if (document.getElementById('metallicStyles')) return;
+
+        const metallicStyles = document.createElement('style');
+        metallicStyles.id = 'metallicStyles';
+        metallicStyles.textContent = `
+            /* 기본 금속 효과 베이스 스타일 */
+            .level-badge-metal {
+                position: relative;
+                overflow: hidden;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+                box-shadow: 
+                    inset 0 1px 0 rgba(255,255,255,0.3),
+                    inset 0 -1px 0 rgba(0,0,0,0.2),
+                    0 2px 8px rgba(0,0,0,0.3);
+                transition: all 0.3s ease;
+            }
+
+            .level-badge-metal::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -100%;
+                width: 300%;
+                height: 200%;
+                background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent);
+                animation: shine 3s infinite;
+                pointer-events: none;
+            }
+
+            .level-badge-metal:hover::before {
+                animation: shine-fast 1s infinite;
+            }
+
+            @keyframes shine {
+                0% { transform: translateX(-100%) rotate(45deg); }
+                100% { transform: translateX(300%) rotate(45deg); }
+            }
+
+            @keyframes shine-fast {
+                0% { transform: translateX(-100%) rotate(45deg); }
+                100% { transform: translateX(300%) rotate(45deg); }
+            }
+
+            /* 레벨업 애니메이션 */
+            .level-up-animation {
+                animation: levelUpPulse 2s ease-in-out;
+            }
+
+            @keyframes levelUpPulse {
+                0%, 100% { transform: scale(1); }
+                25% { transform: scale(1.1); box-shadow: 0 0 20px rgba(255,215,0,0.8); }
+                50% { transform: scale(1.05); }
+                75% { transform: scale(1.1); box-shadow: 0 0 25px rgba(255,215,0,1); }
+            }
+
+            /* BRONZE (브론즈) 효과 */
+            .level-metal-bronze {
+                background: linear-gradient(145deg, #CD7F32, #B8860B, #CD7F32);
+                border: 1px solid #8B4513;
+            }
+
+            /* SILVER (실버) 효과 */
+            .level-metal-silver {
+                background: linear-gradient(145deg, #C0C0C0, #E5E5E5, #C0C0C0);
+                border: 1px solid #A9A9A9;
+            }
+
+            /* GOLD (골드) 효과 */
+            .level-metal-gold {
+                background: linear-gradient(145deg, #FFD700, #FFF8DC, #FFD700);
+                border: 1px solid #DAA520;
+                box-shadow: 
+                    inset 0 1px 0 rgba(255,255,255,0.4),
+                    inset 0 -1px 0 rgba(0,0,0,0.2),
+                    0 2px 8px rgba(255,215,0,0.4);
+            }
+
+            /* PLATINUM (플래티넘) 효과 */
+            .level-metal-platinum {
+                background: linear-gradient(145deg, #E5E4E2, #F8F8FF, #E5E4E2);
+                border: 1px solid #D3D3D3;
+            }
+
+            /* DIAMOND (다이아몬드) 효과 */
+            .level-metal-diamond {
+                background: linear-gradient(145deg, #B9F2FF, #E0FFFF, #B9F2FF);
+                border: 1px solid #87CEEB;
+                box-shadow: 
+                    inset 0 1px 0 rgba(255,255,255,0.6),
+                    inset 0 -1px 0 rgba(0,0,0,0.1),
+                    0 2px 12px rgba(185,242,255,0.5);
+            }
+
+            .level-metal-diamond::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: 
+                    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.8) 2px, transparent 2px),
+                    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.6) 1px, transparent 1px);
+                animation: sparkle 2s infinite;
+                pointer-events: none;
+            }
+
+            @keyframes sparkle {
+                0%, 100% { opacity: 0.8; }
+                50% { opacity: 1; }
+            }
+
+            /* BLACK DIAMOND (블랙 다이아몬드) 효과 */
+            .level-metal-black-diamond {
+                background: linear-gradient(145deg, #2F2F2F, #4A4A4A, #2F2F2F);
+                border: 1px solid #1C1C1C;
+                color: #E0E0E0;
+            }
+
+            /* RUBY MASTER (루비 마스터) 효과 */
+            .level-metal-ruby {
+                background: linear-gradient(145deg, #E0115F, #FF6B6B, #E0115F);
+                border: 1px solid #B22222;
+                box-shadow: 
+                    inset 0 1px 0 rgba(255,255,255,0.3),
+                    inset 0 -1px 0 rgba(0,0,0,0.3),
+                    0 2px 12px rgba(224,17,95,0.4);
+            }
+
+            /* 호버 효과 강화 */
+            .level-badge-metal:hover {
+                transform: translateY(-2px) scale(1.05);
+                box-shadow: 
+                    inset 0 1px 0 rgba(255,255,255,0.4),
+                    inset 0 -1px 0 rgba(0,0,0,0.2),
+                    0 4px 16px rgba(0,0,0,0.4);
+            }
+
+            /* 등급별 특별 호버 효과 */
+            .level-metal-bronze:hover {
+                box-shadow: 0 0 20px rgba(205,127,50,0.6);
+            }
+
+            .level-metal-silver:hover {
+                box-shadow: 0 0 20px rgba(192,192,192,0.6);
+            }
+
+            .level-metal-gold:hover {
+                box-shadow: 0 0 25px rgba(255,215,0,0.8);
+            }
+
+            .level-metal-platinum:hover {
+                box-shadow: 0 0 25px rgba(229,228,226,0.7);
+            }
+
+            .level-metal-diamond:hover {
+                box-shadow: 0 0 30px rgba(185,242,255,0.9);
+            }
+
+            .level-metal-black-diamond:hover {
+                box-shadow: 0 0 25px rgba(74,74,74,0.8);
+            }
+
+            .level-metal-ruby:hover {
+                box-shadow: 0 0 30px rgba(224,17,95,0.8);
+            }
+
+            /* 승급 축하 애니메이션 */
+            @keyframes levelUpCelebration {
+                0% { 
+                    transform: scale(1) rotate(0deg); 
+                    opacity: 1; 
+                }
+                25% { 
+                    transform: scale(1.2) rotate(5deg); 
+                    opacity: 0.9; 
+                }
+                50% { 
+                    transform: scale(1.1) rotate(-3deg); 
+                    opacity: 1; 
+                }
+                75% { 
+                    transform: scale(1.15) rotate(2deg); 
+                    opacity: 0.95; 
+                }
+                100% { 
+                    transform: scale(1) rotate(0deg); 
+                    opacity: 1; 
+                }
+            }
+
+            .level-celebration {
+                animation: levelUpCelebration 1s ease-in-out;
+            }
+        `;
+        document.head.appendChild(metallicStyles);
+    }
+
+    // 레벨 표시 업데이트 (공통 함수) - 금속 효과 포함
     updateLevelDisplay() {
         const level = this.getCurrentLevel();
         const exp = this.getCurrentExp();
+        
+        // 금속 효과 CSS 생성
+        this.generateMetallicCSS();
         
         // 모든 레벨 배지 업데이트
         const levelElements = document.querySelectorAll('[id*="evelBadge"], [id*="serLevel"], .level-badge-nav, .level-badge-profile');
         
         levelElements.forEach(element => {
             if (element) {
-                // 클래스 업데이트
-                element.className = element.className.replace(/level-\w+/, level.class);
+                // 기존 level 클래스 제거
+                element.className = element.className.replace(/level-\w+/g, '');
+                
+                // 새로운 클래스 적용
                 if (element.className.includes('level-badge-profile')) {
-                    element.className = 'level-badge-profile ' + level.class;
+                    element.className = 'level-badge-profile level-badge-metal ' + level.class;
                 } else if (element.className.includes('level-badge-nav')) {
-                    element.className = 'level-badge-nav ' + level.class;
+                    element.className = 'level-badge-nav level-badge-metal ' + level.class;
+                } else {
+                    element.className += ' level-badge-metal ' + level.class;
                 }
                 
-                // 텍스트 업데이트
-                element.textContent = level.name;
+                // 텍스트 업데이트 (새로운 등급명 사용)
+                element.textContent = level.displayName;
             }
         });
 
         // 경험치 표시 업데이트
         const expElement = document.getElementById('userExp');
         if (expElement) {
-            expElement.textContent = `${exp} / ${level.max} EXP`;
+            const currentLevelExp = exp - level.exp;
+            const maxLevelExp = level.max - level.exp;
+            expElement.textContent = `${currentLevelExp} / ${maxLevelExp} EXP`;
+        }
+
+        // 전체 경험치 표시 (있는 경우)
+        const totalExpElement = document.getElementById('totalExp');
+        if (totalExpElement) {
+            totalExpElement.textContent = `총 ${exp} EXP`;
         }
 
         // 진행바 업데이트 (있는 경우)
         const progressBars = document.querySelectorAll('.exp-bar, .progress-bar');
         progressBars.forEach(bar => {
             if (bar) {
-                const progress = ((exp - level.exp) / (level.max - level.exp)) * 100;
-                bar.style.width = Math.min(progress, 100) + '%';
+                const currentLevelExp = exp - level.exp;
+                const maxLevelExp = level.max - level.exp;
+                const progress = (currentLevelExp / maxLevelExp) * 100;
+                bar.style.width = Math.min(Math.max(progress, 0), 100) + '%';
             }
         });
     }
 
     // 레벨업 애니메이션 표시
     showLevelUpAnimation(newLevel) {
-        // 레벨 배지에 애니메이션 효과 추가
+        // 레벨 배지에 축하 애니메이션 효과 추가
         const levelBadges = document.querySelectorAll('.level-badge-nav, .level-badge-profile');
         levelBadges.forEach(badge => {
-            badge.classList.add('level-up-animation');
+            badge.classList.add('level-celebration');
             setTimeout(() => {
-                badge.classList.remove('level-up-animation');
-            }, 2000);
+                badge.classList.remove('level-celebration');
+                badge.classList.add('level-up-animation');
+                setTimeout(() => {
+                    badge.classList.remove('level-up-animation');
+                }, 2000);
+            }, 1000);
         });
 
         // 레벨업 메시지 표시
         this.showLevelUpMessage(newLevel);
+
+        // 페이지 전체에 축하 효과 추가
+        this.showPageCelebrationEffect();
+    }
+
+    // 페이지 전체 축하 효과
+    showPageCelebrationEffect() {
+        // 임시 축하 오버레이 생성
+        const overlay = document.createElement('div');
+        overlay.className = 'celebration-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,215,0,0.1), rgba(255,255,255,0.05), rgba(255,215,0,0.1));
+            pointer-events: none;
+            z-index: 1000;
+            animation: celebrationPulse 2s ease-in-out;
+        `;
+
+        // 축하 CSS 애니메이션 추가
+        if (!document.getElementById('celebrationStyles')) {
+            const celebrationStyles = document.createElement('style');
+            celebrationStyles.id = 'celebrationStyles';
+            celebrationStyles.textContent = `
+                @keyframes celebrationPulse {
+                    0%, 100% { opacity: 0; }
+                    50% { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(celebrationStyles);
+        }
+
+        document.body.appendChild(overlay);
+
+        // 2초 후 제거
+        setTimeout(() => {
+            if (overlay.parentNode) {
+                overlay.remove();
+            }
+        }, 2000);
     }
 
     // 레벨업 메시지 표시
@@ -232,30 +552,133 @@ class LevelManager {
         message.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-2xl p-6 shadow-2xl text-center';
         message.innerHTML = `
             <div class="text-6xl mb-4">🎉</div>
-            <h3 class="text-2xl font-bold text-gray-800 mb-2">레벨 업!</h3>
-            <div class="level-badge-profile ${levelData.class} mx-auto mb-2">${levelData.name}</div>
-            <p class="text-gray-600">축하합니다! ${levelData.name} 등급이 되었습니다!</p>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">등급 승급!</h3>
+            <div class="level-badge-profile level-badge-metal ${levelData.class} mx-auto mb-2" style="font-size: 14px; padding: 8px 16px;">${levelData.displayName}</div>
+            <p class="text-gray-600">축하합니다! <strong>${levelData.displayName}</strong> 등급이 되었습니다!</p>
+            <div class="mt-4 text-sm text-gray-500">
+                💎 새로운 특별 혜택이 해제되었습니다!
+            </div>
         `;
 
         document.body.appendChild(message);
 
-        // 3초 후 자동 제거
+        // 5초 후 자동 제거
         setTimeout(() => {
             if (message.parentNode) {
                 message.remove();
             }
-        }, 3000);
+        }, 5000);
+    }
+
+    // 경험치 추가 편의 함수 (디버깅/테스트용)
+    addExp(amount) {
+        return this.addExperience(amount);
+    }
+
+    // 특정 레벨로 즉시 업그레이드 (테스트용)
+    setLevel(targetLevel) {
+        if (!this.currentUser) return false;
+        
+        const levelData = LEVEL_SYSTEM[targetLevel];
+        if (!levelData) return false;
+        
+        this.currentUser.level = targetLevel;
+        this.currentUser.exp = levelData.exp;
+        
+        localStorage.setItem('fineu_current_user', JSON.stringify(this.currentUser));
+        this.updateLevelDisplay();
+        
+        return true;
+    }
+
+    // 현재 등급 정보 출력 (디버깅용)
+    debugInfo() {
+        const level = this.getCurrentLevel();
+        const exp = this.getCurrentExp();
+        console.log('=== LEVEL DEBUG INFO ===');
+        console.log('Current Level:', level.displayName);
+        console.log('Current EXP:', exp);
+        console.log('Level Range:', level.exp, '-', level.max);
+        console.log('Progress:', ((exp - level.exp) / (level.max - level.exp) * 100).toFixed(1) + '%');
+        console.log('Next Level EXP needed:', level.max - exp);
+        console.log('========================');
+        return { level, exp };
     }
 }
 
 // 전역 레벨 매니저 인스턴스 생성
 window.levelManager = new LevelManager();
 
+// 개발자 도구에서 사용할 수 있는 편의 함수들
+window.testGrades = {
+    // 모든 등급 순서대로 테스트
+    testAllGrades: function() {
+        const grades = ['yellow', 'orange', 'green', 'blue', 'brown', 'black', 'red'];
+        let index = 0;
+        
+        const nextGrade = () => {
+            if (index < grades.length) {
+                window.levelManager.setLevel(grades[index]);
+                console.log(`테스트: ${LEVEL_SYSTEM[grades[index]].displayName} 등급으로 변경`);
+                index++;
+                setTimeout(nextGrade, 2000); // 2초마다 다음 등급
+            } else {
+                console.log('모든 등급 테스트 완료!');
+            }
+        };
+        
+        nextGrade();
+    },
+    
+    // 특정 등급으로 즉시 변경
+    setGrade: function(gradeName) {
+        const gradeKey = Object.keys(LEVEL_SYSTEM).find(key => 
+            LEVEL_SYSTEM[key].displayName.toLowerCase() === gradeName.toLowerCase()
+        );
+        
+        if (gradeKey) {
+            window.levelManager.setLevel(gradeKey);
+            console.log(`${LEVEL_SYSTEM[gradeKey].displayName} 등급으로 변경됨`);
+        } else {
+            console.log('사용 가능한 등급: BRONZE, SILVER, GOLD, PLATINUM, DIAMOND, BLACK DIAMOND, RUBY MASTER');
+        }
+    },
+    
+    // 경험치 추가
+    addExp: function(amount) {
+        const result = window.levelManager.addExperience(amount);
+        if (result.levelUp) {
+            console.log(`🎉 레벨업! ${result.oldLevel} → ${result.newLevel}`);
+        } else {
+            console.log(`경험치 +${amount} 추가됨 (총 ${result.newExp} EXP)`);
+        }
+        return result;
+    },
+    
+    // 현재 상태 출력
+    status: function() {
+        return window.levelManager.debugInfo();
+    }
+};
+
 // 페이지 로드 시 레벨 표시 업데이트
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.levelManager.currentUser) {
-        window.levelManager.updateLevelDisplay();
-    }
+    // 약간의 지연을 두어 모든 DOM 요소가 로드되기를 기다림
+    setTimeout(() => {
+        if (window.levelManager.currentUser) {
+            window.levelManager.updateLevelDisplay();
+        } else {
+            // 사용자 정보가 없으면 기본 등급으로 설정
+            const defaultUser = {
+                id: 'default_user',
+                level: 'yellow',
+                exp: 0
+            };
+            localStorage.setItem('fineu_current_user', JSON.stringify(defaultUser));
+            window.levelManager.loadCurrentUser();
+            window.levelManager.updateLevelDisplay();
+        }
+    }, 100);
 });
 
 // 내보내기 (모듈 시스템 사용 시)
