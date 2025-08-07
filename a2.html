@@ -262,7 +262,7 @@
     <!-- 상단 헤더 -->
     <div class="bg-white shadow-sm p-4">
         <div class="flex items-center justify-between max-w-md mx-auto">
-            <button onclick="location.href='index.html'" class="text-gray-600">
+            <button onclick="navigateToPage('index.html')" class="text-gray-600">
                 <i class="fas fa-arrow-left text-xl"></i>
             </button>
             <h1 class="text-xl font-bold">투자 뉴스</h1>
@@ -338,24 +338,24 @@
     <!-- 하단 네비게이션 -->
     <div class="bottom-navigation">
         <div class="nav-container">
-            <button onclick="location.href='index.html'" class="nav-item">
+            <button onclick="navigateToPage('index.html')" class="nav-item">
                 <i class="fas fa-home text-gray-400"></i>
                 <span class="text-gray-400">홈</span>
             </button>
-            <button onclick="location.href='a2.html'" class="nav-item active">
+            <button onclick="navigateToPage('a2.html')" class="nav-item active">
                 <i class="fas fa-newspaper"></i>
                 <span>뉴스</span>
             </button>
             <div class="nav-center">
-                <div class="level-badge-nav level-yellow" onclick="location.href='a5.html'">
+                <div id="navLevelBadge" class="level-badge-nav level-yellow" onclick="navigateToPage('a5.html')">
                     YELLOW
                 </div>
             </div>
-            <button onclick="location.href='a4.html'" class="nav-item">
+            <button onclick="navigateToPage('a4.html')" class="nav-item">
                 <i class="fas fa-gamepad text-gray-400"></i>
                 <span class="text-gray-400">게임</span>
             </button>
-            <button onclick="location.href='a3.html'" class="nav-item">
+            <button onclick="navigateToPage('a3.html')" class="nav-item">
                 <i class="fas fa-ellipsis-h text-gray-400"></i>
                 <span class="text-gray-400">더보기</span>
             </button>
@@ -417,24 +417,19 @@
         
         <div class="mb-4">
             <div class="bg-gradient-to-r from-purple-500 to-blue-500 text-white p-4 rounded-lg mb-4">
-                <h4 class="text-lg font-bold mb-2">📈 오늘의 경제 이슈</h4>
-                <p class="text-sm opacity-90">2024년 1월 15일</p>
+                <h4 class="text-lg font-bold mb-2" id="todayNewsletterTitle">📈 오늘의 경제 이슈</h4>
+                <p class="text-sm opacity-90" id="todayNewsletterDate">2024년 1월 15일</p>
             </div>
             
             <div class="space-y-4">
                 <div class="border-l-4 border-red-500 pl-4">
                     <h5 class="font-semibold text-red-600 mb-1">🔥 주요 뉴스</h5>
-                    <p class="text-sm text-gray-700">미 연준, 기준금리 동결 결정... 증시 상승 마감</p>
-                </div>
-                
-                <div class="border-l-4 border-green-500 pl-4">
-                    <h5 class="font-semibold text-green-600 mb-1">📊 시장 동향</h5>
-                    <p class="text-sm text-gray-700">코스피 2,650선 회복, 외국인 매수세 지속</p>
+                    <p class="text-sm text-gray-700" id="todayNewsletterContent">미 연준, 기준금리 동결 결정... 증시 상승 마감</p>
                 </div>
                 
                 <div class="border-l-4 border-blue-500 pl-4">
                     <h5 class="font-semibold text-blue-600 mb-1">💰 투자 포인트</h5>
-                    <p class="text-sm text-gray-700">배당주와 성장주의 균형 포트폴리오 추천</p>
+                    <p class="text-sm text-gray-700" id="todayNewsletterImpact">배당주와 성장주의 균형 포트폴리오 추천</p>
                 </div>
             </div>
         </div>
@@ -508,40 +503,12 @@
         
         <div class="mb-4">
             <div class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white p-4 rounded-lg mb-4">
-                <h4 class="text-lg font-bold mb-2">📰 이번 주 경제 리뷰</h4>
-                <p class="text-sm opacity-90">2024년 1월 8일 - 1월 14일</p>
+                <h4 class="text-lg font-bold mb-2" id="weeklyNewsletterWeek">📰 이번 주 경제 리뷰</h4>
+                <p class="text-sm opacity-90" id="weeklyNewsletterSummary">2024년 1월 8일 - 1월 14일</p>
             </div>
             
-            <div class="space-y-4">
-                <div class="newsletter-item" onclick="showNewsletterDetail('월요일', '미 인플레이션 지표 발표', '소비자물가지수(CPI)가 전년 동월 대비 3.2% 상승하며 예상치를 하회했습니다.')">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h5 class="font-semibold">월요일 - 미 인플레이션 지표</h5>
-                            <p class="text-xs text-gray-500">CPI 3.2% 상승</p>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                </div>
-                
-                <div class="newsletter-item" onclick="showNewsletterDetail('수요일', '한국은행 기준금리 동결', '한국은행이 기준금리를 3.50%로 동결하며 안정적 통화정책을 유지하기로 했습니다.')">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h5 class="font-semibold">수요일 - 한은 금리 동결</h5>
-                            <p class="text-xs text-gray-500">3.50% 유지</p>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                </div>
-                
-                <div class="newsletter-item" onclick="showNewsletterDetail('금요일', '대형 IT 기업 실적 발표', '애플, 마이크로소프트 등 빅테크 기업들의 4분기 실적이 시장 예상을 상회했습니다.')">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h5 class="font-semibold">금요일 - 빅테크 실적</h5>
-                            <p class="text-xs text-gray-500">예상 상회</p>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                </div>
+            <div class="space-y-4" id="weeklyTopicsList">
+                <!-- 동적으로 업데이트되는 콘텐츠 -->
             </div>
         </div>
 
@@ -600,9 +567,238 @@
 // 전역 변수
 var userExp = parseInt(localStorage.getItem('userExp')) || 0;
 
+// 뉴스 데이터 저장소
+var newsData = {
+    financialTerms: [
+        {
+            name: "복리 (Compound Interest)",
+            definition: "원금에 대한 이자가 다시 원금에 더해져서 그 합계에 대해 다음 기간의 이자가 계산되는 방식입니다. 시간이 지날수록 이자가 기하급수적으로 증가하는 '눈덩이 효과'를 가져옵니다.",
+            example: "100만원을 연 10% 복리로 투자하면:\n1년 후: 110만원\n2년 후: 121만원 (110만원 × 1.1)\n3년 후: 133만원 (121만원 × 1.1)"
+        },
+        {
+            name: "분산투자 (Diversification)",
+            definition: "투자 위험을 줄이기 위해 여러 종류의 자산에 투자금을 나누어 투자하는 전략입니다. '한 바구니에 계란을 모두 담지 마라'는 투자 원칙을 의미합니다.",
+            example: "주식 50%, 채권 30%, 부동산 20%로 분산하여 한 영역에서 손실이 발생해도 다른 영역에서 보완할 수 있습니다."
+        },
+        {
+            name: "변동성 (Volatility)",
+            definition: "자산 가격의 변동 정도를 나타내는 지표입니다. 변동성이 높을수록 수익률의 편차가 크고, 위험과 기회가 함께 존재합니다.",
+            example: "주식은 변동성이 높아 하루에 ±10% 변동이 가능하지만, 예금은 변동성이 낮아 안정적입니다."
+        },
+        {
+            name: "PER (Price Earnings Ratio)",
+            definition: "주가수익비율로, 주가를 주당순이익으로 나눈 값입니다. 주식이 얼마나 비싸게 거래되고 있는지를 판단하는 지표입니다.",
+            example: "PER 10배면 현재 수익률로 10년이면 투자금을 회수할 수 있다는 의미입니다."
+        },
+        {
+            name: "ROE (Return on Equity)",
+            definition: "자기자본이익률로, 기업이 자기자본을 얼마나 효율적으로 활용하여 이익을 창출했는지를 나타내는 지표입니다.",
+            example: "ROE 15%는 자기자본 100원으로 15원의 순이익을 창출했다는 의미입니다."
+        }
+    ],
+    dailyNewsletters: [
+        {
+            title: "한국은행 기준금리 동결",
+            content: "한국은행이 기준금리를 3.5%로 유지하기로 결정했습니다. 인플레이션 안정화와 경제성장률을 고려한 결정으로 분석됩니다.",
+            impact: "예적금 금리 안정, 대출금리 현 수준 유지 전망"
+        },
+        {
+            title: "반도체 업종 상승세",
+            content: "AI 수요 증가로 반도체 업종이 강세를 보이고 있습니다. 삼성전자와 SK하이닉스가 대표적으로 상승했습니다.",
+            impact: "테크 관련 ETF 및 반도체 관련주 관심 증가"
+        },
+        {
+            title: "원달러 환율 하락",
+            content: "미국의 경제지표 부진으로 원달러 환율이 1,300원대로 하락했습니다. 수입물가 안정화에 긍정적 영향이 예상됩니다.",
+            impact: "해외투자 매력도 증가, 수입 관련 기업에 긍정적"
+        },
+        {
+            title: "부동산 정책 변화",
+            content: "정부가 부동산 정책 완화를 발표했습니다. LTV 비율 상향 조정과 취득세 감면 등이 포함되었습니다.",
+            impact: "부동산 관련주 상승, 건설업계에 긍정적 전망"
+        },
+        {
+            title: "디지털 화폐 규제 완화",
+            content: "금융당국이 디지털 자산에 대한 규제를 일부 완화한다고 발표했습니다. 제도권 편입을 위한 기반이 마련될 예정입니다.",
+            impact: "암호화폐 시장 활성화, 관련 투자상품 증가 전망"
+        }
+    ],
+    weeklyNewsletters: [
+        {
+            week: "2024년 1주차",
+            summary: "경제 회복세 지속, 주식시장 상승",
+            topics: [
+                { day: "월요일", title: "코스피 2,600선 돌파", content: "외국인 순매수로 주요 지수 상승" },
+                { day: "화요일", title: "미국 고용지표 호조", content: "비농업 일자리 증가로 경기 회복 기대" },
+                { day: "수요일", title: "중국 경제지표 개선", content: "제조업 PMI 50선 회복으로 글로벌 경기 안정화" },
+                { day: "목요일", title: "유가 안정세", content: "OPEC+ 생산량 조절로 유가 70달러 유지" },
+                { day: "금요일", title: "주간 마감 강세", content: "개인투자자 매수세로 주간 2% 상승 마감" }
+            ]
+        }
+    ]
+};
+
+// 콘텐츠 업데이트 시스템
+var contentUpdateSystem = {
+    lastUpdateKey: 'fineu_last_content_update',
+    updateIntervalDays: 7,
+    
+    // 마지막 업데이트 시간 확인
+    getLastUpdateTime: function() {
+        var lastUpdate = localStorage.getItem(this.lastUpdateKey);
+        return lastUpdate ? new Date(lastUpdate) : null;
+    },
+    
+    // 업데이트 필요 여부 확인
+    needsUpdate: function() {
+        var lastUpdate = this.getLastUpdateTime();
+        if (!lastUpdate) return true;
+        
+        var now = new Date();
+        var daysDiff = (now - lastUpdate) / (1000 * 60 * 60 * 24);
+        return daysDiff >= this.updateIntervalDays;
+    },
+    
+    // 콘텐츠 업데이트 실행
+    updateContent: function() {
+        if (!this.needsUpdate()) return false;
+        
+        // 오늘의 금융용어 업데이트
+        this.updateDailyTerm();
+        
+        // 오늘의 뉴스레터 업데이트
+        this.updateDailyNewsletter();
+        
+        // 주간 뉴스레터 업데이트
+        this.updateWeeklyNewsletter();
+        
+        // 업데이트 시간 저장
+        localStorage.setItem(this.lastUpdateKey, new Date().toISOString());
+        
+        console.log('뉴스 콘텐츠가 업데이트되었습니다.');
+        return true;
+    },
+    
+    // 오늘의 금융용어 선택
+    updateDailyTerm: function() {
+        var today = new Date();
+        var termIndex = today.getDate() % newsData.financialTerms.length;
+        var selectedTerm = newsData.financialTerms[termIndex];
+        
+        localStorage.setItem('daily_term', JSON.stringify({
+            ...selectedTerm,
+            date: today.toLocaleDateString('ko-KR')
+        }));
+    },
+    
+    // 오늘의 뉴스레터 선택
+    updateDailyNewsletter: function() {
+        var today = new Date();
+        var newsletterIndex = today.getDate() % newsData.dailyNewsletters.length;
+        var selectedNewsletter = newsData.dailyNewsletters[newsletterIndex];
+        
+        localStorage.setItem('daily_newsletter', JSON.stringify({
+            ...selectedNewsletter,
+            date: today.toLocaleDateString('ko-KR')
+        }));
+    },
+    
+    // 주간 뉴스레터 업데이트
+    updateWeeklyNewsletter: function() {
+        var today = new Date();
+        var weekData = newsData.weeklyNewsletters[0]; // 실제로는 여러 주차 데이터 중 선택
+        
+        localStorage.setItem('weekly_newsletter', JSON.stringify({
+            ...weekData,
+            date: today.toLocaleDateString('ko-KR')
+        }));
+    }
+};
+
+// 페이지 로드 시 콘텐츠 확인 및 업데이트
+function initializeContent() {
+    // 콘텐츠 자동 업데이트 확인
+    var wasUpdated = contentUpdateSystem.updateContent();
+    
+    // UI 업데이트
+    updateDailyTermUI();
+    updateDailyNewsletterUI();
+    updateWeeklyNewsletterUI();
+    
+    if (wasUpdated) {
+        showUpdateNotification();
+    }
+}
+
+// 업데이트 알림 표시
+function showUpdateNotification() {
+    var notification = document.createElement('div');
+    notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg z-50';
+    notification.textContent = '🔄 새로운 콘텐츠가 업데이트되었습니다!';
+    document.body.appendChild(notification);
+    
+    setTimeout(function() {
+        notification.remove();
+    }, 3000);
+}
+
+// 오늘의 금융용어 UI 업데이트
+function updateDailyTermUI() {
+    var dailyTerm = JSON.parse(localStorage.getItem('daily_term') || 'null');
+    if (dailyTerm) {
+        document.getElementById('todayTermName').textContent = dailyTerm.name;
+        document.getElementById('todayTermDefinition').textContent = dailyTerm.definition;
+        document.getElementById('todayTermExample').innerHTML = dailyTerm.example.replace(/\n/g, '<br>');
+    }
+}
+
+// 오늘의 뉴스레터 UI 업데이트
+function updateDailyNewsletterUI() {
+    var dailyNewsletter = JSON.parse(localStorage.getItem('daily_newsletter') || 'null');
+    if (dailyNewsletter) {
+        document.getElementById('todayNewsletterTitle').textContent = dailyNewsletter.title;
+        document.getElementById('todayNewsletterContent').textContent = dailyNewsletter.content;
+        document.getElementById('todayNewsletterImpact').textContent = dailyNewsletter.impact;
+    }
+}
+
+// 주간 뉴스레터 UI 업데이트
+function updateWeeklyNewsletterUI() {
+    var weeklyNewsletter = JSON.parse(localStorage.getItem('weekly_newsletter') || 'null');
+    if (weeklyNewsletter) {
+        document.getElementById('weeklyNewsletterWeek').textContent = weeklyNewsletter.week;
+        document.getElementById('weeklyNewsletterSummary').textContent = weeklyNewsletter.summary;
+        
+        var topicsList = document.getElementById('weeklyTopicsList');
+        if (topicsList && weeklyNewsletter.topics) {
+            topicsList.innerHTML = '';
+            weeklyNewsletter.topics.forEach(function(topic) {
+                var topicDiv = document.createElement('div');
+                topicDiv.className = 'newsletter-item';
+                topicDiv.onclick = function() { showNewsletterDetail(topic.day, topic.title, topic.content); };
+                topicDiv.innerHTML = 
+                    '<div class="flex justify-between items-center">' +
+                    '<div>' +
+                    '<h4 class="font-semibold">' + topic.day + '</h4>' +
+                    '<p class="text-sm text-gray-600">' + topic.title + '</p>' +
+                    '</div>' +
+                    '<i class="fas fa-chevron-right text-gray-400"></i>' +
+                    '</div>';
+                topicsList.appendChild(topicDiv);
+            });
+        }
+    }
+}
+
 // 뉴스 새로고침
 function refreshNews() {
-    location.reload();
+    // 강제 콘텐츠 업데이트
+    localStorage.removeItem(contentUpdateSystem.lastUpdateKey);
+    contentUpdateSystem.updateContent();
+    updateDailyTermUI();
+    updateDailyNewsletterUI();
+    updateWeeklyNewsletterUI();
+    showUpdateNotification();
 }
 
 // 오늘의 금융 용어
@@ -683,15 +879,80 @@ function showCardNewsDetail(title, subtitle) {
     addExperience(75);
 }
 
+// 페이지 이동 함수 (캐시 무력화 적용)
+function navigateToPage(page) {
+    try {
+        // 현재 시간을 이용한 캐시 버스터
+        var cacheBuster = '?v=' + new Date().getTime();
+        var currentHost = window.location.origin;
+        var targetUrl = currentHost + '/' + page + cacheBuster;
+        
+        // 사용자 데이터 저장
+        localStorage.setItem('userExp', userExp);
+        
+        // 페이지 이동
+        window.location.href = targetUrl;
+    } catch (error) {
+        console.error('페이지 이동 오류:', error);
+        // 오류 시 기본 이동
+        window.location.href = page;
+    }
+}
+
+// 사용자 데이터 동기화
+function syncUserData() {
+    try {
+        var mainUserData = localStorage.getItem('fineu_current_user');
+        if (mainUserData) {
+            var userData = JSON.parse(mainUserData);
+            updateNavLevelDisplay(userData.level || 'yellow');
+        }
+    } catch (error) {
+        console.error('사용자 데이터 동기화 오류:', error);
+    }
+}
+
+// 네비게이션 레벨 표시 업데이트
+function updateNavLevelDisplay(level) {
+    var levelSystem = {
+        yellow: { name: 'YELLOW', class: 'level-yellow' },
+        orange: { name: 'ORANGE', class: 'level-orange' },
+        green: { name: 'GREEN', class: 'level-green' },
+        blue: { name: 'BLUE', class: 'level-blue' },
+        brown: { name: 'BROWN', class: 'level-brown' },
+        black: { name: 'BLACK', class: 'level-black' },
+        blackplus: { name: 'BLACK+', class: 'level-black' },
+        red: { name: 'RED', class: 'level-red' }
+    };
+    
+    var levelInfo = levelSystem[level] || levelSystem.yellow;
+    var navLevelBadge = document.getElementById('navLevelBadge');
+    
+    if (navLevelBadge) {
+        navLevelBadge.className = 'level-badge-nav ' + levelInfo.class;
+        navLevelBadge.textContent = levelInfo.name;
+    }
+}
+
 // 경험치 추가
 function addExperience(amount) {
     userExp += amount;
     localStorage.setItem('userExp', userExp);
     
-    // 메인 페이지에도 경험치 업데이트
-    var mainUserExp = localStorage.getItem('userExp');
-    if (mainUserExp) {
-        localStorage.setItem('userExp', userExp);
+    // 메인 페이지 사용자 데이터도 업데이트
+    try {
+        var mainUserData = localStorage.getItem('fineu_current_user');
+        if (mainUserData) {
+            var userData = JSON.parse(mainUserData);
+            userData.exp = (userData.exp || 0) + amount;
+            localStorage.setItem('fineu_current_user', JSON.stringify(userData));
+            
+            // 개별 사용자 데이터도 업데이트
+            var userKey = 'user_' + userData.id;
+            localStorage.setItem(userKey, JSON.stringify(userData));
+        }
+    } catch (error) {
+        console.error('경험치 동기화 오류:', error);
     }
 }
 
@@ -708,6 +969,10 @@ document.addEventListener('click', function(e) {
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     console.log('뉴스 페이지 로드 완료');
+    // 사용자 데이터 동기화
+    syncUserData();
+    // 콘텐츠 자동 업데이트 시스템 초기화
+    initializeContent();
 });
 </script>
 
