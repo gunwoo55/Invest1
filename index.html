@@ -15,6 +15,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css?v=2.1.0">
     <script src="https://cdn.jsdelivr.net/npm/chart.js?v=2.1.0"></script>
     
+    <!-- 전역 레벨 관리 시스템 -->
+    <script src="js/levelManager.js"></script>
+    
+    <!-- 개인정보 분리 및 보안 시스템 -->
+    <script src="js/userDataManager.js"></script>
+    
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -520,16 +526,8 @@ var totalAssets = 10000000;
 var cash = 10000000;
 var portfolioChart = null;
 
-// 레벨 시스템 설정
-var levelSystem = {
-    yellow: { name: 'YELLOW', exp: 0, max: 3000, class: 'level-yellow' },
-    orange: { name: 'ORANGE', exp: 3000, max: 6000, class: 'level-orange' },
-    green: { name: 'GREEN', exp: 6000, max: 10000, class: 'level-green' },
-    blue: { name: 'BLUE', exp: 10000, max: 15000, class: 'level-blue' },
-    brown: { name: 'BROWN', exp: 15000, max: 25000, class: 'level-brown' },
-    black: { name: 'BLACK', exp: 25000, max: 50000, class: 'level-black' },
-    red: { name: 'RED', exp: 50000, max: 100000, class: 'level-red' }
-};
+// 레벨 시스템 설정 (levelManager.js와 동기화)
+var levelSystem = LEVEL_SYSTEM;
 
 // 페이지 이동 함수 (캐시 무력화 적용)
 function navigateToPage(page) {
@@ -614,6 +612,14 @@ function showMainScreen(userId, password) {
         }
         
         updateDisplay();
+        
+        // 레벨 매니저를 통한 레벨 표시 업데이트
+        setTimeout(() => {
+            if (window.levelManager) {
+                window.levelManager.updateLevelDisplay();
+            }
+        }, 100);
+        
     } catch (error) {
         console.error('화면 전환 오류:', error);
     }
@@ -638,30 +644,60 @@ function setupUser(userId, password) {
             cash: 10000000
         };
         
-        // 기존 사용자 데이터 불러오기
-        var savedData = localStorage.getItem('user_' + userId);
-        if (savedData) {
-            var userData = JSON.parse(savedData);
-            currentUser = Object.assign(currentUser, userData);
-            // test/test의 경우 새 로그인일 때만 black 레벨로 강제 설정
-            if (userId === 'test' && password === 'test') {
-                currentUser.level = 'black';
+        // 보안 강화된 사용자 데이터 관리 시스템 사용
+        if (window.userDataManager) {
+            window.userDataManager.currentUserId = userId;
+            
+            // 기존 사용자 데이터 불러오기 (보안 검증 포함)
+            var savedData = window.userDataManager.loadUserData(userId);
+            if (savedData && Object.keys(savedData).length > 0) {
+                currentUser = Object.assign(currentUser, savedData);
+                // test/test의 경우 새 로그인일 때만 black 레벨로 강제 설정
+                if (userId === 'test' && password === 'test') {
+                    currentUser.level = 'black';
+                }
+                userLevel = currentUser.level || defaultLevel;
+                userExp = currentUser.exp || 0;
+                totalAssets = currentUser.totalAssets || 10000000;
+                cash = currentUser.cash || 10000000;
+                userAssets = currentUser.assets || {};
+            } else {
+                userLevel = currentUser.level;
+                userExp = currentUser.exp;
+                totalAssets = currentUser.totalAssets;
+                cash = currentUser.cash;
+                userAssets = currentUser.assets;
             }
-            userLevel = currentUser.level || defaultLevel;
-            userExp = currentUser.exp || 0;
-            totalAssets = currentUser.totalAssets || 10000000;
-            cash = currentUser.cash || 10000000;
-            userAssets = currentUser.assets || {};
         } else {
-            userLevel = currentUser.level;
-            userExp = currentUser.exp;
-            totalAssets = currentUser.totalAssets;
-            cash = currentUser.cash;
-            userAssets = currentUser.assets;
+            // 레거시 방식 (백업용)
+            var savedData = localStorage.getItem('user_' + userId);
+            if (savedData) {
+                var userData = JSON.parse(savedData);
+                currentUser = Object.assign(currentUser, userData);
+                if (userId === 'test' && password === 'test') {
+                    currentUser.level = 'black';
+                }
+                userLevel = currentUser.level || defaultLevel;
+                userExp = currentUser.exp || 0;
+                totalAssets = currentUser.totalAssets || 10000000;
+                cash = currentUser.cash || 10000000;
+                userAssets = currentUser.assets || {};
+            } else {
+                userLevel = currentUser.level;
+                userExp = currentUser.exp;
+                totalAssets = currentUser.totalAssets;
+                cash = currentUser.cash;
+                userAssets = currentUser.assets;
+            }
         }
         
         // 현재 사용자 저장
         localStorage.setItem('fineu_current_user', JSON.stringify(currentUser));
+        
+        // 레벨 매니저 업데이트
+        if (window.levelManager) {
+            window.levelManager.forceUpdateUser(currentUser);
+        }
         
     } catch (error) {
         console.error('사용자 설정 오류:', error);
@@ -696,6 +732,13 @@ function updateDisplay() {
 // 레벨 표시 업데이트
 function updateLevelDisplay() {
     try {
+        // 레벨 매니저를 통한 통합 레벨 관리
+        if (window.levelManager && window.levelManager.currentUser) {
+            window.levelManager.updateLevelDisplay();
+            return;
+        }
+        
+        // 레거시 방식 (레벨 매니저가 없을 때)
         var level = levelSystem[userLevel];
         if (!level) return;
         
@@ -924,7 +967,14 @@ function saveUserData() {
             currentUser.exp = userExp;
             currentUser.totalAssets = totalAssets;
             currentUser.cash = cash;
-            localStorage.setItem('user_' + currentUser.id, JSON.stringify(currentUser));
+            
+            // 보안 강화된 데이터 저장
+            if (window.userDataManager) {
+                window.userDataManager.saveUserData(currentUser.id, currentUser);
+            } else {
+                // 레거시 방식 (백업용)
+                localStorage.setItem('user_' + currentUser.id, JSON.stringify(currentUser));
+            }
         }
     } catch (error) {
         console.error('데이터 저장 오류:', error);
