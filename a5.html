@@ -800,6 +800,16 @@ document.addEventListener('DOMContentLoaded', function() {
     if ("Notification" in window && Notification.permission === "default") {
         Notification.requestPermission();
     }
+    
+    // 레벨 변경 시 투자 상품 자동 업데이트 콜백 등록
+    if (window.levelManager) {
+        window.levelManager.onLevelChange(function(currentLevel, currentExp, oldLevel, newLevel) {
+            // 레벨이 변경되었을 때 투자 상품 상태 업데이트
+            updateAssetProducts();
+            updateLevelDisplay();
+            console.log('Investment products updated due to level change');
+        });
+    }
 });
 
 // 사용자 데이터 로드
@@ -1003,6 +1013,7 @@ function updateAssetProducts() {
             }
         }
     }
+}
 
 // 보유 자산 표시 업데이트
 function updateHoldingDisplays() {

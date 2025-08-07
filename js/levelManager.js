@@ -129,6 +129,13 @@ class LevelManager {
             userData.level = newLevel;
             localStorage.setItem(`user_${this.currentUser.id}`, JSON.stringify(userData));
         }
+        
+        // a5.html과의 호환성을 위해 currentUser도 업데이트
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        if (currentUser && Object.keys(currentUser).length > 0) {
+            currentUser.level = newLevel;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
 
         // 레벨 변경 콜백 실행
         this.notifyLevelChange(oldLevel, newLevel);
@@ -644,7 +651,17 @@ class LevelManager {
         this.currentUser.exp = levelData.exp;
         
         localStorage.setItem('fineu_current_user', JSON.stringify(this.currentUser));
+        
+        // a5.html과의 호환성을 위해 currentUser도 업데이트
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        if (currentUser && Object.keys(currentUser).length > 0) {
+            currentUser.level = targetLevel;
+            currentUser.exp = levelData.exp;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+        
         this.updateLevelDisplay();
+        this.notifyLevelChange();
         
         return true;
     }
