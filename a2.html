@@ -600,13 +600,335 @@
 // 전역 변수
 var userExp = parseInt(localStorage.getItem('userExp')) || 0;
 
+// 콘텐츠 업데이트 관리
+const CONTENT_TYPES = {
+    DAILY_TERM: 'dailyTerm',
+    DAILY_NEWS: 'dailyNews', 
+    WEEKLY_NEWS: 'weeklyNews',
+    TERM_STUDY: 'termStudy',
+    CARD_NEWS: 'cardNews'
+};
+
+const STALE_THRESHOLD_DAYS = 7;
+
+// 날짜 유틸리티 함수들
+function getCurrentDate() {
+    return new Date().toISOString().split('T')[0];
+}
+
+function formatKoreanDate(date) {
+    const d = new Date(date);
+    return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+}
+
+function isContentStale(contentType) {
+    const lastUpdate = localStorage.getItem(`lastUpdate_${contentType}`);
+    if (!lastUpdate) return true;
+    
+    const lastUpdateDate = new Date(lastUpdate);
+    const currentDate = new Date();
+    const diffTime = Math.abs(currentDate - lastUpdateDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays >= STALE_THRESHOLD_DAYS;
+}
+
+function updateContentTimestamp(contentType) {
+    localStorage.setItem(`lastUpdate_${contentType}`, getCurrentDate());
+}
+
+// AI 기반 콘텐츠 생성 함수들
+function generateFinancialTerm() {
+    const terms = [
+        {
+            name: "ROI (Return On Investment)",
+            definition: "투자 수익률로, 투자한 금액 대비 얻은 수익의 비율을 나타내는 지표입니다. 투자의 효율성을 측정하는 가장 기본적인 지표 중 하나입니다.",
+            example: "100만원을 투자해서 110만원이 되었다면 ROI는 10%입니다.\n계산법: (110만원 - 100만원) / 100만원 × 100 = 10%"
+        },
+        {
+            name: "PBR (Price-to-Book Ratio)",
+            definition: "주가순자산비율로, 주가를 주당순자산으로 나눈 값입니다. 기업의 자산 대비 주가가 얼마나 비싼지 저렴한지를 판단하는 지표입니다.",
+            example: "주가 10,000원, 주당순자산 5,000원이면 PBR은 2.0입니다.\n PBR이 1 미만이면 자산 대비 저평가, 1 초과면 고평가로 해석됩니다."
+        },
+        {
+            name: "EPS (Earnings Per Share)",
+            definition: "주당순이익으로, 기업의 총 순이익을 발행 주식 수로 나눈 값입니다. 주식 1주가 얼마나 많은 이익을 창출하는지 보여주는 지표입니다.",
+            example: "순이익 100억원, 발행주식 1,000만주라면 EPS는 1,000원입니다.\nEPS가 높을수록 수익성이 좋은 기업으로 평가됩니다."
+        },
+        {
+            name: "배당수익률 (Dividend Yield)",
+            definition: "주가 대비 연간 배당금의 비율로, 투자한 금액 대비 배당으로 얼마의 수익을 얻을 수 있는지 나타내는 지표입니다.",
+            example: "주가 20,000원, 연간 배당금 1,000원이면 배당수익률은 5%입니다.\n은행 예금금리와 비교하여 투자 매력도를 평가할 수 있습니다."
+        },
+        {
+            name: "변동성 (Volatility)",
+            definition: "주가나 자산 가격의 변동 정도를 나타내는 지표입니다. 높은 변동성은 높은 수익 가능성과 동시에 높은 손실 위험을 의미합니다.",
+            example: "일일 변동폭이 ±5%인 주식과 ±1%인 주식 중 전자가 변동성이 높습니다.\n변동성이 높은 자산일수록 리스크 관리가 중요합니다."
+        }
+    ];
+    
+    const randomTerm = terms[Math.floor(Math.random() * terms.length)];
+    return {
+        ...randomTerm,
+        date: getCurrentDate()
+    };
+}
+
+function generateDailyNews() {
+    const newsTemplates = [
+        {
+            type: "주요 뉴스",
+            color: "red",
+            icon: "🔥",
+            topics: [
+                "미 연준, 금리 정책 발표... 시장 주목",
+                "국내 반도체 수출 증가세... 경기 회복 신호",
+                "원/달러 환율 변동... 수출기업 영향 분석",
+                "부동산 정책 변화... 주택시장 반응",
+                "글로벌 인플레이션 동향... 국내 파급효과"
+            ]
+        },
+        {
+            type: "시장 동향", 
+            color: "green",
+            icon: "📊",
+            topics: [
+                "코스피 상승 마감... 외국인 매수세 지속",
+                "테크주 강세... AI 관련주 주목",
+                "바이오 섹터 급등... 신약 개발 소식",
+                "2차전지 관련주 상승... ESG 투자 확산",
+                "금융주 혼조... 금리 정책 영향"
+            ]
+        },
+        {
+            type: "투자 포인트",
+            color: "blue", 
+            icon: "💰",
+            topics: [
+                "분산투자의 중요성... 포트폴리오 리밸런싱",
+                "ESG 투자 트렌드... 지속가능한 투자",
+                "달러 강세 대응... 환율 헷지 전략",
+                "고배당주 투자... 안정적 수익 추구",
+                "성장주 vs 가치주... 시장 상황별 전략"
+            ]
+        }
+    ];
+    
+    const selectedNews = newsTemplates.map(template => ({
+        type: template.type,
+        color: template.color,
+        icon: template.icon,
+        content: template.topics[Math.floor(Math.random() * template.topics.length)]
+    }));
+    
+    return {
+        date: getCurrentDate(),
+        news: selectedNews
+    };
+}
+
+function generateWeeklyNews() {
+    const weeklyEvents = [
+        {
+            day: "월요일",
+            title: "경제지표 발표",
+            details: [
+                "소비자물가지수(CPI) 발표... 인플레이션 안정화 신호",
+                "고용지표 개선... 실업률 하락세 지속", 
+                "제조업 PMI 상승... 경기 회복 조짐",
+                "수출입 통계 발표... 무역수지 개선"
+            ]
+        },
+        {
+            day: "수요일", 
+            title: "통화정책 결정",
+            details: [
+                "한국은행 금리 동결... 경제 안정화 정책",
+                "미 연준 매파 발언... 추가 인상 시사",
+                "ECB 정책 변화... 유로존 경기 부양",
+                "일본은행 완화 유지... 엔화 약세 지속"
+            ]
+        },
+        {
+            day: "금요일",
+            title: "기업 실적 발표", 
+            details: [
+                "대형 IT 기업 실적 호조... 클라우드 성장",
+                "반도체 업체 매출 증가... 메모리 가격 상승",
+                "자동차 산업 회복... 전기차 판매 급증",
+                "금융권 이익 증가... NIM 개선 효과"
+            ]
+        }
+    ];
+    
+    const selectedEvents = weeklyEvents.map(event => ({
+        day: event.day,
+        title: event.title, 
+        content: event.details[Math.floor(Math.random() * event.details.length)]
+    }));
+    
+    return {
+        startDate: getCurrentDate(),
+        events: selectedEvents
+    };
+}
+
+function generateTermStudyContent() {
+    const categories = [
+        {
+            name: "주식 기초",
+            terms: [
+                { name: "시가총액", desc: "회사의 전체 가치를 나타내는 지표" },
+                { name: "PER", desc: "주가수익비율, 주식의 가치평가 지표" },
+                { name: "EPS", desc: "주당순이익, 수익성 측정 지표" },
+                { name: "ROE", desc: "자기자본이익률, 경영효율성 지표" }
+            ]
+        },
+        {
+            name: "채권 기초", 
+            terms: [
+                { name: "만기수익률", desc: "채권을 만기까지 보유시 얻는 수익률" },
+                { name: "신용등급", desc: "채권 발행자의 신용도 평가" },
+                { name: "듀레이션", desc: "금리 변화에 대한 민감도 측정" },
+                { name: "스프레드", desc: "기준금리와의 금리 차이" }
+            ]
+        }
+    ];
+    
+    return {
+        date: getCurrentDate(),
+        categories: categories
+    };
+}
+
+function generateCardNewsContent() {
+    const cardNews = [
+        {
+            title: "투자 기초 가이드",
+            subtitle: "처음 시작하는 투자의 모든 것",
+            icon: "fas fa-seedling",
+            content: "투자 목표 설정부터 리스크 관리까지"
+        },
+        {
+            title: "분산투자의 힘", 
+            subtitle: "계란을 한 바구니에 담지 마라",
+            icon: "fas fa-chart-pie",
+            content: "포트폴리오 다각화로 안정적 수익 추구"
+        },
+        {
+            title: "복리의 마법",
+            subtitle: "시간이 만드는 놀라운 수익",
+            icon: "fas fa-magic", 
+            content: "장기투자와 복리효과의 중요성"
+        },
+        {
+            title: "ESG 투자 트렌드",
+            subtitle: "지속가능한 투자의 미래",
+            icon: "fas fa-leaf",
+            content: "환경, 사회, 지배구조를 고려한 투자"
+        }
+    ];
+    
+    return {
+        date: getCurrentDate(),
+        content: cardNews
+    };
+}
+
+// 콘텐츠 업데이트 및 표시 함수들
+function updateAllContentIfStale() {
+    let updated = false;
+    
+    if (isContentStale(CONTENT_TYPES.DAILY_TERM)) {
+        const newTerm = generateFinancialTerm();
+        localStorage.setItem('dailyTermContent', JSON.stringify(newTerm));
+        updateContentTimestamp(CONTENT_TYPES.DAILY_TERM);
+        updated = true;
+    }
+    
+    if (isContentStale(CONTENT_TYPES.DAILY_NEWS)) {
+        const newNews = generateDailyNews();
+        localStorage.setItem('dailyNewsContent', JSON.stringify(newNews));
+        updateContentTimestamp(CONTENT_TYPES.DAILY_NEWS);
+        updated = true;
+    }
+    
+    if (isContentStale(CONTENT_TYPES.WEEKLY_NEWS)) {
+        const newWeekly = generateWeeklyNews();
+        localStorage.setItem('weeklyNewsContent', JSON.stringify(newWeekly));
+        updateContentTimestamp(CONTENT_TYPES.WEEKLY_NEWS);
+        updated = true;
+    }
+    
+    if (isContentStale(CONTENT_TYPES.TERM_STUDY)) {
+        const newTermStudy = generateTermStudyContent();
+        localStorage.setItem('termStudyContent', JSON.stringify(newTermStudy));
+        updateContentTimestamp(CONTENT_TYPES.TERM_STUDY);
+        updated = true;
+    }
+    
+    if (isContentStale(CONTENT_TYPES.CARD_NEWS)) {
+        const newCardNews = generateCardNewsContent();
+        localStorage.setItem('cardNewsContent', JSON.stringify(newCardNews));
+        updateContentTimestamp(CONTENT_TYPES.CARD_NEWS);
+        updated = true;
+    }
+    
+    if (updated) {
+        showUpdateNotification();
+    }
+}
+
+function showUpdateNotification() {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #10B981, #059669);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1001;
+        font-size: 14px;
+        font-weight: 500;
+    `;
+    notification.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>콘텐츠가 업데이트되었습니다!';
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
 // 뉴스 새로고침
 function refreshNews() {
+    // 강제로 모든 콘텐츠 업데이트
+    Object.values(CONTENT_TYPES).forEach(type => {
+        localStorage.removeItem(`lastUpdate_${type}`);
+    });
+    updateAllContentIfStale();
     location.reload();
 }
 
 // 오늘의 금융 용어
 function showTodayTerm() {
+    const termData = JSON.parse(localStorage.getItem('dailyTermContent') || '{}');
+    
+    if (termData.name) {
+        document.getElementById('todayTermName').textContent = termData.name;
+        document.getElementById('todayTermDefinition').textContent = termData.definition;
+        document.getElementById('todayTermExample').innerHTML = termData.example.replace(/\n/g, '<br>');
+        
+        // 날짜 업데이트
+        const dateElement = document.querySelector('#todayTermModal .text-gray-600.text-sm');
+        if (dateElement) {
+            dateElement.textContent = formatKoreanDate(termData.date);
+        }
+    }
+    
     document.getElementById('todayTermModal').classList.add('show');
 }
 
@@ -622,6 +944,27 @@ function completeTodayTerm() {
 
 // 오늘의 뉴스레터
 function showTodayNewsletter() {
+    const newsData = JSON.parse(localStorage.getItem('dailyNewsContent') || '{}');
+    
+    if (newsData.news) {
+        // 날짜 업데이트
+        const dateElement = document.querySelector('#todayNewsletterModal .text-sm.opacity-90');
+        if (dateElement) {
+            dateElement.textContent = formatKoreanDate(newsData.date);
+        }
+        
+        // 뉴스 내용 업데이트
+        const newsContainer = document.querySelector('#todayNewsletterModal .space-y-4');
+        if (newsContainer) {
+            newsContainer.innerHTML = newsData.news.map(news => `
+                <div class="border-l-4 border-${news.color}-500 pl-4">
+                    <h5 class="font-semibold text-${news.color}-600 mb-1">${news.icon} ${news.type}</h5>
+                    <p class="text-sm text-gray-700">${news.content}</p>
+                </div>
+            `).join('');
+        }
+    }
+    
     document.getElementById('todayNewsletterModal').classList.add('show');
 }
 
@@ -637,6 +980,22 @@ function completeTodayNewsletter() {
 
 // 금융 용어 공부
 function showTermStudy() {
+    const termStudyData = JSON.parse(localStorage.getItem('termStudyContent') || '{}');
+    
+    if (termStudyData.categories) {
+        const termList = document.getElementById('termList');
+        if (termList) {
+            termList.innerHTML = termStudyData.categories.map(category => 
+                category.terms.map(term => `
+                    <div class="term-card" onclick="showTermDetail('${term.name}', '${term.name}', '${term.desc}')">
+                        <h5 class="font-semibold">${term.name}</h5>
+                        <p class="text-sm text-gray-600">${term.desc}</p>
+                    </div>
+                `).join('')
+            ).join('');
+        }
+    }
+    
     document.getElementById('termStudyModal').classList.add('show');
 }
 
@@ -651,6 +1010,34 @@ function showTermDetail(term, fullName, description) {
 
 // 주간 뉴스레터
 function showWeeklyNewsletter() {
+    const weeklyData = JSON.parse(localStorage.getItem('weeklyNewsContent') || '{}');
+    
+    if (weeklyData.events) {
+        // 날짜 업데이트
+        const dateElement = document.querySelector('#weeklyNewsletterModal .text-sm.opacity-90');
+        if (dateElement) {
+            const endDate = new Date(weeklyData.startDate);
+            endDate.setDate(endDate.getDate() + 6);
+            dateElement.textContent = `${formatKoreanDate(weeklyData.startDate)} - ${formatKoreanDate(endDate.toISOString().split('T')[0])}`;
+        }
+        
+        // 주간 이벤트 업데이트
+        const eventsContainer = document.querySelector('#weeklyNewsletterModal .space-y-4');
+        if (eventsContainer) {
+            eventsContainer.innerHTML = weeklyData.events.map(event => `
+                <div class="newsletter-item" onclick="showNewsletterDetail('${event.day}', '${event.title}', '${event.content}')">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h5 class="font-semibold">${event.day} - ${event.title}</h5>
+                            <p class="text-xs text-gray-500">${event.content.substring(0, 20)}...</p>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+    
     document.getElementById('weeklyNewsletterModal').classList.add('show');
 }
 
@@ -671,6 +1058,25 @@ function completeWeeklyNewsletter() {
 
 // 카드뉴스
 function showCardNews() {
+    const cardNewsData = JSON.parse(localStorage.getItem('cardNewsContent') || '{}');
+    
+    if (cardNewsData.content) {
+        const cardNewsContainer = document.querySelector('#cardNewsModal .space-y-4');
+        if (cardNewsContainer) {
+            cardNewsContainer.innerHTML = cardNewsData.content.map(card => `
+                <div class="card-news-item" onclick="showCardNewsDetail('${card.title}', '${card.subtitle}')">
+                    <div class="card-news-image">
+                        <i class="${card.icon}"></i>
+                    </div>
+                    <div class="p-4">
+                        <h5 class="font-semibold mb-2">${card.title}</h5>
+                        <p class="text-sm text-gray-600">${card.content}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+    
     document.getElementById('cardNewsModal').classList.add('show');
 }
 
@@ -708,6 +1114,8 @@ document.addEventListener('click', function(e) {
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     console.log('뉴스 페이지 로드 완료');
+    // 콘텐츠 자동 업데이트 확인
+    updateAllContentIfStale();
 });
 </script>
 
