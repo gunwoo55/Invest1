@@ -899,19 +899,26 @@ function updateRecentTransactions() {
         return;
     }
     
-    var recentTransactions = currentUser.transactions.slice(-5).reverse();
+    var recentTransactions = currentUser.transactions.slice(-10).reverse();
     
-    recentTransactions.forEach(function(transaction) {
+    recentTransactions.forEach(function(transaction, index) {
         var transactionDiv = document.createElement('div');
         transactionDiv.className = 'p-3 bg-gray-50 rounded-lg ' + (transaction.type === 'income' ? 'income-item' : 'expense-item');
         
         transactionDiv.innerHTML = 
             '<div class="flex justify-between items-center">' +
-            '<div>' +
+            '<div class="flex-1">' +
+            '<div class="flex items-center justify-between">' +
             '<p class="font-semibold">' + transaction.category + '</p>' +
+            '<div class="flex space-x-2">' +
+            '<button onclick="editTransaction(' + (currentUser.transactions.length - 1 - index) + ')" class="text-blue-500 text-sm hover:text-blue-700">' +
+            '<i class="fas fa-edit"></i></button>' +
+            '<button onclick="deleteTransaction(' + (currentUser.transactions.length - 1 - index) + ')" class="text-red-500 text-sm hover:text-red-700">' +
+            '<i class="fas fa-trash"></i></button>' +
+            '</div></div>' +
             (transaction.memo ? '<p class="text-sm text-gray-500">' + transaction.memo + '</p>' : '') +
             '</div>' +
-            '<div class="text-right">' +
+            '<div class="text-right ml-3">' +
             '<p class="font-bold ' + (transaction.type === 'income' ? 'text-green-600' : 'text-red-600') + '">' +
             (transaction.type === 'income' ? '+' : '-') + transaction.amount.toLocaleString() + '원</p>' +
             '<p class="text-xs text-gray-400">' + new Date(transaction.date).toLocaleDateString() + '</p>' +
@@ -1167,6 +1174,11 @@ function executeTrade() {
         // 경험치 추가
         currentUser.exp += Math.floor(totalAmount / 10000) * 10;
         
+        // 예적금 거래인 경우 가계부에 자동 추가
+        if (type === 'deposit') {
+            addToAccountBook('expense', totalAmount, '예적금 투자', product.name + ' ' + quantity + '개 매수');
+        }
+        
         alert('매수가 완료되었습니다!');
         
     } else {
@@ -1197,12 +1209,43 @@ function executeTrade() {
         // 경험치 추가
         currentUser.exp += Math.floor(totalAmount / 10000) * 5;
         
+        // 예적금 매도인 경우 가계부에 자동 추가
+        if (type === 'deposit') {
+            addToAccountBook('income', totalAmount, '예적금 환급', product.name + ' ' + quantity + '개 매도');
+        }
+        
         alert('매도가 완료되었습니다!');
     }
     
+    completeTradeUpdates();
+}
+    
+// 가계부에 자동 추가 (예적금 연동)
+function addToAccountBook(type, amount, category, memo) {
+    if (!currentUser.transactions) {
+        currentUser.transactions = [];
+    }
+    
+    currentUser.transactions.push({
+        type: type,
+        amount: amount,
+        category: category,
+        memo: memo,
+        date: new Date().toISOString(),
+        autoAdded: true // 자동 추가됨을 표시
+    });
+    
+    // UI 업데이트는 메인 함수에서 처리됨
+}
+
+// 거래 완료 후 업데이트
+function completeTradeUpdates() {
     saveUserData();
     updateLevelDisplay();
     updateHoldingDisplays();
+    updateBudgetSummary();
+    createBudgetChart();
+    updateRecentTransactions();
     hideTradeModal();
     hideInvestmentModal();
 }
@@ -1396,8 +1439,157 @@ function updatePricesSimulation() {
     }
 }
 
+// 거래 내역 편집
+function editTransaction(index) {
+    if (!currentUser.transactions || !currentUser.transactions[index]) {
+        alert('거래 내역을 찾을 수 없습니다.');
+        return;
+    }
+    
+    var transaction = currentUser.transactions[index];
+    
+    if (transaction.type === 'income') {
+        // 수입 편집
+        document.getElementById('incomeAmount').value = transaction.amount;
+        document.getElementById('incomeCategory').value = transaction.category;
+        document.getElementById('incomeMemo').value = transaction.memo || '';
+        
+        // 편집 모드 표시
+        var modal = document.getElementById('incomeModal');
+        var title = modal.querySelector('h3');
+        var button = modal.querySelector('button[onclick="addIncome()"]');
+        
+        title.textContent = '수입 편집';
+        button.textContent = '수정';
+        button.onclick = function() { updateTransaction(index); };
+        
+        showAddIncomeModal();
+    } else {
+        // 지출 편집
+        document.getElementById('expenseAmount').value = transaction.amount;
+        document.getElementById('expenseCategory').value = transaction.category;
+        document.getElementById('expenseMemo').value = transaction.memo || '';
+        
+        // 편집 모드 표시
+        var modal = document.getElementById('expenseModal');
+        var title = modal.querySelector('h3');
+        var button = modal.querySelector('button[onclick="addExpense()"]');
+        
+        title.textContent = '지출 편집';
+        button.textContent = '수정';
+        button.onclick = function() { updateTransaction(index); };
+        
+        showAddExpenseModal();
+    }
+}
+
+// 거래 내역 업데이트
+function updateTransaction(index) {
+    if (!currentUser.transactions || !currentUser.transactions[index]) {
+        alert('거래 내역을 찾을 수 없습니다.');
+        return;
+    }
+    
+    var transaction = currentUser.transactions[index];
+    
+    if (transaction.type === 'income') {
+        var amount = parseInt(document.getElementById('incomeAmount').value);
+        var category = document.getElementById('incomeCategory').value;
+        var memo = document.getElementById('incomeMemo').value;
+        
+        if (!amount || !category) {
+            alert('금액과 분류를 입력해주세요.');
+            return;
+        }
+        
+        currentUser.transactions[index] = {
+            ...transaction,
+            amount: amount,
+            category: category,
+            memo: memo,
+            updatedDate: new Date().toISOString()
+        };
+        
+        hideIncomeModal();
+        resetIncomeModal();
+    } else {
+        var amount = parseInt(document.getElementById('expenseAmount').value);
+        var category = document.getElementById('expenseCategory').value;
+        var memo = document.getElementById('expenseMemo').value;
+        
+        if (!amount || !category) {
+            alert('금액과 분류를 입력해주세요.');
+            return;
+        }
+        
+        currentUser.transactions[index] = {
+            ...transaction,
+            amount: amount,
+            category: category,
+            memo: memo,
+            updatedDate: new Date().toISOString()
+        };
+        
+        hideExpenseModal();
+        resetExpenseModal();
+    }
+    
+    saveUserData();
+    updateBudgetSummary();
+    createBudgetChart();
+    updateRecentTransactions();
+    
+    alert('거래 내역이 수정되었습니다!');
+}
+
+// 거래 내역 삭제
+function deleteTransaction(index) {
+    if (!currentUser.transactions || !currentUser.transactions[index]) {
+        alert('거래 내역을 찾을 수 없습니다.');
+        return;
+    }
+    
+    var transaction = currentUser.transactions[index];
+    var confirmMessage = '다음 거래 내역을 삭제하시겠습니까?\n\n' +
+                        '분류: ' + transaction.category + '\n' +
+                        '금액: ' + (transaction.type === 'income' ? '+' : '-') + transaction.amount.toLocaleString() + '원';
+    
+    if (confirm(confirmMessage)) {
+        currentUser.transactions.splice(index, 1);
+        
+        saveUserData();
+        updateBudgetSummary();
+        createBudgetChart();
+        updateRecentTransactions();
+        
+        alert('거래 내역이 삭제되었습니다!');
+    }
+}
+
+// 모달 초기화 함수들
+function resetIncomeModal() {
+    var modal = document.getElementById('incomeModal');
+    var title = modal.querySelector('h3');
+    var button = modal.querySelector('button[onclick*="Income"]');
+    
+    title.textContent = '수입 추가';
+    button.textContent = '추가';
+    button.onclick = addIncome;
+}
+
+function resetExpenseModal() {
+    var modal = document.getElementById('expenseModal');
+    var title = modal.querySelector('h3');
+    var button = modal.querySelector('button[onclick*="Expense"]');
+    
+    title.textContent = '지출 추가';
+    button.textContent = '추가';
+    button.onclick = addExpense;
+}
+
 // 수입 추가 모달 표시
 function showAddIncomeModal() {
+    resetIncomeModal();
     document.getElementById('incomeModal').classList.remove('hidden');
 }
 
@@ -1407,10 +1599,12 @@ function hideIncomeModal() {
     document.getElementById('incomeAmount').value = '';
     document.getElementById('incomeCategory').value = '';
     document.getElementById('incomeMemo').value = '';
+    resetIncomeModal();
 }
 
 // 지출 추가 모달 표시
 function showAddExpenseModal() {
+    resetExpenseModal();
     document.getElementById('expenseModal').classList.remove('hidden');
 }
 
@@ -1420,6 +1614,7 @@ function hideExpenseModal() {
     document.getElementById('expenseAmount').value = '';
     document.getElementById('expenseCategory').value = '';
     document.getElementById('expenseMemo').value = '';
+    resetExpenseModal();
 }
 
 // 포트폴리오 모달 숨기기
