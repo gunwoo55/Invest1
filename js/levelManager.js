@@ -100,11 +100,17 @@ class LevelManager {
             return { levelUp: true, oldLevel, newLevel, newExp };
         } else {
             // 경험치만 업데이트
-            localStorage.setItem('fineu_current_user', JSON.stringify(this.currentUser));
-            if (this.currentUser.id) {
-                const userData = JSON.parse(localStorage.getItem(`user_${this.currentUser.id}`) || '{}');
-                userData.exp = newExp;
-                localStorage.setItem(`user_${this.currentUser.id}`, JSON.stringify(userData));
+            try {
+                localStorage.setItem('fineu_current_user', JSON.stringify(this.currentUser));
+                if (this.currentUser.id) {
+                    const userData = JSON.parse(localStorage.getItem(`user_${this.currentUser.id}`) || '{}');
+                    if (typeof userData === 'object') {
+                        userData.exp = newExp;
+                        localStorage.setItem(`user_${this.currentUser.id}`, JSON.stringify(userData));
+                    }
+                }
+            } catch (error) {
+                console.error('경험치 저장 오류:', error);
             }
             this.notifyLevelChange();
             return { levelUp: false, newExp };
@@ -120,6 +126,13 @@ class LevelManager {
         }
         // 최고 레벨
         return 'red';
+    }
+
+    // 사용자 정보 강제 업데이트
+    forceUpdateUser(userData) {
+        this.currentUser = userData;
+        localStorage.setItem('fineu_current_user', JSON.stringify(userData));
+        this.notifyLevelChange();
     }
 
     // 레벨별 접근 권한 체크

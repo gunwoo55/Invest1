@@ -694,6 +694,11 @@ function setupUser(userId, password) {
         // 현재 사용자 저장
         localStorage.setItem('fineu_current_user', JSON.stringify(currentUser));
         
+        // 레벨 매니저 업데이트
+        if (window.levelManager) {
+            window.levelManager.forceUpdateUser(currentUser);
+        }
+        
     } catch (error) {
         console.error('사용자 설정 오류:', error);
     }
