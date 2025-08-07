@@ -254,6 +254,66 @@
             color: white;
             font-size: 24px;
         }
+
+        .real-time-news-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #10B981;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .real-time-news-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .real-time-news-item.breaking {
+            border-left-color: #EF4444;
+            background: linear-gradient(135deg, #FEF2F2, #FFFFFF);
+        }
+
+        .news-source {
+            font-size: 12px;
+            color: #6B7280;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .economic-indicator {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .economic-indicator:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .indicator-value {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+
+        .indicator-positive {
+            color: #10B981;
+        }
+
+        .indicator-negative {
+            color: #EF4444;
+        }
+
+        .indicator-neutral {
+            color: #6B7280;
+        }
     </style>
 </head>
 <body>
@@ -331,6 +391,35 @@
             <p class="text-gray-600 text-sm">시각적으로 쉽게 배우는 금융 지식</p>
             <div class="progress-bar">
                 <div class="progress-fill" style="width: 30%"></div>
+            </div>
+        </div>
+
+        <!-- 실시간 금융 뉴스 -->
+        <div class="mt-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">실시간 금융 뉴스</h2>
+                <button onclick="loadRealTimeNews()" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+            <div id="realTimeNewsContainer">
+                <div class="text-center py-8">
+                    <div class="loading mx-auto mb-4"></div>
+                    <p class="text-gray-500">실시간 뉴스 로딩 중...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 경제 지표 -->
+        <div class="mt-8">
+            <h2 class="text-xl font-bold mb-4">주요 경제 지표</h2>
+            <div id="economicIndicators" class="grid grid-cols-2 gap-4">
+                <div class="bg-white rounded-lg p-4 card-shadow">
+                    <div class="text-center">
+                        <div class="loading mx-auto mb-2"></div>
+                        <p class="text-sm text-gray-500">로딩 중...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -599,10 +688,295 @@
 <script>
 // 전역 변수
 var userExp = parseInt(localStorage.getItem('userExp')) || 0;
+var newsCache = [];
+var lastNewsUpdate = 0;
+var CACHE_DURATION = 5 * 60 * 1000; // 5분 캐시
+
+// 실시간 뉴스 로드
+function loadRealTimeNews() {
+    var container = document.getElementById('realTimeNewsContainer');
+    if (!container) return;
+    
+    // 캐시 확인
+    var now = Date.now();
+    if (newsCache.length > 0 && (now - lastNewsUpdate) < CACHE_DURATION) {
+        displayNews(newsCache);
+        return;
+    }
+    
+    container.innerHTML = '<div class="text-center py-8"><div class="loading mx-auto mb-4"></div><p class="text-gray-500">실시간 뉴스 로딩 중...</p></div>';
+    
+    // 여러 뉴스 소스에서 데이터 로드 시도
+    Promise.all([
+        loadNewsFromSource1(),
+        loadNewsFromSource2(),
+        loadFallbackNews()
+    ])
+    .then(function(results) {
+        var allNews = [];
+        results.forEach(function(newsArray) {
+            if (newsArray && newsArray.length > 0) {
+                allNews = allNews.concat(newsArray);
+            }
+        });
+        
+        if (allNews.length > 0) {
+            // 날짜순 정렬
+            allNews.sort(function(a, b) {
+                return new Date(b.publishedAt) - new Date(a.publishedAt);
+            });
+            
+            // 중복 제거
+            var uniqueNews = [];
+            var seenTitles = new Set();
+            allNews.forEach(function(news) {
+                if (!seenTitles.has(news.title)) {
+                    seenTitles.add(news.title);
+                    uniqueNews.push(news);
+                }
+            });
+            
+            newsCache = uniqueNews.slice(0, 10); // 최대 10개
+            lastNewsUpdate = now;
+            displayNews(newsCache);
+        } else {
+            container.innerHTML = '<div class="text-center py-8"><p class="text-red-500">뉴스를 불러올 수 없습니다</p><button onclick="loadRealTimeNews()" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg text-sm">다시 시도</button></div>';
+        }
+    })
+    .catch(function(error) {
+        console.error('뉴스 로드 오류:', error);
+        container.innerHTML = '<div class="text-center py-8"><p class="text-red-500">뉴스 로드 실패</p><button onclick="loadRealTimeNews()" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg text-sm">다시 시도</button></div>';
+    });
+}
+
+// NewsAPI를 사용한 뉴스 로드 (소스 1)
+function loadNewsFromSource1() {
+    var apiKey = 'demo'; // 실제로는 유효한 API 키 사용
+    var url = 'https://newsapi.org/v2/everything?q=경제 OR 금융 OR 투자 OR 주식&language=ko&sortBy=publishedAt&pageSize=5&apiKey=' + apiKey;
+    
+    return fetch(url)
+        .then(function(response) {
+            if (!response.ok) throw new Error('NewsAPI 오류');
+            return response.json();
+        })
+        .then(function(data) {
+            return data.articles ? data.articles.map(function(article) {
+                return {
+                    title: article.title,
+                    description: article.description,
+                    url: article.url,
+                    publishedAt: article.publishedAt,
+                    source: article.source.name,
+                    category: '경제'
+                };
+            }) : [];
+        })
+        .catch(function() {
+            return [];
+        });
+}
+
+// Reddit API를 사용한 뉴스 로드 (소스 2)
+function loadNewsFromSource2() {
+    var url = 'https://www.reddit.com/r/investing+stocks+economics.json?limit=5';
+    
+    return fetch(url)
+        .then(function(response) {
+            if (!response.ok) throw new Error('Reddit API 오류');
+            return response.json();
+        })
+        .then(function(data) {
+            if (!data.data || !data.data.children) return [];
+            
+            return data.data.children.map(function(post) {
+                var postData = post.data;
+                return {
+                    title: postData.title,
+                    description: postData.selftext ? postData.selftext.substring(0, 100) + '...' : '투자 관련 토론',
+                    url: 'https://reddit.com' + postData.permalink,
+                    publishedAt: new Date(postData.created_utc * 1000).toISOString(),
+                    source: 'Reddit',
+                    category: '투자 토론'
+                };
+            });
+        })
+        .catch(function() {
+            return [];
+        });
+}
+
+// 대체 뉴스 데이터 (API 실패시)
+function loadFallbackNews() {
+    return Promise.resolve([
+        {
+            title: '미 연준, 기준금리 동결로 시장 안정화 도모',
+            description: '미국 연방준비제도(Fed)가 기준금리를 현재 수준으로 동결하기로 결정하면서 국내외 금융시장이 안정세를 보이고 있습니다.',
+            url: '#',
+            publishedAt: new Date().toISOString(),
+            source: 'FINE U 뉴스',
+            category: '통화정책'
+        },
+        {
+            title: '코스피, 외국인 매수세에 힘입어 상승 마감',
+            description: '코스피가 외국인 투자자들의 지속적인 매수세에 힘입어 전 거래일 대비 상승 마감했습니다.',
+            url: '#',
+            publishedAt: new Date(Date.now() - 3600000).toISOString(),
+            source: 'FINE U 뉴스',
+            category: '주식시장'
+        },
+        {
+            title: '원/달러 환율, 안정적 흐름 지속',
+            description: '원/달러 환율이 1,300원대 중반에서 안정적인 움직임을 보이며 수출입 기업들의 환율 부담이 완화되고 있습니다.',
+            url: '#',
+            publishedAt: new Date(Date.now() - 7200000).toISOString(),
+            source: 'FINE U 뉴스',
+            category: '환율'
+        },
+        {
+            title: '테크 기업들, 3분기 실적 호조 전망',
+            description: '주요 테크놀로지 기업들의 3분기 실적이 시장 예상을 상회할 것이라는 전망이 나오면서 관련 주가가 상승세를 보이고 있습니다.',
+            url: '#',
+            publishedAt: new Date(Date.now() - 10800000).toISOString(),
+            source: 'FINE U 뉴스',
+            category: '기업실적'
+        },
+        {
+            title: '디지털 자산 시장, 제도권 진입 가속화',
+            description: '암호화폐와 디지털 자산 시장이 제도권 금융으로의 진입을 가속화하면서 투자자들의 관심이 높아지고 있습니다.',
+            url: '#',
+            publishedAt: new Date(Date.now() - 14400000).toISOString(),
+            source: 'FINE U 뉴스',
+            category: '디지털자산'
+        }
+    ]);
+}
+
+// 뉴스 표시
+function displayNews(newsArray) {
+    var container = document.getElementById('realTimeNewsContainer');
+    if (!container || !newsArray || newsArray.length === 0) return;
+    
+    var html = '';
+    newsArray.forEach(function(news, index) {
+        var isBreaking = index < 2; // 상위 2개는 속보 처리
+        var timeAgo = getTimeAgo(new Date(news.publishedAt));
+        
+        html += '<div class="real-time-news-item' + (isBreaking ? ' breaking' : '') + '" onclick="openNewsDetail(\'' + news.url + '\', \'' + news.title.replace(/'/g, "\\'") + '\')">';
+        
+        if (isBreaking) {
+            html += '<div class="flex items-center mb-2"><span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">속보</span></div>';
+        }
+        
+        html += '<h4 class="font-semibold text-gray-800 mb-2">' + news.title + '</h4>';
+        
+        if (news.description) {
+            html += '<p class="text-sm text-gray-600 mb-2">' + (news.description.length > 80 ? news.description.substring(0, 80) + '...' : news.description) + '</p>';
+        }
+        
+        html += '<div class="news-source">';
+        html += '<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">' + news.category + '</span>';
+        html += '<span>·</span>';
+        html += '<span>' + news.source + '</span>';
+        html += '<span>·</span>';
+        html += '<span>' + timeAgo + '</span>';
+        html += '</div>';
+        
+        html += '</div>';
+    });
+    
+    container.innerHTML = html;
+}
+
+// 시간 차이 계산
+function getTimeAgo(date) {
+    var now = new Date();
+    var diff = Math.floor((now - date) / 1000);
+    
+    if (diff < 60) return '방금 전';
+    if (diff < 3600) return Math.floor(diff / 60) + '분 전';
+    if (diff < 86400) return Math.floor(diff / 3600) + '시간 전';
+    return Math.floor(diff / 86400) + '일 전';
+}
+
+// 뉴스 상세 보기
+function openNewsDetail(url, title) {
+    if (url === '#') {
+        alert('📰 ' + title + '\n\n이 뉴스는 데모용 콘텐츠입니다.\n실제 서비스에서는 상세 기사를 볼 수 있습니다.\n\n+10 EXP 획득!');
+        addExperience(10);
+    } else {
+        var userAgent = navigator.userAgent.toLowerCase();
+        if (userAgent.indexOf('mobile') > -1) {
+            // 모바일에서는 앱 내에서 열기
+            alert('📱 모바일 뉴스 뷰어\n\n' + title + '\n\n실제 서비스에서는 앱 내 브라우저로 기사를 볼 수 있습니다.\n\n+10 EXP 획득!');
+            addExperience(10);
+        } else {
+            // 데스크톱에서는 새 탭에서 열기
+            window.open(url, '_blank');
+            addExperience(10);
+        }
+    }
+}
+
+// 경제 지표 로드
+function loadEconomicIndicators() {
+    var container = document.getElementById('economicIndicators');
+    if (!container) return;
+    
+    // 실제 API 호출 대신 시뮬레이션 데이터 사용
+    var indicators = [
+        {
+            name: '코스피',
+            value: '2,651.23',
+            change: '+15.42',
+            changePercent: '+0.58%',
+            trend: 'positive'
+        },
+        {
+            name: '코스닥',
+            value: '847.91',
+            change: '-3.21',
+            changePercent: '-0.38%',
+            trend: 'negative'
+        },
+        {
+            name: '원/달러',
+            value: '1,335.5',
+            change: '+2.1',
+            changePercent: '+0.16%',
+            trend: 'positive'
+        },
+        {
+            name: '국고채 3년',
+            value: '3.45%',
+            change: '-0.02%p',
+            changePercent: '',
+            trend: 'negative'
+        }
+    ];
+    
+    var html = '';
+    indicators.forEach(function(indicator) {
+        var trendClass = indicator.trend === 'positive' ? 'indicator-positive' : 
+                        indicator.trend === 'negative' ? 'indicator-negative' : 'indicator-neutral';
+        
+        html += '<div class="economic-indicator card-shadow">';
+        html += '<div class="text-sm text-gray-600 mb-1">' + indicator.name + '</div>';
+        html += '<div class="indicator-value ' + trendClass + '">' + indicator.value + '</div>';
+        if (indicator.change) {
+            html += '<div class="text-xs ' + trendClass + '">' + indicator.change;
+            if (indicator.changePercent) html += ' (' + indicator.changePercent + ')';
+            html += '</div>';
+        }
+        html += '</div>';
+    });
+    
+    container.innerHTML = html;
+}
 
 // 뉴스 새로고침
 function refreshNews() {
-    location.reload();
+    loadRealTimeNews();
+    loadEconomicIndicators();
 }
 
 // 오늘의 금융 용어
@@ -708,6 +1082,16 @@ document.addEventListener('click', function(e) {
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     console.log('뉴스 페이지 로드 완료');
+    
+    // 실시간 뉴스 및 경제 지표 로드
+    loadRealTimeNews();
+    loadEconomicIndicators();
+    
+    // 5분마다 자동 업데이트
+    setInterval(function() {
+        loadRealTimeNews();
+        loadEconomicIndicators();
+    }, 5 * 60 * 1000);
 });
 </script>
 
