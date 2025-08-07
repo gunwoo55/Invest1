@@ -214,6 +214,84 @@
             transform: scale(1.1);
         }
 
+        .character-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+
+        .character-sprite {
+            font-size: 100px;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #FEF3C7, #FCD34D);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            margin: 10px auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .character-sprite:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        }
+
+        .character-sprite.happy {
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        .character-sprite.level-up {
+            animation: levelUpGlow 1s ease-in-out;
+        }
+
+        .character-effects {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) scale(1); }
+            40% { transform: translateY(-20px) scale(1.1); }
+            60% { transform: translateY(-10px) scale(1.05); }
+        }
+
+        @keyframes levelUpGlow {
+            0% { box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+            50% { box-shadow: 0 12px 40px rgba(255,215,0,0.6); }
+            100% { box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+        }
+
+        @keyframes heartFloat {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            100% { opacity: 0; transform: translateY(-50px) scale(1.2); }
+        }
+
+        .floating-heart {
+            position: absolute;
+            color: #EF4444;
+            font-size: 24px;
+            animation: heartFloat 1s ease-out forwards;
+        }
+
+        .floating-exp {
+            position: absolute;
+            color: #059669;
+            font-size: 14px;
+            font-weight: bold;
+            animation: heartFloat 1s ease-out forwards;
+        }
+
         .exp-bar {
             width: 100%;
             height: 8px;
@@ -341,8 +419,12 @@
                 </div>
                 
                 <div id="owlGameContainer" class="text-center">
-                    <img src="https://page.gensparksite.com/v1/base64_upload/8f76d2282f082e1c88ea19dba80d0d9d" 
-                         alt="똑부리" class="owl-character" onclick="petOwl()">
+                    <div class="character-container" onclick="petOwl()">
+                        <div class="character-sprite" id="characterSprite">
+                            🦉
+                        </div>
+                        <div class="character-effects" id="characterEffects"></div>
+                    </div>
                     
                     <div class="mt-4">
                         <h4 class="font-bold text-lg" id="owlName">똑부리</h4>
@@ -391,24 +473,24 @@
         <!-- 하단 네비게이션 -->
         <div class="bottom-navigation">
             <div class="nav-container">
-                <button onclick="goToMainPage()" class="nav-item">
+                <button onclick="navigateToPage('index.html')" class="nav-item">
                     <i class="fas fa-home text-gray-400"></i>
                     <span class="text-gray-400">홈</span>
                 </button>
-                <button onclick="goToNewsPage()" class="nav-item">
+                <button onclick="navigateToPage('a2.html')" class="nav-item">
                     <i class="fas fa-newspaper text-gray-400"></i>
                     <span class="text-gray-400">뉴스</span>
                 </button>
                 <div class="nav-center">
-                    <div id="navLevelBadge" class="level-badge-nav level-yellow" onclick="goToGradePage()">
+                    <div id="navLevelBadge" class="level-badge-nav level-yellow" onclick="navigateToPage('a5.html')">
                         YELLOW
                     </div>
                 </div>
-                <button onclick="goToGamePage()" class="nav-item active">
+                <button onclick="navigateToPage('a4.html')" class="nav-item active">
                     <i class="fas fa-gamepad"></i>
                     <span>게임</span>
                 </button>
-                <button onclick="goToMorePage()" class="nav-item">
+                <button onclick="navigateToPage('a3.html')" class="nav-item">
                     <i class="fas fa-ellipsis-h text-gray-400"></i>
                     <span class="text-gray-400">더보기</span>
                 </button>
@@ -419,10 +501,22 @@
 
 <script>
 // 전역 게임 변수들
-var currentUser = JSON.parse(localStorage.getItem('currentUser')) || { name: '사용자', level: 'yellow', exp: 0 };
+var currentUser = null;
 var quizQuestions = [];
 var currentQuizIndex = 0;
 var quizScore = 0;
+
+// 레벨 시스템 설정
+var levelSystem = {
+    yellow: { name: 'YELLOW', exp: 0, max: 3000, class: 'level-yellow' },
+    orange: { name: 'ORANGE', exp: 3000, max: 6000, class: 'level-orange' },
+    green: { name: 'GREEN', exp: 6000, max: 10000, class: 'level-green' },
+    blue: { name: 'BLUE', exp: 10000, max: 15000, class: 'level-blue' },
+    brown: { name: 'BROWN', exp: 15000, max: 25000, class: 'level-brown' },
+    black: { name: 'BLACK', exp: 25000, max: 50000, class: 'level-black' },
+    blackplus: { name: 'BLACK+', exp: 25000, max: 50000, class: 'level-black' },
+    red: { name: 'RED', exp: 50000, max: 100000, class: 'level-red' }
+};
 
 // 로켓 게임 변수들
 var rocketGame = {
@@ -449,25 +543,44 @@ var owlData = JSON.parse(localStorage.getItem('owlData')) || {
     money: 1250
 };
 
-// 페이지 이동 함수들
+// 페이지 이동 함수들 (캐시 무력화 적용)
+function navigateToPage(page) {
+    try {
+        // 현재 시간을 이용한 캐시 버스터
+        var cacheBuster = '?v=' + new Date().getTime();
+        var currentHost = window.location.origin;
+        var targetUrl = currentHost + '/' + page + cacheBuster;
+        
+        // 게임 데이터 저장
+        saveOwlData();
+        
+        // 페이지 이동
+        window.location.href = targetUrl;
+    } catch (error) {
+        console.error('페이지 이동 오류:', error);
+        // 오류 시 기본 이동
+        window.location.href = page;
+    }
+}
+
 function goToMainPage() {
-    window.location.href = 'index.html?v=' + Date.now();
+    navigateToPage('index.html');
 }
 
 function goToNewsPage() {
-    window.location.href = 'a2.html?v=' + Date.now();
+    navigateToPage('a2.html');
 }
 
 function goToGradePage() {
-    window.location.href = 'a5.html?v=' + Date.now();
+    navigateToPage('a5.html');
 }
 
 function goToGamePage() {
-    window.location.href = 'a4.html?v=' + Date.now();
+    navigateToPage('a4.html');
 }
 
 function goToMorePage() {
-    window.location.href = 'a3.html?v=' + Date.now();
+    navigateToPage('a3.html');
 }
 
 // 경제 퀴즈 시작
@@ -787,14 +900,20 @@ function petOwl() {
     gainOwlExp(10);
     updateOwlDisplay();
     
-    // 애니메이션 효과
-    var owl = document.querySelector('.owl-character');
-    owl.style.transform = 'scale(1.2)';
-    setTimeout(function() {
-        owl.style.transform = 'scale(1)';
-    }, 200);
+    // 향상된 애니메이션 효과
+    var sprite = document.getElementById('characterSprite');
+    var effects = document.getElementById('characterEffects');
     
-    showMessage('똑부리가 좋아합니다! 행복도 +5, 경험치 +10');
+    // 캐릭터 애니메이션
+    sprite.classList.add('happy');
+    setTimeout(function() {
+        sprite.classList.remove('happy');
+    }, 600);
+    
+    // 하트 이펙트
+    createFloatingEffect('💖', effects);
+    
+    showEnhancedMessage('똑부리가 좋아합니다! 행복도 +5, 경험치 +10', 'success');
 }
 
 // 똑부리 먹이주기
@@ -804,9 +923,14 @@ function feedOwl() {
         owlData.happiness = Math.min(100, owlData.happiness + 15);
         gainOwlExp(30);
         updateOwlDisplay();
-        showMessage('똑부리에게 먹이를 줬습니다! 행복도 +15, 경험치 +30');
+        
+        // 먹이 이펙트
+        var effects = document.getElementById('characterEffects');
+        createFloatingEffect('🍎', effects);
+        
+        showEnhancedMessage('똑부리에게 먹이를 줬습니다! 행복도 +15, 경험치 +30', 'success');
     } else {
-        showMessage('코인이 부족합니다! (필요: 50코인)');
+        showEnhancedMessage('코인이 부족합니다! (필요: 50코인)', 'error');
     }
 }
 
@@ -817,9 +941,14 @@ function studyWithOwl() {
         owlData.knowledge = Math.min(100, owlData.knowledge + 8);
         gainOwlExp(80);
         updateOwlDisplay();
-        showMessage('똑부리와 함께 공부했습니다! 경제 지식 +8, 경험치 +80');
+        
+        // 공부 이펙트
+        var effects = document.getElementById('characterEffects');
+        createFloatingEffect('📚', effects);
+        
+        showEnhancedMessage('똑부리와 함께 공부했습니다! 경제 지식 +8, 경험치 +80', 'success');
     } else {
-        showMessage('코인이 부족합니다! (필요: 100코인)');
+        showEnhancedMessage('코인이 부족합니다! (필요: 100코인)', 'error');
     }
 }
 
@@ -829,42 +958,164 @@ function investWithOwl() {
         var success = Math.random() > 0.3; // 70% 성공률
         owlData.money -= 200;
         
+        var effects = document.getElementById('characterEffects');
+        
         if (success) {
             var profit = Math.floor(Math.random() * 300) + 100;
             owlData.money += profit;
             owlData.investment = Math.min(100, owlData.investment + 5);
             gainOwlExp(100);
-            showMessage('투자 성공! +' + profit + '코인, 투자 실력 +5, 경험치 +100');
+            
+            // 성공 이펙트
+            createFloatingEffect('💰', effects);
+            
+            showEnhancedMessage('투자 성공! +' + profit + '코인, 투자 실력 +5, 경험치 +100', 'success');
         } else {
             owlData.investment = Math.min(100, owlData.investment + 2);
             gainOwlExp(50);
-            showMessage('투자 실패... 하지만 경험은 쌓였습니다! 투자 실력 +2, 경험치 +50');
+            
+            // 실패 이펙트
+            createFloatingEffect('📉', effects);
+            
+            showEnhancedMessage('투자 실패... 하지만 경험은 쌓였습니다! 투자 실력 +2, 경험치 +50', 'warning');
         }
         updateOwlDisplay();
     } else {
-        showMessage('코인이 부족합니다! (필요: 200코인)');
+        showEnhancedMessage('코인이 부족합니다! (필요: 200코인)', 'error');
     }
+}
+
+// 플로팅 이펙트 생성
+function createFloatingEffect(emoji, container) {
+    var effect = document.createElement('div');
+    effect.className = 'floating-heart';
+    effect.textContent = emoji;
+    effect.style.left = Math.random() * 60 + 'px';
+    effect.style.top = Math.random() * 60 + 'px';
+    
+    container.appendChild(effect);
+    
+    setTimeout(function() {
+        container.removeChild(effect);
+    }, 1000);
+}
+
+// 향상된 메시지 표시
+function showEnhancedMessage(message, type) {
+    var colors = {
+        success: '#10B981',
+        warning: '#F59E0B',
+        error: '#EF4444',
+        info: '#3B82F6'
+    };
+    
+    var messageDiv = document.createElement('div');
+    messageDiv.style.cssText = 
+        'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); ' +
+        'background: ' + (colors[type] || colors.info) + '; color: white; ' +
+        'padding: 12px 24px; border-radius: 8px; font-weight: bold; z-index: 1000; ' +
+        'box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideDown 0.3s ease-out;';
+    
+    messageDiv.textContent = message;
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(function() {
+        document.body.removeChild(messageDiv);
+    }, 3000);
 }
 
 // 똑부리 경험치 획득
 function gainOwlExp(amount) {
     owlData.exp += amount;
     
+    // 경험치 플로팅 이펙트
+    var effects = document.getElementById('characterEffects');
+    var expEffect = document.createElement('div');
+    expEffect.className = 'floating-exp';
+    expEffect.textContent = '+' + amount + ' EXP';
+    expEffect.style.left = '50px';
+    expEffect.style.top = '20px';
+    effects.appendChild(expEffect);
+    
+    setTimeout(function() {
+        effects.removeChild(expEffect);
+    }, 1000);
+    
     // 레벨업 체크
     if (owlData.exp >= owlData.maxExp) {
-        owlData.level++;
-        owlData.exp = 0;
-        owlData.maxExp = owlData.level * 1000;
-        owlData.money += owlData.level * 100;
-        
-        var levelNames = ['초보 투자자', '견습 투자자', '숙련 투자자', '전문 투자자', '투자 마스터'];
-        var levelName = levelNames[Math.min(owlData.level - 1, levelNames.length - 1)];
-        
-        showMessage('레벨업! 레벨 ' + owlData.level + ' - ' + levelName + '\n보너스 코인 +' + (owlData.level * 100));
+        levelUpOwl();
     }
     
     updateOwlDisplay();
     saveOwlData();
+    
+    // 메인 사용자 데이터에도 경험치 추가
+    syncWithMainUser(amount);
+}
+
+// 레벨업 처리
+function levelUpOwl() {
+    owlData.level++;
+    owlData.exp = 0;
+    owlData.maxExp = owlData.level * 1000;
+    owlData.money += owlData.level * 100;
+    
+    var levelNames = ['초보 투자자', '견습 투자자', '숙련 투자자', '전문 투자자', '투자 마스터', '투자 전설', '투자 신'];
+    var levelName = levelNames[Math.min(owlData.level - 1, levelNames.length - 1)];
+    
+    // 레벨업 애니메이션
+    var sprite = document.getElementById('characterSprite');
+    sprite.classList.add('level-up');
+    setTimeout(function() {
+        sprite.classList.remove('level-up');
+    }, 1000);
+    
+    // 레벨업 이펙트
+    var effects = document.getElementById('characterEffects');
+    createFloatingEffect('🎉', effects);
+    createFloatingEffect('✨', effects);
+    createFloatingEffect('🌟', effects);
+    
+    showEnhancedMessage('🎉 레벨업! 레벨 ' + owlData.level + ' - ' + levelName + '\n보너스 코인 +' + (owlData.level * 100), 'success');
+}
+
+// 메인 사용자 데이터와 동기화
+function syncWithMainUser(expAmount) {
+    try {
+        var mainUserData = localStorage.getItem('fineu_current_user');
+        if (mainUserData) {
+            var userData = JSON.parse(mainUserData);
+            userData.exp = (userData.exp || 0) + Math.floor(expAmount / 2); // 게임에서는 절반의 경험치
+            
+            localStorage.setItem('fineu_current_user', JSON.stringify(userData));
+            localStorage.setItem('user_' + userData.id, JSON.stringify(userData));
+        }
+    } catch (error) {
+        console.error('사용자 데이터 동기화 오류:', error);
+    }
+}
+
+// 사용자 데이터 로드
+function loadUserData() {
+    try {
+        var userData = localStorage.getItem('fineu_current_user');
+        if (userData) {
+            currentUser = JSON.parse(userData);
+            updateLevelBadge();
+        }
+    } catch (error) {
+        console.error('사용자 데이터 로드 오류:', error);
+    }
+}
+
+// 레벨 뱃지 업데이트
+function updateLevelBadge() {
+    var levelBadge = document.getElementById('navLevelBadge');
+    if (levelBadge && currentUser && levelSystem[currentUser.level]) {
+        var levelInfo = levelSystem[currentUser.level];
+        levelBadge.className = 'level-badge-nav ' + levelInfo.class;
+        levelBadge.textContent = levelInfo.name;
+    }
 }
 
 // 똑부리 정보 업데이트
@@ -881,13 +1132,8 @@ function updateOwlDisplay() {
 
 // 레벨 이름 가져오기
 function getLevelName() {
-    var levelNames = ['초보 투자자', '견습 투자자', '숙련 투자자', '전문 투자자', '투자 마스터'];
+    var levelNames = ['초보 투자자', '견습 투자자', '숙련 투자자', '전문 투자자', '투자 마스터', '투자 전설', '투자 신'];
     return levelNames[Math.min(owlData.level - 1, levelNames.length - 1)];
-}
-
-// 메시지 표시
-function showMessage(message) {
-    alert(message);
 }
 
 // 똑부리 데이터 저장
@@ -902,23 +1148,13 @@ function refreshGames() {
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
+    // 사용자 데이터 로드
+    loadUserData();
+    
+    // 똑부리 데이터 업데이트
     updateOwlDisplay();
     
-    // 사용자 레벨 표시
-    var levelBadge = document.getElementById('navLevelBadge');
-    if (levelBadge && currentUser.level) {
-        var levelInfo = {
-            yellow: 'YELLOW',
-            orange: 'ORANGE', 
-            green: 'GREEN',
-            blue: 'BLUE',
-            brown: 'BROWN',
-            black: 'BLACK',
-            red: 'RED'
-        };
-        levelBadge.textContent = levelInfo[currentUser.level] || 'YELLOW';
-        levelBadge.className = 'level-badge-nav level-' + currentUser.level;
-    }
+    console.log('게임 페이지 초기화 완료');
 });
 </script>
 
