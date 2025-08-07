@@ -301,7 +301,7 @@
             
             <div class="space-y-4" id="assetProducts">
                 <!-- 예적금 (모든 등급 이용 가능) -->
-                <div class="asset-item bg-purple-50 rounded-xl p-4 cursor-pointer" onclick="openInvestmentModal('deposit')">
+                <div class="asset-item bg-purple-50 rounded-xl p-4 cursor-pointer" onclick="openInvestmentModal('deposit')" id="depositProduct">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <i class="fas fa-piggy-bank text-purple-500 text-xl"></i>
@@ -312,7 +312,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">이용 가능</span>
+                            <span class="asset-status bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">이용 가능</span>
                         </div>
                     </div>
                 </div>
@@ -329,7 +329,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="inline-block px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">ORANGE+</span>
+                            <span class="asset-status bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-semibold">ORANGE+</span>
                         </div>
                     </div>
                 </div>
@@ -346,7 +346,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">GREEN+</span>
+                            <span class="asset-status bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-semibold">GREEN+</span>
                         </div>
                     </div>
                 </div>
@@ -363,7 +363,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">BLUE+</span>
+                            <span class="asset-status bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-semibold">BLUE+</span>
                         </div>
                     </div>
                 </div>
@@ -380,7 +380,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">BROWN+</span>
+                            <span class="asset-status bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-semibold">BROWN+</span>
                         </div>
                     </div>
                 </div>
@@ -397,7 +397,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="inline-block px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">BLACK+</span>
+                            <span class="asset-status bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-semibold">BLACK+</span>
                         </div>
                     </div>
                 </div>
@@ -845,8 +845,22 @@ function saveUserData() {
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
 }
 
-// 레벨 표시 업데이트
+// 레벨 표시 업데이트 (새로운 레벨 매니저 사용)
 function updateLevelDisplay() {
+    // 레벨 매니저를 통한 통합 레벨 관리
+    if (window.levelManager && window.levelManager.currentUser) {
+        window.levelManager.updateLevelDisplay();
+        
+        // 가상 자산 표시 업데이트
+        var virtualBalance = document.getElementById('virtualBalance');
+        if (virtualBalance) {
+            virtualBalance.textContent = currentUser.virtualBalance.toLocaleString() + '원';
+        }
+        
+        return;
+    }
+    
+    // 레거시 방식 (레벨 매니저가 없을 때)
     var level = levelSystem[currentUser.level];
     var levelBadge = document.getElementById('currentLevelBadge');
     var expText = document.getElementById('expText');
@@ -872,51 +886,123 @@ function updateLevelDisplay() {
     }
 }
 
-// 등급별 자산 상품 업데이트
+// 등급별 자산 상품 업데이트 (새로운 투자 잠금 시스템)
 function updateAssetProducts() {
-    var levels = Object.keys(levelSystem);
-    var currentLevelIndex = levels.indexOf(currentUser.level);
-    
-    // 주식 (ORANGE부터)
-    var stockProduct = document.getElementById('stockProduct');
-    if (currentLevelIndex >= 1) {
-        stockProduct.classList.remove('locked');
-    } else {
-        stockProduct.classList.add('locked');
+    // 레벨 매니저를 통해 투자 잠금 상태 확인
+    if (window.levelManager) {
+        const lockStatus = window.levelManager.getInvestmentLockStatus();
+        
+        // 예적금 (항상 사용 가능)
+        var depositProduct = document.getElementById('depositProduct');
+        if (depositProduct) {
+            depositProduct.classList.remove('locked');
+            var statusElement = depositProduct.querySelector('.asset-status');
+            if (statusElement) {
+                statusElement.textContent = '이용 가능';
+                statusElement.className = 'asset-status bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold';
+            }
+        }
+        
+        // 주식
+        var stockProduct = document.getElementById('stockProduct');
+        if (stockProduct) {
+            if (lockStatus.stock.unlocked) {
+                stockProduct.classList.remove('locked');
+                var statusElement = stockProduct.querySelector('.asset-status');
+                if (statusElement) {
+                    statusElement.textContent = '이용 가능';
+                    statusElement.className = 'asset-status bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                }
+            } else {
+                stockProduct.classList.add('locked');
+                var statusElement = stockProduct.querySelector('.asset-status');
+                if (statusElement) {
+                    statusElement.textContent = lockStatus.stock.requiredLevel + '+';
+                    statusElement.className = 'asset-status bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                }
+            }
+        }
+        
+        // 채권
+        var bondProduct = document.getElementById('bondProduct');
+        if (bondProduct) {
+            if (lockStatus.bond.unlocked) {
+                bondProduct.classList.remove('locked');
+                var statusElement = bondProduct.querySelector('.asset-status');
+                if (statusElement) {
+                    statusElement.textContent = '이용 가능';
+                    statusElement.className = 'asset-status bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                }
+            } else {
+                bondProduct.classList.add('locked');
+                var statusElement = bondProduct.querySelector('.asset-status');
+                if (statusElement) {
+                    statusElement.textContent = lockStatus.bond.requiredLevel + '+';
+                    statusElement.className = 'asset-status bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                }
+            }
+        }
+        
+        // ETF/펀드
+        var etfProduct = document.getElementById('etfProduct');
+        if (etfProduct) {
+            if (lockStatus.etf.unlocked) {
+                etfProduct.classList.remove('locked');
+                var statusElement = etfProduct.querySelector('.asset-status');
+                if (statusElement) {
+                    statusElement.textContent = '이용 가능';
+                    statusElement.className = 'asset-status bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                }
+            } else {
+                etfProduct.classList.add('locked');
+                var statusElement = etfProduct.querySelector('.asset-status');
+                if (statusElement) {
+                    statusElement.textContent = lockStatus.etf.requiredLevel + '+';
+                    statusElement.className = 'asset-status bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                }
+            }
+        }
+        
+        // 암호화폐
+        var cryptoProduct = document.getElementById('cryptoProduct');
+        if (cryptoProduct) {
+            if (lockStatus.crypto.unlocked) {
+                cryptoProduct.classList.remove('locked');
+                var statusElement = cryptoProduct.querySelector('.asset-status');
+                if (statusElement) {
+                    statusElement.textContent = '이용 가능';
+                    statusElement.className = 'asset-status bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                }
+            } else {
+                cryptoProduct.classList.add('locked');
+                var statusElement = cryptoProduct.querySelector('.asset-status');
+                if (statusElement) {
+                    statusElement.textContent = lockStatus.crypto.requiredLevel + '+';
+                    statusElement.className = 'asset-status bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                }
+            }
+        }
+        
+        // 귀금속/원자재
+        var commodityProduct = document.getElementById('commodityProduct');
+        if (commodityProduct) {
+            if (lockStatus.commodity.unlocked) {
+                commodityProduct.classList.remove('locked');
+                var statusElement = commodityProduct.querySelector('.asset-status');
+                if (statusElement) {
+                    statusElement.textContent = '이용 가능';
+                    statusElement.className = 'asset-status bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                }
+            } else {
+                commodityProduct.classList.add('locked');
+                var statusElement = commodityProduct.querySelector('.asset-status');
+                if (statusElement) {
+                    statusElement.textContent = lockStatus.commodity.requiredLevel + '+';
+                    statusElement.className = 'asset-status bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                }
+            }
+        }
     }
-    
-    // 채권 (GREEN부터)
-    var bondProduct = document.getElementById('bondProduct');
-    if (currentLevelIndex >= 2) {
-        bondProduct.classList.remove('locked');
-    } else {
-        bondProduct.classList.add('locked');
-    }
-    
-    // ETF (BLUE부터)
-    var etfProduct = document.getElementById('etfProduct');
-    if (currentLevelIndex >= 3) {
-        etfProduct.classList.remove('locked');
-    } else {
-        etfProduct.classList.add('locked');
-    }
-    
-    // 암호화폐 (BROWN부터)
-    var cryptoProduct = document.getElementById('cryptoProduct');
-    if (currentLevelIndex >= 4) {
-        cryptoProduct.classList.remove('locked');
-    } else {
-        cryptoProduct.classList.add('locked');
-    }
-    
-    // 귀금속 (BLACK부터)
-    var commodityProduct = document.getElementById('commodityProduct');
-    if (currentLevelIndex >= 5) {
-        commodityProduct.classList.remove('locked');
-    } else {
-        commodityProduct.classList.add('locked');
-    }
-}
 
 // 보유 자산 표시 업데이트
 function updateHoldingDisplays() {
@@ -1298,13 +1384,22 @@ function showTransactionHistory() {
     alert('전체 거래내역을 표시합니다!');
 }
 
-// 투자 모달 열기
+// 투자 모달 열기 (새로운 투자 잠금 시스템)
 function openInvestmentModal(type) {
-    // 등급 제한 확인
-    if (isProductLocked(type)) {
-        var requiredLevel = getRequiredLevel(type);
-        alert(requiredLevel + ' 등급부터 이용할 수 있습니다.');
-        return;
+    // 레벨 매니저를 통한 투자 접근 권한 확인
+    if (window.levelManager) {
+        if (!window.levelManager.hasInvestmentAccess(type)) {
+            var requiredLevel = window.levelManager.getRequiredLevelForInvestment(type);
+            alert(requiredLevel + ' 등급부터 이용할 수 있습니다.\n\n자산 운용으로 경험치를 쌓아 등급을 올려보세요!');
+            return;
+        }
+    } else {
+        // 레거시 방식 (백업용)
+        if (isProductLocked(type)) {
+            var requiredLevel = getRequiredLevel(type);
+            alert(requiredLevel + ' 등급부터 이용할 수 있습니다.');
+            return;
+        }
     }
     
     var modal = document.getElementById('investmentModal');

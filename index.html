@@ -60,8 +60,8 @@
         
         .level-badge-profile {
             display: inline-block;
-            padding: 6px 16px;
-            border-radius: 16px;
+            padding: 8px 20px;
+            border-radius: 25px; /* 타원형 명찰 스타일 */
             font-size: 12px;
             font-weight: 700;
             color: white;
@@ -70,7 +70,13 @@
             overflow: hidden;
             letter-spacing: 0.5px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
+            box-shadow: 
+                0 4px 16px rgba(0,0,0,0.15), 
+                inset 0 1px 0 rgba(255,255,255,0.3),
+                inset 0 -1px 0 rgba(0,0,0,0.2);
+            border: 2px solid rgba(255,255,255,0.2);
+            min-width: 80px;
+            text-align: center;
         }
 
         .level-badge-profile::before {
@@ -82,6 +88,14 @@
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
             transition: left 0.6s;
+        }
+
+        .level-badge-profile:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 
+                0 6px 20px rgba(0,0,0,0.2), 
+                inset 0 1px 0 rgba(255,255,255,0.4),
+                inset 0 -1px 0 rgba(0,0,0,0.3);
         }
 
         .level-badge-profile:hover::before {
@@ -289,14 +303,17 @@
             flex-direction: column;
             align-items: center;
             gap: 6px;
-            padding: 8px 4px;
+            padding: 12px 8px;
             background: none;
             border: none;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 16px;
+            border-radius: 50%; /* 원형 디자인 */
             position: relative;
             overflow: hidden;
+            width: 60px;
+            height: 60px;
+            justify-content: center;
         }
 
         .nav-item::before {
@@ -306,7 +323,7 @@
             left: 50%;
             width: 0;
             height: 0;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.15));
             border-radius: 50%;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             transform: translate(-50%, -50%);
@@ -315,15 +332,15 @@
         .nav-item:hover::before {
             width: 100%;
             height: 100%;
-            border-radius: 16px;
         }
 
         .nav-item:hover {
-            transform: translateY(-3px) scale(1.05);
+            transform: translateY(-5px) scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
         }
 
         .nav-item:active {
-            transform: translateY(-1px) scale(0.98);
+            transform: translateY(-2px) scale(0.95);
         }
 
         .nav-item i {
@@ -359,10 +376,9 @@
         }
 
         .nav-item.active::before {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.15));
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(99, 102, 241, 0.25));
             width: 100%;
             height: 100%;
-            border-radius: 16px;
         }
 
         .nav-center {
@@ -775,11 +791,8 @@ function showMainScreen(userId, password) {
 // 사용자 초기화
 function setupUser(userId, password) {
     try {
-        // test/test 로그인 시 black 레벨로 시작 (새 로그인일 때만)
+        // 기본 시작 레벨은 yellow
         var defaultLevel = 'yellow';
-        if (userId === 'test' && password === 'test') {
-            defaultLevel = 'black';
-        }
         
         currentUser = {
             id: userId,
@@ -795,14 +808,9 @@ function setupUser(userId, password) {
         if (window.userDataManager) {
             window.userDataManager.currentUserId = userId;
             
-            // 기존 사용자 데이터 불러오기 (보안 검증 포함)
             var savedData = window.userDataManager.loadUserData(userId);
             if (savedData && Object.keys(savedData).length > 0) {
                 currentUser = Object.assign(currentUser, savedData);
-                // test/test의 경우 새 로그인일 때만 black 레벨로 강제 설정
-                if (userId === 'test' && password === 'test') {
-                    currentUser.level = 'black';
-                }
                 userLevel = currentUser.level || defaultLevel;
                 userExp = currentUser.exp || 0;
                 totalAssets = currentUser.totalAssets || 10000000;
@@ -817,13 +825,9 @@ function setupUser(userId, password) {
             }
         } else {
             // 레거시 방식 (백업용)
-            var savedData = localStorage.getItem('user_' + userId);
             if (savedData) {
                 var userData = JSON.parse(savedData);
                 currentUser = Object.assign(currentUser, userData);
-                if (userId === 'test' && password === 'test') {
-                    currentUser.level = 'black';
-                }
                 userLevel = currentUser.level || defaultLevel;
                 userExp = currentUser.exp || 0;
                 totalAssets = currentUser.totalAssets || 10000000;

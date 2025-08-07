@@ -3,70 +3,67 @@
  * 모든 페이지에서 사용자 등급 정보를 공유하는 중앙화된 관리 시스템
  */
 
-// 레벨 시스템 정의 (금속 효과 포함)
+// 레벨 시스템 정의 (Yellow → Black 순서)
 const LEVEL_SYSTEM = {
     yellow: { 
-        name: 'BRONZE', 
+        name: 'YELLOW', 
         exp: 0, 
         max: 3000, 
-        class: 'level-bronze level-metal-bronze', 
+        class: 'level-yellow level-metal-yellow', 
         order: 1,
-        metalType: 'bronze',
-        displayName: 'BRONZE'
+        metalType: 'yellow',
+        displayName: 'YELLOW',
+        investmentUnlocks: ['deposit'] // 예적금만 가능
     },
     orange: { 
-        name: 'SILVER', 
+        name: 'ORANGE', 
         exp: 3000, 
         max: 6000, 
-        class: 'level-silver level-metal-silver', 
+        class: 'level-orange level-metal-orange', 
         order: 2,
-        metalType: 'silver',
-        displayName: 'SILVER'
+        metalType: 'orange',
+        displayName: 'ORANGE',
+        investmentUnlocks: ['deposit', 'stock'] // 주식 추가
     },
     green: { 
-        name: 'GOLD', 
+        name: 'GREEN', 
         exp: 6000, 
         max: 10000, 
-        class: 'level-gold level-metal-gold', 
+        class: 'level-green level-metal-green', 
         order: 3,
-        metalType: 'gold',
-        displayName: 'GOLD'
+        metalType: 'green',
+        displayName: 'GREEN',
+        investmentUnlocks: ['deposit', 'stock', 'bond'] // 채권 추가
     },
     blue: { 
-        name: 'PLATINUM', 
+        name: 'BLUE', 
         exp: 10000, 
         max: 15000, 
-        class: 'level-platinum level-metal-platinum', 
+        class: 'level-blue level-metal-blue', 
         order: 4,
-        metalType: 'platinum',
-        displayName: 'PLATINUM'
+        metalType: 'blue',
+        displayName: 'BLUE',
+        investmentUnlocks: ['deposit', 'stock', 'bond', 'etf'] // ETF/펀드 추가
     },
     brown: { 
-        name: 'DIAMOND', 
+        name: 'BROWN', 
         exp: 15000, 
         max: 25000, 
-        class: 'level-diamond level-metal-diamond', 
+        class: 'level-brown level-metal-brown', 
         order: 5,
-        metalType: 'diamond',
-        displayName: 'DIAMOND'
+        metalType: 'brown',
+        displayName: 'BROWN',
+        investmentUnlocks: ['deposit', 'stock', 'bond', 'etf', 'crypto'] // 암호화폐 추가
     },
     black: { 
-        name: 'BLACK DIAMOND', 
+        name: 'BLACK', 
         exp: 25000, 
         max: 50000, 
-        class: 'level-black-diamond level-metal-black-diamond', 
+        class: 'level-black level-metal-black', 
         order: 6,
-        metalType: 'black-diamond',
-        displayName: 'BLACK DIAMOND'
-    },
-    red: { 
-        name: 'RUBY MASTER', 
-        exp: 50000, 
-        max: 100000, 
-        class: 'level-ruby level-metal-ruby', 
-        order: 7,
-        metalType: 'ruby',
-        displayName: 'RUBY MASTER'
+        metalType: 'black',
+        displayName: 'BLACK',
+        investmentUnlocks: ['deposit', 'stock', 'bond', 'etf', 'crypto', 'commodity'] // 귀금속/원자재 추가
     }
 };
 
@@ -191,14 +188,44 @@ class LevelManager {
         this.notifyLevelChange();
     }
 
-    // 레벨별 접근 권한 체크
-    hasLevelAccess(requiredLevel) {
+    // 투자 상품 접근 권한 체크
+    hasInvestmentAccess(investmentType) {
         if (!this.currentUser) return false;
         
-        const currentLevelOrder = LEVEL_SYSTEM[this.currentUser.level]?.order || 1;
-        const requiredLevelOrder = LEVEL_SYSTEM[requiredLevel]?.order || 1;
+        const currentLevel = this.getCurrentLevel();
+        return currentLevel.investmentUnlocks && currentLevel.investmentUnlocks.includes(investmentType);
+    }
+
+    // 접근 가능한 투자 상품 목록 반환
+    getAvailableInvestments() {
+        if (!this.currentUser) return ['deposit']; // 기본값
         
-        return currentLevelOrder >= requiredLevelOrder;
+        const currentLevel = this.getCurrentLevel();
+        return currentLevel.investmentUnlocks || ['deposit'];
+    }
+
+    // 투자 상품별 잠금 상태 확인
+    getInvestmentLockStatus() {
+        const allInvestments = ['deposit', 'stock', 'bond', 'etf', 'crypto', 'commodity'];
+        const available = this.getAvailableInvestments();
+        
+        return allInvestments.reduce((status, investment) => {
+            status[investment] = {
+                unlocked: available.includes(investment),
+                requiredLevel: this.getRequiredLevelForInvestment(investment)
+            };
+            return status;
+        }, {});
+    }
+
+    // 특정 투자 상품에 필요한 최소 레벨 반환
+    getRequiredLevelForInvestment(investmentType) {
+        for (const [levelKey, levelData] of Object.entries(LEVEL_SYSTEM)) {
+            if (levelData.investmentUnlocks && levelData.investmentUnlocks.includes(investmentType)) {
+                return levelData.displayName;
+            }
+        }
+        return 'UNKNOWN';
     }
 
     // 레벨 변경 콜백 등록
@@ -274,78 +301,65 @@ class LevelManager {
                 75% { transform: scale(1.1); box-shadow: 0 0 25px rgba(255,215,0,1); }
             }
 
-            /* BRONZE (브론즈) 효과 */
-            .level-metal-bronze {
-                background: linear-gradient(145deg, #CD7F32, #B8860B, #CD7F32);
-                border: 1px solid #8B4513;
-            }
-
-            /* SILVER (실버) 효과 */
-            .level-metal-silver {
-                background: linear-gradient(145deg, #C0C0C0, #E5E5E5, #C0C0C0);
-                border: 1px solid #A9A9A9;
-            }
-
-            /* GOLD (골드) 효과 */
-            .level-metal-gold {
-                background: linear-gradient(145deg, #FFD700, #FFF8DC, #FFD700);
-                border: 1px solid #DAA520;
+            /* YELLOW (옐로우) 효과 */
+            .level-metal-yellow {
+                background: linear-gradient(145deg, #FEF08A, #FDE047, #FACC15);
+                border: 1px solid #EAB308;
                 box-shadow: 
                     inset 0 1px 0 rgba(255,255,255,0.4),
                     inset 0 -1px 0 rgba(0,0,0,0.2),
-                    0 2px 8px rgba(255,215,0,0.4);
+                    0 2px 8px rgba(250,204,21,0.4);
             }
 
-            /* PLATINUM (플래티넘) 효과 */
-            .level-metal-platinum {
-                background: linear-gradient(145deg, #E5E4E2, #F8F8FF, #E5E4E2);
-                border: 1px solid #D3D3D3;
-            }
-
-            /* DIAMOND (다이아몬드) 효과 */
-            .level-metal-diamond {
-                background: linear-gradient(145deg, #B9F2FF, #E0FFFF, #B9F2FF);
-                border: 1px solid #87CEEB;
+            /* ORANGE (오렌지) 효과 */
+            .level-metal-orange {
+                background: linear-gradient(145deg, #FED7AA, #FB923C, #EA580C);
+                border: 1px solid #DC2626;
                 box-shadow: 
-                    inset 0 1px 0 rgba(255,255,255,0.6),
-                    inset 0 -1px 0 rgba(0,0,0,0.1),
-                    0 2px 12px rgba(185,242,255,0.5);
+                    inset 0 1px 0 rgba(255,255,255,0.4),
+                    inset 0 -1px 0 rgba(0,0,0,0.2),
+                    0 2px 8px rgba(234,88,12,0.4);
             }
 
-            .level-metal-diamond::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: 
-                    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.8) 2px, transparent 2px),
-                    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.6) 1px, transparent 1px);
-                animation: sparkle 2s infinite;
-                pointer-events: none;
-            }
-
-            @keyframes sparkle {
-                0%, 100% { opacity: 0.8; }
-                50% { opacity: 1; }
-            }
-
-            /* BLACK DIAMOND (블랙 다이아몬드) 효과 */
-            .level-metal-black-diamond {
-                background: linear-gradient(145deg, #2F2F2F, #4A4A4A, #2F2F2F);
-                border: 1px solid #1C1C1C;
-                color: #E0E0E0;
-            }
-
-            /* RUBY MASTER (루비 마스터) 효과 */
-            .level-metal-ruby {
-                background: linear-gradient(145deg, #E0115F, #FF6B6B, #E0115F);
-                border: 1px solid #B22222;
+            /* GREEN (그린) 효과 */
+            .level-metal-green {
+                background: linear-gradient(145deg, #BBF7D0, #34D399, #059669);
+                border: 1px solid #047857;
                 box-shadow: 
-                    inset 0 1px 0 rgba(255,255,255,0.3),
-                    inset 0 -1px 0 rgba(0,0,0,0.3),
-                    0 2px 12px rgba(224,17,95,0.4);
+                    inset 0 1px 0 rgba(255,255,255,0.4),
+                    inset 0 -1px 0 rgba(0,0,0,0.2),
+                    0 2px 8px rgba(5,150,105,0.4);
+            }
+
+            /* BLUE (블루) 효과 */
+            .level-metal-blue {
+                background: linear-gradient(145deg, #DBEAFE, #60A5FA, #2563EB);
+                border: 1px solid #1D4ED8;
+                box-shadow: 
+                    inset 0 1px 0 rgba(255,255,255,0.4),
+                    inset 0 -1px 0 rgba(0,0,0,0.2),
+                    0 2px 8px rgba(37,99,235,0.4);
+            }
+
+            /* BROWN (브라운) 효과 */
+            .level-metal-brown {
+                background: linear-gradient(145deg, #D6D3D1, #A8A29E, #78716C);
+                border: 1px solid #57534E;
+                box-shadow: 
+                    inset 0 1px 0 rgba(255,255,255,0.4),
+                    inset 0 -1px 0 rgba(0,0,0,0.2),
+                    0 2px 8px rgba(120,113,108,0.4);
+            }
+
+            /* BLACK (블랙) 효과 */
+            .level-metal-black {
+                background: linear-gradient(145deg, #6B7280, #374151, #1F2937);
+                border: 1px solid #111827;
+                color: #F9FAFB;
+                box-shadow: 
+                    inset 0 1px 0 rgba(255,255,255,0.2),
+                    inset 0 -1px 0 rgba(0,0,0,0.4),
+                    0 2px 12px rgba(31,41,55,0.6);
             }
 
             /* 호버 효과 강화 */
@@ -358,32 +372,28 @@ class LevelManager {
             }
 
             /* 등급별 특별 호버 효과 */
-            .level-metal-bronze:hover {
-                box-shadow: 0 0 20px rgba(205,127,50,0.6);
+            .level-metal-yellow:hover {
+                box-shadow: 0 0 20px rgba(250,204,21,0.6);
             }
 
-            .level-metal-silver:hover {
-                box-shadow: 0 0 20px rgba(192,192,192,0.6);
+            .level-metal-orange:hover {
+                box-shadow: 0 0 20px rgba(234,88,12,0.6);
             }
 
-            .level-metal-gold:hover {
-                box-shadow: 0 0 25px rgba(255,215,0,0.8);
+            .level-metal-green:hover {
+                box-shadow: 0 0 20px rgba(5,150,105,0.6);
             }
 
-            .level-metal-platinum:hover {
-                box-shadow: 0 0 25px rgba(229,228,226,0.7);
+            .level-metal-blue:hover {
+                box-shadow: 0 0 25px rgba(37,99,235,0.7);
             }
 
-            .level-metal-diamond:hover {
-                box-shadow: 0 0 30px rgba(185,242,255,0.9);
+            .level-metal-brown:hover {
+                box-shadow: 0 0 25px rgba(120,113,108,0.7);
             }
 
-            .level-metal-black-diamond:hover {
-                box-shadow: 0 0 25px rgba(74,74,74,0.8);
-            }
-
-            .level-metal-ruby:hover {
-                box-shadow: 0 0 30px rgba(224,17,95,0.8);
+            .level-metal-black:hover {
+                box-shadow: 0 0 30px rgba(31,41,55,0.8);
             }
 
             /* 승급 축하 애니메이션 */
@@ -546,28 +556,76 @@ class LevelManager {
             existingMessage.remove();
         }
 
+        // 새로 해제된 투자 상품 확인
+        const unlockedInvestments = this.getNewlyUnlockedInvestments(newLevel);
+        const unlockedText = unlockedInvestments.length > 0 ? 
+            `<div class="mt-2 text-sm text-green-600">🔓 새로 해제된 투자: ${unlockedInvestments.join(', ')}</div>` : 
+            '<div class="mt-2 text-sm text-gray-500">💎 새로운 특별 혜택이 해제되었습니다!</div>';
+
         // 새 메시지 생성
         const message = document.createElement('div');
         message.id = 'levelUpMessage';
-        message.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-2xl p-6 shadow-2xl text-center';
+        message.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-2xl p-6 shadow-2xl text-center max-w-sm mx-4';
         message.innerHTML = `
             <div class="text-6xl mb-4">🎉</div>
             <h3 class="text-2xl font-bold text-gray-800 mb-2">등급 승급!</h3>
             <div class="level-badge-profile level-badge-metal ${levelData.class} mx-auto mb-2" style="font-size: 14px; padding: 8px 16px;">${levelData.displayName}</div>
             <p class="text-gray-600">축하합니다! <strong>${levelData.displayName}</strong> 등급이 되었습니다!</p>
-            <div class="mt-4 text-sm text-gray-500">
-                💎 새로운 특별 혜택이 해제되었습니다!
-            </div>
+            ${unlockedText}
+            <button onclick="this.parentElement.remove()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors">확인</button>
         `;
 
         document.body.appendChild(message);
 
-        // 5초 후 자동 제거
+        // 투자 잠금 해제 알림 (페이지별 처리)
+        this.notifyInvestmentUnlock(unlockedInvestments);
+
+        // 10초 후 자동 제거
         setTimeout(() => {
             if (message.parentNode) {
                 message.remove();
             }
-        }, 5000);
+        }, 10000);
+    }
+
+    // 새로 해제된 투자 상품 목록 반환
+    getNewlyUnlockedInvestments(newLevel) {
+        const newLevelData = LEVEL_SYSTEM[newLevel];
+        if (!newLevelData || !newLevelData.investmentUnlocks) return [];
+
+        // 이전 레벨과 비교
+        const levels = Object.keys(LEVEL_SYSTEM);
+        const currentIndex = levels.indexOf(newLevel);
+        if (currentIndex <= 0) return newLevelData.investmentUnlocks;
+
+        const previousLevel = levels[currentIndex - 1];
+        const previousLevelData = LEVEL_SYSTEM[previousLevel];
+        const previousUnlocks = previousLevelData?.investmentUnlocks || [];
+
+        const investmentNames = {
+            deposit: '예적금',
+            stock: '주식',
+            bond: '채권',
+            etf: 'ETF/펀드',
+            crypto: '암호화폐',
+            commodity: '귀금속/원자재'
+        };
+
+        return newLevelData.investmentUnlocks
+            .filter(investment => !previousUnlocks.includes(investment))
+            .map(investment => investmentNames[investment] || investment);
+    }
+
+    // 투자 잠금 해제 알림
+    notifyInvestmentUnlock(unlockedInvestments) {
+        if (unlockedInvestments.length === 0) return;
+
+        // 등급 메뉴 페이지에 있는 경우 자산 상품 업데이트
+        if (typeof updateAssetProducts === 'function') {
+            setTimeout(() => {
+                updateAssetProducts();
+            }, 500);
+        }
     }
 
     // 경험치 추가 편의 함수 (디버깅/테스트용)
