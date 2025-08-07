@@ -356,6 +356,63 @@ class LevelManager {
                     inset 0 -1px 0 rgba(0,0,0,0.2),
                     0 4px 16px rgba(0,0,0,0.4);
             }
+
+            /* 등급별 특별 호버 효과 */
+            .level-metal-bronze:hover {
+                box-shadow: 0 0 20px rgba(205,127,50,0.6);
+            }
+
+            .level-metal-silver:hover {
+                box-shadow: 0 0 20px rgba(192,192,192,0.6);
+            }
+
+            .level-metal-gold:hover {
+                box-shadow: 0 0 25px rgba(255,215,0,0.8);
+            }
+
+            .level-metal-platinum:hover {
+                box-shadow: 0 0 25px rgba(229,228,226,0.7);
+            }
+
+            .level-metal-diamond:hover {
+                box-shadow: 0 0 30px rgba(185,242,255,0.9);
+            }
+
+            .level-metal-black-diamond:hover {
+                box-shadow: 0 0 25px rgba(74,74,74,0.8);
+            }
+
+            .level-metal-ruby:hover {
+                box-shadow: 0 0 30px rgba(224,17,95,0.8);
+            }
+
+            /* 승급 축하 애니메이션 */
+            @keyframes levelUpCelebration {
+                0% { 
+                    transform: scale(1) rotate(0deg); 
+                    opacity: 1; 
+                }
+                25% { 
+                    transform: scale(1.2) rotate(5deg); 
+                    opacity: 0.9; 
+                }
+                50% { 
+                    transform: scale(1.1) rotate(-3deg); 
+                    opacity: 1; 
+                }
+                75% { 
+                    transform: scale(1.15) rotate(2deg); 
+                    opacity: 0.95; 
+                }
+                100% { 
+                    transform: scale(1) rotate(0deg); 
+                    opacity: 1; 
+                }
+            }
+
+            .level-celebration {
+                animation: levelUpCelebration 1s ease-in-out;
+            }
         `;
         document.head.appendChild(metallicStyles);
     }
@@ -393,32 +450,89 @@ class LevelManager {
         // 경험치 표시 업데이트
         const expElement = document.getElementById('userExp');
         if (expElement) {
-            expElement.textContent = `${exp} / ${level.max} EXP`;
+            const currentLevelExp = exp - level.exp;
+            const maxLevelExp = level.max - level.exp;
+            expElement.textContent = `${currentLevelExp} / ${maxLevelExp} EXP`;
+        }
+
+        // 전체 경험치 표시 (있는 경우)
+        const totalExpElement = document.getElementById('totalExp');
+        if (totalExpElement) {
+            totalExpElement.textContent = `총 ${exp} EXP`;
         }
 
         // 진행바 업데이트 (있는 경우)
         const progressBars = document.querySelectorAll('.exp-bar, .progress-bar');
         progressBars.forEach(bar => {
             if (bar) {
-                const progress = ((exp - level.exp) / (level.max - level.exp)) * 100;
-                bar.style.width = Math.min(progress, 100) + '%';
+                const currentLevelExp = exp - level.exp;
+                const maxLevelExp = level.max - level.exp;
+                const progress = (currentLevelExp / maxLevelExp) * 100;
+                bar.style.width = Math.min(Math.max(progress, 0), 100) + '%';
             }
         });
     }
 
     // 레벨업 애니메이션 표시
     showLevelUpAnimation(newLevel) {
-        // 레벨 배지에 애니메이션 효과 추가
+        // 레벨 배지에 축하 애니메이션 효과 추가
         const levelBadges = document.querySelectorAll('.level-badge-nav, .level-badge-profile');
         levelBadges.forEach(badge => {
-            badge.classList.add('level-up-animation');
+            badge.classList.add('level-celebration');
             setTimeout(() => {
-                badge.classList.remove('level-up-animation');
-            }, 2000);
+                badge.classList.remove('level-celebration');
+                badge.classList.add('level-up-animation');
+                setTimeout(() => {
+                    badge.classList.remove('level-up-animation');
+                }, 2000);
+            }, 1000);
         });
 
         // 레벨업 메시지 표시
         this.showLevelUpMessage(newLevel);
+
+        // 페이지 전체에 축하 효과 추가
+        this.showPageCelebrationEffect();
+    }
+
+    // 페이지 전체 축하 효과
+    showPageCelebrationEffect() {
+        // 임시 축하 오버레이 생성
+        const overlay = document.createElement('div');
+        overlay.className = 'celebration-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,215,0,0.1), rgba(255,255,255,0.05), rgba(255,215,0,0.1));
+            pointer-events: none;
+            z-index: 1000;
+            animation: celebrationPulse 2s ease-in-out;
+        `;
+
+        // 축하 CSS 애니메이션 추가
+        if (!document.getElementById('celebrationStyles')) {
+            const celebrationStyles = document.createElement('style');
+            celebrationStyles.id = 'celebrationStyles';
+            celebrationStyles.textContent = `
+                @keyframes celebrationPulse {
+                    0%, 100% { opacity: 0; }
+                    50% { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(celebrationStyles);
+        }
+
+        document.body.appendChild(overlay);
+
+        // 2초 후 제거
+        setTimeout(() => {
+            if (overlay.parentNode) {
+                overlay.remove();
+            }
+        }, 2000);
     }
 
     // 레벨업 메시지 표시
@@ -455,10 +569,97 @@ class LevelManager {
             }
         }, 5000);
     }
+
+    // 경험치 추가 편의 함수 (디버깅/테스트용)
+    addExp(amount) {
+        return this.addExperience(amount);
+    }
+
+    // 특정 레벨로 즉시 업그레이드 (테스트용)
+    setLevel(targetLevel) {
+        if (!this.currentUser) return false;
+        
+        const levelData = LEVEL_SYSTEM[targetLevel];
+        if (!levelData) return false;
+        
+        this.currentUser.level = targetLevel;
+        this.currentUser.exp = levelData.exp;
+        
+        localStorage.setItem('fineu_current_user', JSON.stringify(this.currentUser));
+        this.updateLevelDisplay();
+        
+        return true;
+    }
+
+    // 현재 등급 정보 출력 (디버깅용)
+    debugInfo() {
+        const level = this.getCurrentLevel();
+        const exp = this.getCurrentExp();
+        console.log('=== LEVEL DEBUG INFO ===');
+        console.log('Current Level:', level.displayName);
+        console.log('Current EXP:', exp);
+        console.log('Level Range:', level.exp, '-', level.max);
+        console.log('Progress:', ((exp - level.exp) / (level.max - level.exp) * 100).toFixed(1) + '%');
+        console.log('Next Level EXP needed:', level.max - exp);
+        console.log('========================');
+        return { level, exp };
+    }
 }
 
 // 전역 레벨 매니저 인스턴스 생성
 window.levelManager = new LevelManager();
+
+// 개발자 도구에서 사용할 수 있는 편의 함수들
+window.testGrades = {
+    // 모든 등급 순서대로 테스트
+    testAllGrades: function() {
+        const grades = ['yellow', 'orange', 'green', 'blue', 'brown', 'black', 'red'];
+        let index = 0;
+        
+        const nextGrade = () => {
+            if (index < grades.length) {
+                window.levelManager.setLevel(grades[index]);
+                console.log(`테스트: ${LEVEL_SYSTEM[grades[index]].displayName} 등급으로 변경`);
+                index++;
+                setTimeout(nextGrade, 2000); // 2초마다 다음 등급
+            } else {
+                console.log('모든 등급 테스트 완료!');
+            }
+        };
+        
+        nextGrade();
+    },
+    
+    // 특정 등급으로 즉시 변경
+    setGrade: function(gradeName) {
+        const gradeKey = Object.keys(LEVEL_SYSTEM).find(key => 
+            LEVEL_SYSTEM[key].displayName.toLowerCase() === gradeName.toLowerCase()
+        );
+        
+        if (gradeKey) {
+            window.levelManager.setLevel(gradeKey);
+            console.log(`${LEVEL_SYSTEM[gradeKey].displayName} 등급으로 변경됨`);
+        } else {
+            console.log('사용 가능한 등급: BRONZE, SILVER, GOLD, PLATINUM, DIAMOND, BLACK DIAMOND, RUBY MASTER');
+        }
+    },
+    
+    // 경험치 추가
+    addExp: function(amount) {
+        const result = window.levelManager.addExperience(amount);
+        if (result.levelUp) {
+            console.log(`🎉 레벨업! ${result.oldLevel} → ${result.newLevel}`);
+        } else {
+            console.log(`경험치 +${amount} 추가됨 (총 ${result.newExp} EXP)`);
+        }
+        return result;
+    },
+    
+    // 현재 상태 출력
+    status: function() {
+        return window.levelManager.debugInfo();
+    }
+};
 
 // 페이지 로드 시 레벨 표시 업데이트
 document.addEventListener('DOMContentLoaded', () => {
