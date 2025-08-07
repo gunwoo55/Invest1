@@ -152,17 +152,67 @@
             background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: bold;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 8px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin: 6px 4px;
+            font-size: 14px;
+            min-width: 90px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(74, 111, 165, 0.2);
+            will-change: transform;
         }
 
         .game-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(74, 111, 165, 0.4);
+            background: linear-gradient(135deg, #5A7FB5, #7B9DD7);
+        }
+
+        .game-button:active {
+            transform: translateY(-1px) scale(1.02);
+            transition: all 0.1s ease;
+        }
+
+        .game-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .game-button:hover::before {
+            left: 100%;
+        }
+
+        /* 모바일 최적화 */
+        @media (max-width: 640px) {
+            .game-button {
+                padding: 12px 16px;
+                font-size: 13px;
+                margin: 4px 2px;
+                min-width: 80px;
+            }
+            
+            .owl-character {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .stats-grid {
+                gap: 8px;
+            }
+            
+            .stat-item {
+                padding: 12px 8px;
+            }
         }
 
         .ranking-badge {
@@ -207,26 +257,86 @@
             margin: 0 auto;
             display: block;
             border-radius: 50%;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 3px solid transparent;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            padding: 8px;
+            will-change: transform;
         }
 
         .owl-character:hover {
-            transform: scale(1.1);
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 12px 35px rgba(52, 211, 153, 0.3);
+            border-color: #34D399;
+        }
+
+        .owl-character:active {
+            transform: scale(1.05) rotate(-2deg);
+            transition: all 0.1s ease;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { 
+                transform: translateY(0); 
+            }
+            40% { 
+                transform: translateY(-10px); 
+            }
+            60% { 
+                transform: translateY(-5px); 
+            }
+        }
+
+        .owl-character.bouncing {
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        .stats-grid .stat-item {
+            transition: all 0.3s ease;
+            will-change: transform;
+        }
+
+        .stats-grid .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .exp-bar {
             width: 100%;
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
+            height: 12px;
+            background: linear-gradient(145deg, #e5e7eb, #d1d5db);
+            border-radius: 6px;
             overflow: hidden;
             margin: 12px 0;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .exp-fill {
             height: 100%;
-            background: linear-gradient(135deg, #34D399, #059669);
-            transition: width 0.5s ease;
+            background: linear-gradient(90deg, #34D399, #10B981, #059669);
+            transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .exp-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         .stats-grid {
@@ -237,10 +347,47 @@
         }
 
         .stat-item {
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 8px;
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            padding: 16px 12px;
+            border-radius: 12px;
             text-align: center;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            border-color: #d1d5db;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #34D399, #10B981);
+            transition: left 0.3s ease;
+        }
+
+        .stat-item:hover::before {
+            left: 0;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -325,7 +472,7 @@
             </div>
 
             <!-- 똑부리 키우기 -->
-            <div class="game-card mb-24">
+            <div class="game-card mb-32">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center space-x-3">
                         <i class="fas fa-seedling text-3xl text-green-500"></i>
@@ -341,8 +488,8 @@
                 </div>
                 
                 <div id="owlGameContainer" class="text-center">
-                    <img src="https://page.gensparksite.com/v1/base64_upload/8f76d2282f082e1c88ea19dba80d0d9d" 
-                         alt="똑부리" class="owl-character" onclick="petOwl()">
+                    <img src="IMG_4014.png" 
+                         alt="똑부리" class="owl-character" onclick="petOwl()" loading="lazy">
                     
                     <div class="mt-4">
                         <h4 class="font-bold text-lg" id="owlName">똑부리</h4>
@@ -356,20 +503,20 @@
                     
                     <div class="stats-grid">
                         <div class="stat-item">
-                            <div class="text-lg font-bold text-blue-600" id="owlKnowledge">85</div>
-                            <div class="text-xs text-gray-600">경제 지식</div>
+                            <div class="stat-value text-blue-600" id="owlKnowledge">85</div>
+                            <div class="stat-label">경제 지식</div>
                         </div>
                         <div class="stat-item">
-                            <div class="text-lg font-bold text-green-600" id="owlInvestment">42</div>
-                            <div class="text-xs text-gray-600">투자 실력</div>
+                            <div class="stat-value text-green-600" id="owlInvestment">42</div>
+                            <div class="stat-label">투자 실력</div>
                         </div>
                         <div class="stat-item">
-                            <div class="text-lg font-bold text-purple-600" id="owlHappiness">78</div>
-                            <div class="text-xs text-gray-600">행복도</div>
+                            <div class="stat-value text-purple-600" id="owlHappiness">78</div>
+                            <div class="stat-label">행복도</div>
                         </div>
                         <div class="stat-item">
-                            <div class="text-lg font-bold text-orange-600" id="owlMoney">1,250</div>
-                            <div class="text-xs text-gray-600">보유 코인</div>
+                            <div class="stat-value text-orange-600" id="owlMoney">1,250</div>
+                            <div class="stat-label">보유 코인</div>
                         </div>
                     </div>
                     
@@ -787,14 +934,47 @@ function petOwl() {
     gainOwlExp(10);
     updateOwlDisplay();
     
-    // 애니메이션 효과
+    // 향상된 애니메이션 효과
     var owl = document.querySelector('.owl-character');
-    owl.style.transform = 'scale(1.2)';
-    setTimeout(function() {
-        owl.style.transform = 'scale(1)';
-    }, 200);
+    owl.classList.add('bouncing');
     
-    showMessage('똑부리가 좋아합니다! 행복도 +5, 경험치 +10');
+    // 파티클 효과 생성
+    createHeartParticles(owl);
+    
+    setTimeout(function() {
+        owl.classList.remove('bouncing');
+    }, 600);
+    
+    showMessage('똑부리가 좋아합니다! 행복도 +5, 경험치 +10', 'success');
+}
+
+// 하트 파티클 생성 함수
+function createHeartParticles(element) {
+    for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+            const heart = document.createElement('div');
+            heart.innerHTML = '💚';
+            heart.style.position = 'absolute';
+            heart.style.fontSize = '20px';
+            heart.style.pointerEvents = 'none';
+            heart.style.zIndex = '1000';
+            
+            const rect = element.getBoundingClientRect();
+            heart.style.left = (rect.left + Math.random() * rect.width) + 'px';
+            heart.style.top = rect.top + 'px';
+            
+            document.body.appendChild(heart);
+            
+            // 애니메이션
+            heart.animate([
+                { transform: 'translateY(0px) scale(1)', opacity: 1 },
+                { transform: 'translateY(-50px) scale(0.5)', opacity: 0 }
+            ], {
+                duration: 1000,
+                easing: 'ease-out'
+            }).onfinish = () => heart.remove();
+        }, i * 100);
+    }
 }
 
 // 똑부리 먹이주기
@@ -804,9 +984,9 @@ function feedOwl() {
         owlData.happiness = Math.min(100, owlData.happiness + 15);
         gainOwlExp(30);
         updateOwlDisplay();
-        showMessage('똑부리에게 먹이를 줬습니다! 행복도 +15, 경험치 +30');
+        showMessage('똑부리에게 먹이를 줬습니다!\n행복도 +15, 경험치 +30', 'success');
     } else {
-        showMessage('코인이 부족합니다! (필요: 50코인)');
+        showMessage('코인이 부족합니다!\n(필요: 50코인)', 'error');
     }
 }
 
@@ -817,9 +997,9 @@ function studyWithOwl() {
         owlData.knowledge = Math.min(100, owlData.knowledge + 8);
         gainOwlExp(80);
         updateOwlDisplay();
-        showMessage('똑부리와 함께 공부했습니다! 경제 지식 +8, 경험치 +80');
+        showMessage('똑부리와 함께 공부했습니다!\n경제 지식 +8, 경험치 +80', 'success');
     } else {
-        showMessage('코인이 부족합니다! (필요: 100코인)');
+        showMessage('코인이 부족합니다!\n(필요: 100코인)', 'error');
     }
 }
 
@@ -834,15 +1014,15 @@ function investWithOwl() {
             owlData.money += profit;
             owlData.investment = Math.min(100, owlData.investment + 5);
             gainOwlExp(100);
-            showMessage('투자 성공! +' + profit + '코인, 투자 실력 +5, 경험치 +100');
+            showMessage('투자 성공! 🎉\n+' + profit + '코인, 투자 실력 +5\n경험치 +100', 'success');
         } else {
             owlData.investment = Math.min(100, owlData.investment + 2);
             gainOwlExp(50);
-            showMessage('투자 실패... 하지만 경험은 쌓였습니다! 투자 실력 +2, 경험치 +50');
+            showMessage('투자 실패... 💪\n하지만 경험은 쌓였습니다!\n투자 실력 +2, 경험치 +50', 'info');
         }
         updateOwlDisplay();
     } else {
-        showMessage('코인이 부족합니다! (필요: 200코인)');
+        showMessage('코인이 부족합니다!\n(필요: 200코인)', 'error');
     }
 }
 
@@ -860,11 +1040,57 @@ function gainOwlExp(amount) {
         var levelNames = ['초보 투자자', '견습 투자자', '숙련 투자자', '전문 투자자', '투자 마스터'];
         var levelName = levelNames[Math.min(owlData.level - 1, levelNames.length - 1)];
         
-        showMessage('레벨업! 레벨 ' + owlData.level + ' - ' + levelName + '\n보너스 코인 +' + (owlData.level * 100));
+        // 레벨업 애니메이션
+        triggerLevelUpAnimation();
+        
+        showMessage('🎉 레벨업! 🎉\n레벨 ' + owlData.level + ' - ' + levelName + '\n보너스 코인 +' + (owlData.level * 100), 'success');
     }
     
     updateOwlDisplay();
     saveOwlData();
+}
+
+// 레벨업 애니메이션
+function triggerLevelUpAnimation() {
+    const owl = document.querySelector('.owl-character');
+    const container = document.getElementById('owlGameContainer');
+    
+    // 반짝이는 효과
+    for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+            const sparkle = document.createElement('div');
+            sparkle.innerHTML = '✨';
+            sparkle.style.position = 'absolute';
+            sparkle.style.fontSize = '24px';
+            sparkle.style.pointerEvents = 'none';
+            sparkle.style.zIndex = '1000';
+            
+            const rect = container.getBoundingClientRect();
+            sparkle.style.left = (rect.left + Math.random() * rect.width) + 'px';
+            sparkle.style.top = (rect.top + Math.random() * rect.height) + 'px';
+            
+            document.body.appendChild(sparkle);
+            
+            sparkle.animate([
+                { transform: 'translateY(0px) scale(1) rotate(0deg)', opacity: 1 },
+                { transform: 'translateY(-40px) scale(1.5) rotate(360deg)', opacity: 0 }
+            ], {
+                duration: 1500,
+                easing: 'ease-out'
+            }).onfinish = () => sparkle.remove();
+        }, i * 100);
+    }
+    
+    // 캐릭터 애니메이션
+    owl.animate([
+        { transform: 'scale(1) rotate(0deg)' },
+        { transform: 'scale(1.3) rotate(10deg)' },
+        { transform: 'scale(1.1) rotate(-5deg)' },
+        { transform: 'scale(1) rotate(0deg)' }
+    ], {
+        duration: 1000,
+        easing: 'ease-in-out'
+    });
 }
 
 // 똑부리 정보 업데이트
@@ -885,9 +1111,66 @@ function getLevelName() {
     return levelNames[Math.min(owlData.level - 1, levelNames.length - 1)];
 }
 
-// 메시지 표시
-function showMessage(message) {
-    alert(message);
+// 향상된 메시지 표시
+function showMessage(message, type = 'info') {
+    // 기존 메시지 제거
+    const existingMsg = document.querySelector('.game-message');
+    if (existingMsg) existingMsg.remove();
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'game-message';
+    messageDiv.innerHTML = message;
+    
+    // 메시지 타입에 따른 스타일
+    const styles = {
+        success: 'background: linear-gradient(135deg, #10B981, #059669); color: white;',
+        error: 'background: linear-gradient(135deg, #EF4444, #DC2626); color: white;',
+        info: 'background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white;'
+    };
+    
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        ${styles[type]}
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-weight: 500;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        z-index: 10000;
+        animation: slideInDown 0.5s ease, slideOutUp 0.5s ease 2.5s forwards;
+        white-space: pre-line;
+        text-align: center;
+        font-size: 14px;
+        max-width: 300px;
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    // 3초 후 자동 제거
+    setTimeout(() => {
+        if (messageDiv.parentNode) {
+            messageDiv.remove();
+        }
+    }, 3000);
+}
+
+// CSS 애니메이션을 head에 추가
+if (!document.querySelector('#message-animations')) {
+    const style = document.createElement('style');
+    style.id = 'message-animations';
+    style.textContent = `
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        @keyframes slideOutUp {
+            from { opacity: 1; transform: translateX(-50%) translateY(0); }
+            to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 // 똑부리 데이터 저장
