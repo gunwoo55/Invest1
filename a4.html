@@ -9,6 +9,10 @@
     <meta http-equiv="Expires" content="0">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- 전역 레벨 관리 시스템 -->
+    <script src="js/levelManager.js"></script>
+    
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -207,11 +211,149 @@
             margin: 0 auto;
             display: block;
             border-radius: 50%;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            position: relative;
         }
 
         .owl-character:hover {
-            transform: scale(1.1);
+            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+        }
+
+        .owl-character:active {
+            transform: scale(0.95) rotate(-2deg);
+            transition: all 0.1s ease;
+        }
+
+        /* 똑부리 게임 컨테이너 개선 */
+        #owlGameContainer {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 20px;
+            padding: 24px;
+            margin: 16px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        /* 반짝이는 효과 */
+        .owl-character::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparkle 3s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: rotate(0deg); }
+            50% { opacity: 1; transform: rotate(180deg); }
+        }
+
+        /* 게임 카드 개선 */
+        .game-card {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .game-card:hover::before {
+            left: 100%;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 게임 버튼 개선 */
+        .game-button {
+            background: linear-gradient(135deg, #3B82F6, #1E40AF);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .game-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .game-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .game-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .game-button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* 통계 표시 개선 */
+        .stat-item {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #ffffff, #f1f5f9);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3B82F6, #1E40AF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .exp-bar {
@@ -341,7 +483,7 @@
                 </div>
                 
                 <div id="owlGameContainer" class="text-center">
-                    <img src="https://page.gensparksite.com/v1/base64_upload/8f76d2282f082e1c88ea19dba80d0d9d" 
+                    <img src="IMG_4014.png" 
                          alt="똑부리" class="owl-character" onclick="petOwl()">
                     
                     <div class="mt-4">
@@ -356,19 +498,19 @@
                     
                     <div class="stats-grid">
                         <div class="stat-item">
-                            <div class="text-lg font-bold text-blue-600" id="owlKnowledge">85</div>
+                            <div class="stat-value" id="owlKnowledge">85</div>
                             <div class="text-xs text-gray-600">경제 지식</div>
                         </div>
                         <div class="stat-item">
-                            <div class="text-lg font-bold text-green-600" id="owlInvestment">42</div>
+                            <div class="stat-value" id="owlInvestment">42</div>
                             <div class="text-xs text-gray-600">투자 실력</div>
                         </div>
                         <div class="stat-item">
-                            <div class="text-lg font-bold text-purple-600" id="owlHappiness">78</div>
+                            <div class="stat-value" id="owlHappiness">78</div>
                             <div class="text-xs text-gray-600">행복도</div>
                         </div>
                         <div class="stat-item">
-                            <div class="text-lg font-bold text-orange-600" id="owlMoney">1,250</div>
+                            <div class="stat-value" id="owlMoney">1,250</div>
                             <div class="text-xs text-gray-600">보유 코인</div>
                         </div>
                     </div>
@@ -419,7 +561,7 @@
 
 <script>
 // 전역 게임 변수들
-var currentUser = JSON.parse(localStorage.getItem('currentUser')) || { name: '사용자', level: 'yellow', exp: 0 };
+var currentUser = null;
 var quizQuestions = [];
 var currentQuizIndex = 0;
 var quizScore = 0;
@@ -863,6 +1005,15 @@ function gainOwlExp(amount) {
         showMessage('레벨업! 레벨 ' + owlData.level + ' - ' + levelName + '\n보너스 코인 +' + (owlData.level * 100));
     }
     
+    // 전역 사용자 레벨 시스템에도 경험치 추가
+    if (window.levelManager && window.levelManager.currentUser) {
+        const result = window.levelManager.addExperience(amount);
+        if (result && result.levelUp) {
+            // 전역 레벨업 발생시 축하 메시지
+            window.levelManager.showLevelUpAnimation(result.newLevel);
+        }
+    }
+    
     updateOwlDisplay();
     saveOwlData();
 }
@@ -902,11 +1053,20 @@ function refreshGames() {
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
+    // 레벨 매니저를 통한 사용자 정보 로드
+    if (window.levelManager) {
+        currentUser = window.levelManager.currentUser;
+        // 레벨 표시 업데이트
+        setTimeout(() => {
+            window.levelManager.updateLevelDisplay();
+        }, 100);
+    }
+    
     updateOwlDisplay();
     
-    // 사용자 레벨 표시
+    // 레거시 레벨 표시 (백업용)
     var levelBadge = document.getElementById('navLevelBadge');
-    if (levelBadge && currentUser.level) {
+    if (levelBadge && currentUser && currentUser.level) {
         var levelInfo = {
             yellow: 'YELLOW',
             orange: 'ORANGE', 
