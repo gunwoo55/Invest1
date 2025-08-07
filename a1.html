@@ -48,31 +48,80 @@
         .loss { color: #2563EB; }
         
         .level-badge-nav {
-            width: 56px;
-            height: 56px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 800;
             color: white;
-            font-size: 12px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-size: 11px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.7);
             position: absolute;
-            top: -8px;
+            top: -12px;
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
             z-index: 10;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+        }
+
+        .level-badge-nav::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: badgeShimmer 3s infinite;
+        }
+
+        .level-badge-nav:hover {
+            transform: translateX(-50%) scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 6px 12px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.3);
+        }
+
+        @keyframes badgeShimmer {
+            0% { transform: rotate(0deg) translateY(-100%); }
+            100% { transform: rotate(360deg) translateY(-100%); }
         }
         
-        .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
-        .level-orange { background: linear-gradient(135deg, #FB923C, #EA580C); }
-        .level-green { background: linear-gradient(135deg, #34D399, #059669); }
-        .level-blue { background: linear-gradient(135deg, #60A5FA, #2563EB); }
-        .level-brown { background: linear-gradient(135deg, #A16207, #92400E); }
-        .level-black { background: linear-gradient(135deg, #374151, #111827); }
-        .level-red { background: linear-gradient(135deg, #EF4444, #DC2626); }
+        /* Enhanced metallic level colors with depth and shine */
+        .level-yellow, .level-bronze { 
+            background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 25%, #D97706 50%, #92400E 75%, #F59E0B 100%);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+        }
+        .level-orange, .level-silver { 
+            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #E2E8F0 100%);
+            box-shadow: 0 8px 24px rgba(148, 163, 184, 0.3);
+        }
+        .level-green, .level-gold { 
+            background: linear-gradient(135deg, #FEF3C7 0%, #FCD34D 25%, #F59E0B 50%, #D97706 75%, #FCD34D 100%);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+        }
+        .level-blue, .level-platinum { 
+            background: linear-gradient(135deg, #F0F9FF 0%, #DBEAFE 25%, #93C5FD 50%, #3B82F6 75%, #DBEAFE 100%);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+        .level-brown, .level-diamond { 
+            background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 25%, #5EEAD4 50%, #14B8A6 75%, #CCFBF1 100%);
+            box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3);
+        }
+        .level-black, .level-black-diamond { 
+            background: linear-gradient(135deg, #4B5563 0%, #374151 25%, #1F2937 50%, #111827 75%, #374151 100%);
+            box-shadow: 0 8px 24px rgba(17, 24, 39, 0.5);
+        }
+        .level-red, .level-ruby { 
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 25%, #F87171 50%, #EF4444 75%, #DC2626 100%);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+        }
         
         .asset-category {
             border-left: 4px solid;
@@ -89,10 +138,12 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: white;
-            border-top: 1px solid #e5e7eb;
-            padding: 12px 0 8px 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.98) 100%);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+            padding: 12px 0 max(8px, env(safe-area-inset-bottom)) 0;
             z-index: 50;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .nav-container {
@@ -103,39 +154,88 @@
             align-items: end;
             position: relative;
             height: 60px;
+            padding: 0 8px;
         }
 
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            padding: 4px;
+            gap: 6px;
+            padding: 8px 4px;
             background: none;
             border: none;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+        }
+
+        .nav-item:hover::before {
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
         }
 
         .nav-item:hover {
-            transform: translateY(-1px);
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        .nav-item:active {
+            transform: translateY(-1px) scale(0.98);
         }
 
         .nav-item i {
-            font-size: 20px;
+            font-size: 22px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+            color: #6B7280;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .nav-item span {
             font-size: 11px;
-            font-weight: 500;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            color: #6B7280;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.3px;
         }
 
         .nav-item.active i {
             color: #3B82F6;
+            transform: scale(1.1);
+            text-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
         }
 
         .nav-item.active span {
             color: #3B82F6;
+            font-weight: 700;
+            text-shadow: 0 1px 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .nav-item.active::before {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.15));
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
         }
 
         .nav-center {
@@ -184,10 +284,27 @@
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.2s;
+            position: relative;
         }
 
         .investment-menu-item:hover {
             background-color: #f3f4f6;
+        }
+
+        .investment-menu-item.locked-item {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .investment-menu-item.locked-item::after {
+            content: '🔒';
+            position: absolute;
+            right: 12px;
+            font-size: 14px;
+        }
+
+        .investment-menu-item.locked-item:hover {
+            background-color: #fef2f2;
         }
 
         .investment-menu-item i {
@@ -624,9 +741,147 @@ function goToMorePage() {
     window.location.href = 'a3.html';
 }
 
-// 화면 전환
+// 투자 메뉴 토글 (레벨 제한 포함)
+function toggleInvestmentMenu() {
+    try {
+        // 현재 사용자 레벨 확인
+        const currentLevel = getCurrentUserLevel();
+        const levelOrder = getLevelOrder(currentLevel);
+        
+        // 최소 Bronze(레벨 1) 이상만 투자 메뉴 접근 가능
+        if (levelOrder < 1) {
+            showLevelRestrictedMessage('투자 기능을 사용하려면 BRONZE 레벨 이상이어야 합니다.');
+            return;
+        }
+        
+        var menu = document.getElementById('investmentMenu');
+        if (menu) {
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+            } else {
+                menu.classList.add('show');
+                updateInvestmentMenuAccess(levelOrder);
+            }
+        }
+    } catch (error) {
+        console.error('투자 메뉴 토글 오류:', error);
+    }
+}
+
+// 투자 메뉴 접근 권한 업데이트
+function updateInvestmentMenuAccess(userLevelOrder) {
+    const investmentItems = [
+        { element: document.querySelector('[onclick="showScreen(\'stockScreen\')"]'), requiredLevel: 1, name: '주식' },
+        { element: document.querySelector('[onclick="showScreen(\'depositScreen\')"]'), requiredLevel: 1, name: '예적금' },
+        { element: document.querySelector('[onclick="showScreen(\'bondScreen\')"]'), requiredLevel: 2, name: '채권' },
+        { element: document.querySelector('[onclick="showScreen(\'etfScreen\')"]'), requiredLevel: 3, name: 'ETF/펀드' },
+        { element: document.querySelector('[onclick="showScreen(\'cryptoScreen\')"]'), requiredLevel: 4, name: '암호화폐' },
+        { element: document.querySelector('[onclick="showScreen(\'commodityScreen\')"]'), requiredLevel: 5, name: '귀금속' }
+    ];
+    
+    investmentItems.forEach(item => {
+        if (item.element) {
+            if (userLevelOrder >= item.requiredLevel) {
+                // 접근 가능한 항목
+                item.element.classList.remove('locked-item');
+                item.element.style.opacity = '1';
+                item.element.style.cursor = 'pointer';
+                item.element.onclick = () => showScreen(item.element.getAttribute('onclick').match(/'([^']+)'/)[1]);
+            } else {
+                // 접근 불가능한 항목
+                item.element.classList.add('locked-item');
+                item.element.style.opacity = '0.5';
+                item.element.style.cursor = 'not-allowed';
+                item.element.onclick = (e) => {
+                    e.preventDefault();
+                    const requiredLevelName = getLevelNameByOrder(item.requiredLevel);
+                    showLevelRestrictedMessage(`${item.name} 투자는 ${requiredLevelName} 레벨 이상부터 이용 가능합니다.`);
+                };
+            }
+        }
+    });
+}
+
+// 현재 사용자 레벨 가져오기
+function getCurrentUserLevel() {
+    if (window.levelManager && window.levelManager.currentUser) {
+        return window.levelManager.currentUser.level || 'yellow';
+    }
+    
+    // 백업: localStorage에서 직접 가져오기
+    try {
+        const savedUser = localStorage.getItem('fineu_current_user');
+        if (savedUser) {
+            const userData = JSON.parse(savedUser);
+            return userData.level || 'yellow';
+        }
+    } catch (error) {
+        console.error('사용자 레벨 조회 오류:', error);
+    }
+    
+    return 'yellow'; // 기본값
+}
+
+// 레벨 순서 가져오기
+function getLevelOrder(level) {
+    const levelOrders = {
+        'yellow': 1,   // BRONZE
+        'orange': 2,   // SILVER  
+        'green': 3,    // GOLD
+        'blue': 4,     // PLATINUM
+        'brown': 5,    // DIAMOND
+        'black': 6,    // BLACK DIAMOND
+        'red': 7       // RUBY MASTER
+    };
+    
+    return levelOrders[level] || 0;
+}
+
+// 순서로 레벨 이름 가져오기
+function getLevelNameByOrder(order) {
+    const levelNames = {
+        1: 'BRONZE',
+        2: 'SILVER',
+        3: 'GOLD', 
+        4: 'PLATINUM',
+        5: 'DIAMOND',
+        6: 'BLACK DIAMOND',
+        7: 'RUBY MASTER'
+    };
+    
+    return levelNames[order] || 'BRONZE';
+}
+
+// 레벨 제한 메시지 표시
+function showLevelRestrictedMessage(message) {
+    // 커스텀 모달 대신 현재는 alert 사용
+    alert(`🔒 접근 제한\n\n${message}\n\n더 많은 투자 상품을 이용하려면\n게임과 퀴즈를 통해 레벨을 올려보세요!`);
+}
+
+// 화면 전환 (레벨 체크 포함)
 function showScreen(screenId) {
     try {
+        const currentLevel = getCurrentUserLevel();
+        const levelOrder = getLevelOrder(currentLevel);
+        
+        // 각 투자 화면별 필요 레벨 체크
+        const screenRequirements = {
+            'stockScreen': { level: 1, name: '주식' },
+            'depositScreen': { level: 1, name: '예적금' },
+            'bondScreen': { level: 2, name: '채권' },
+            'etfScreen': { level: 3, name: 'ETF/펀드' },
+            'cryptoScreen': { level: 4, name: '암호화폐' },
+            'commodityScreen': { level: 5, name: '귀금속' }
+        };
+        
+        const requirement = screenRequirements[screenId];
+        if (requirement && levelOrder < requirement.level) {
+            const requiredLevelName = getLevelNameByOrder(requirement.level);
+            showLevelRestrictedMessage(`${requirement.name} 투자는 ${requiredLevelName} 레벨 이상부터 이용 가능합니다.`);
+            return;
+        }
+        
+        // 기존 화면 전환 로직
         document.querySelectorAll('.screen').forEach(function(screen) {
             screen.classList.remove('active');
         });
@@ -1181,22 +1436,6 @@ function executeTrade(action) {
     } catch (error) {
         console.error('거래 실행 오류:', error);
         alert('거래 중 오류가 발생했습니다.');
-    }
-}
-
-// 투자 메뉴 토글
-function toggleInvestmentMenu() {
-    try {
-        var menu = document.getElementById('investmentMenu');
-        if (menu) {
-            if (menu.classList.contains('show')) {
-                menu.classList.remove('show');
-            } else {
-                menu.classList.add('show');
-            }
-        }
-    } catch (error) {
-        console.error('투자 메뉴 토글 오류:', error);
     }
 }
 

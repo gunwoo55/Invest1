@@ -73,10 +73,12 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: white;
-            border-top: 1px solid #e5e7eb;
-            padding: 12px 0 8px 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.98) 100%);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+            padding: 12px 0 max(8px, env(safe-area-inset-bottom)) 0;
             z-index: 50;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .nav-container {
@@ -87,39 +89,88 @@
             align-items: end;
             position: relative;
             height: 60px;
+            padding: 0 8px;
         }
 
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            padding: 4px;
+            gap: 6px;
+            padding: 8px 4px;
             background: none;
             border: none;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+        }
+
+        .nav-item:hover::before {
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
         }
 
         .nav-item:hover {
-            transform: translateY(-1px);
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        .nav-item:active {
+            transform: translateY(-1px) scale(0.98);
         }
 
         .nav-item i {
-            font-size: 20px;
+            font-size: 22px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+            color: #6B7280;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .nav-item span {
             font-size: 11px;
-            font-weight: 500;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            color: #6B7280;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.3px;
         }
 
         .nav-item.active i {
             color: #3B82F6;
+            transform: scale(1.1);
+            text-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
         }
 
         .nav-item.active span {
             color: #3B82F6;
+            font-weight: 700;
+            text-shadow: 0 1px 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .nav-item.active::before {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.15));
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
         }
 
         .nav-center {
@@ -129,6 +180,82 @@
             align-items: end;
             height: 100%;
             position: relative;
+        }
+
+        .level-badge-nav {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            font-size: 11px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+        }
+
+        .level-badge-nav::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: badgeShimmer 3s infinite;
+        }
+
+        .level-badge-nav:hover {
+            transform: translateX(-50%) scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 6px 12px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.3);
+        }
+
+        @keyframes badgeShimmer {
+            0% { transform: rotate(0deg) translateY(-100%); }
+            100% { transform: rotate(360deg) translateY(-100%); }
+        }
+        
+        /* Enhanced metallic level colors with depth and shine */
+        .level-yellow, .level-bronze { 
+            background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 25%, #D97706 50%, #92400E 75%, #F59E0B 100%);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+        }
+        .level-orange, .level-silver { 
+            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #E2E8F0 100%);
+            box-shadow: 0 8px 24px rgba(148, 163, 184, 0.3);
+        }
+        .level-green, .level-gold { 
+            background: linear-gradient(135deg, #FEF3C7 0%, #FCD34D 25%, #F59E0B 50%, #D97706 75%, #FCD34D 100%);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+        }
+        .level-blue, .level-platinum { 
+            background: linear-gradient(135deg, #F0F9FF 0%, #DBEAFE 25%, #93C5FD 50%, #3B82F6 75%, #DBEAFE 100%);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+        .level-brown, .level-diamond { 
+            background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 25%, #5EEAD4 50%, #14B8A6 75%, #CCFBF1 100%);
+            box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3);
+        }
+        .level-black, .level-black-diamond { 
+            background: linear-gradient(135deg, #4B5563 0%, #374151 25%, #1F2937 50%, #111827 75%, #374151 100%);
+            box-shadow: 0 8px 24px rgba(17, 24, 39, 0.5);
+        }
+        .level-red, .level-ruby { 
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 25%, #F87171 50%, #EF4444 75%, #DC2626 100%);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
         }
 
         .game-card {
@@ -566,17 +693,38 @@ var quizQuestions = [];
 var currentQuizIndex = 0;
 var quizScore = 0;
 
-// 로켓 게임 변수들
+// 로켓 게임 변수들 (향상된 버전)
 var rocketGame = {
     canvas: null,
     ctx: null,
-    rocket: { x: 160, y: 350, width: 40, height: 60 },
+    rocket: { 
+        x: 160, 
+        y: 350, 
+        width: 40, 
+        height: 60,
+        targetX: 160,
+        rotation: 0,
+        thruster: 0
+    },
     enemies: [],
     bullets: [],
+    particles: [],
+    explosions: [],
+    powerUps: [],
     score: 0,
     gameLoop: null,
     isRunning: false,
-    keys: {}
+    keys: {},
+    sounds: {
+        shoot: null,
+        explosion: null,
+        powerUp: null,
+        background: null
+    },
+    background: {
+        stars: [],
+        speed: 1
+    }
 };
 
 // 똑부리 게임 변수들
@@ -749,10 +897,16 @@ function showQuizResult() {
     gainOwlExp(expGained);
 }
 
-// 로켓 게임 시작
+// 로켓 게임 시작 (향상된 버전)
 function startRocketGame() {
     rocketGame.canvas = document.getElementById('rocketCanvas');
     rocketGame.ctx = rocketGame.canvas.getContext('2d');
+    
+    // 오디오 초기화
+    initializeGameAudio();
+    
+    // 배경 별들 초기화
+    initializeStarField();
     
     // 터치 이벤트 추가
     rocketGame.canvas.addEventListener('touchstart', handleTouch, { passive: false });
@@ -766,133 +920,486 @@ function startRocketGame() {
     document.getElementById('rocketStartBtn').style.display = 'none';
     document.getElementById('rocketPauseBtn').style.display = 'inline-block';
     
-    rocketGame.gameLoop = setInterval(updateRocketGame, 16);
+    // 배경음악 재생
+    if (rocketGame.sounds.background) {
+        rocketGame.sounds.background.play().catch(e => console.log('오디오 재생 실패:', e));
+    }
+    
+    rocketGame.gameLoop = setInterval(updateRocketGame, 16); // 60 FPS
 }
 
-// 터치 이벤트 처리
+// 게임 오디오 초기화
+function initializeGameAudio() {
+    try {
+        // Web Audio API 사용하여 사운드 생성
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // 슈팅 사운드
+        rocketGame.sounds.shoot = createShootSound(audioContext);
+        
+        // 폭발 사운드  
+        rocketGame.sounds.explosion = createExplosionSound(audioContext);
+        
+        // 파워업 사운드
+        rocketGame.sounds.powerUp = createPowerUpSound(audioContext);
+        
+    } catch (error) {
+        console.log('오디오 초기화 실패:', error);
+    }
+}
+
+// 슈팅 사운드 생성
+function createShootSound(audioContext) {
+    return function() {
+        try {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        } catch (e) {}
+    };
+}
+
+// 폭발 사운드 생성
+function createExplosionSound(audioContext) {
+    return function() {
+        try {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            const filterNode = audioContext.createBiquadFilter();
+            
+            oscillator.connect(filterNode);
+            filterNode.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(30, audioContext.currentTime + 0.3);
+            
+            filterNode.frequency.setValueAtTime(1000, audioContext.currentTime);
+            filterNode.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.3);
+            
+            gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        } catch (e) {}
+    };
+}
+
+// 파워업 사운드 생성
+function createPowerUpSound(audioContext) {
+    return function() {
+        try {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.2);
+            
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        } catch (e) {}
+    };
+}
+
+// 배경 별들 초기화
+function initializeStarField() {
+    rocketGame.background.stars = [];
+    for (let i = 0; i < 50; i++) {
+        rocketGame.background.stars.push({
+            x: Math.random() * rocketGame.canvas.width,
+            y: Math.random() * rocketGame.canvas.height,
+            size: Math.random() * 2 + 1,
+            speed: Math.random() * 2 + 1,
+            brightness: Math.random() * 0.5 + 0.5
+        });
+    }
+}
+
+// 터치 이벤트 처리 (향상된 버전)
 function handleTouch(e) {
     e.preventDefault();
     var rect = rocketGame.canvas.getBoundingClientRect();
     var touch = e.touches[0] || e.changedTouches[0];
     var x = touch.clientX - rect.left;
     
-    // 로켓을 터치 위치로 이동
-    rocketGame.rocket.x = Math.max(0, Math.min(x - rocketGame.rocket.width / 2, rocketGame.canvas.width - rocketGame.rocket.width));
+    // 부드러운 이동을 위해 목표 위치만 설정
+    rocketGame.rocket.targetX = Math.max(rocketGame.rocket.width/2, Math.min(x, rocketGame.canvas.width - rocketGame.rocket.width/2));
+    
+    // 추진기 효과 활성화
+    rocketGame.rocket.thruster = 10;
 }
 
-// 클릭 이벤트 처리
+// 클릭 이벤트 처리 (향상된 버전)
 function handleClick(e) {
     var rect = rocketGame.canvas.getBoundingClientRect();
     var x = e.clientX - rect.left;
     
-    // 로켓을 클릭 위치로 이동
-    rocketGame.rocket.x = Math.max(0, Math.min(x - rocketGame.rocket.width / 2, rocketGame.canvas.width - rocketGame.rocket.width));
+    // 부드러운 이동을 위해 목표 위치만 설정
+    rocketGame.rocket.targetX = Math.max(rocketGame.rocket.width/2, Math.min(x, rocketGame.canvas.width - rocketGame.rocket.width/2));
+    
+    // 추진기 효과 활성화
+    rocketGame.rocket.thruster = 10;
+    
+    // 총알 발사
+    shootBullet();
 }
 
-// 로켓 게임 초기화
+// 총알 발사 함수
+function shootBullet() {
+    rocketGame.bullets.push({
+        x: rocketGame.rocket.x + rocketGame.rocket.width / 2 - 2,
+        y: rocketGame.rocket.y,
+        speed: 8,
+        trail: []
+    });
+    
+    // 슈팅 사운드 재생
+    if (rocketGame.sounds.shoot) {
+        rocketGame.sounds.shoot();
+    }
+}
+
+// 로켓 게임 초기화 (향상된 버전)
 function resetRocketGame() {
     rocketGame.rocket.x = 160;
     rocketGame.rocket.y = 350;
+    rocketGame.rocket.targetX = 160;
+    rocketGame.rocket.rotation = 0;
+    rocketGame.rocket.thruster = 0;
     rocketGame.enemies = [];
     rocketGame.bullets = [];
+    rocketGame.particles = [];
+    rocketGame.explosions = [];
+    rocketGame.powerUps = [];
     rocketGame.score = 0;
     updateRocketScore();
 }
 
-// 로켓 게임 업데이트
+// 로켓 게임 업데이트 (완전히 향상된 버전)
 function updateRocketGame() {
     if (!rocketGame.isRunning) return;
     
     var ctx = rocketGame.ctx;
     var canvas = rocketGame.canvas;
     
-    // 화면 클리어
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // 배경 그라데이션
+    var gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, '#0f0f23');
+    gradient.addColorStop(0.5, '#1a1a40');
+    gradient.addColorStop(1, '#2d1b69');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // 적 생성
-    if (Math.random() < 0.02) {
+    // 별들 업데이트 및 그리기
+    updateStarField(ctx, canvas);
+    
+    // 로켓 부드러운 이동
+    updateRocketMovement();
+    
+    // 적 생성 (더 다양하고 스마트하게)
+    spawnEnemies();
+    
+    // 파워업 생성
+    spawnPowerUps();
+    
+    // 자동 총알 발사 (더 부드럽게)
+    if (Math.random() < 0.15) {
+        shootBullet();
+    }
+    
+    // 추진기 파티클 생성
+    createThrusterParticles();
+    
+    // 로켓 그리기 (더 멋지게)
+    drawEnhancedRocket(ctx);
+    
+    // 적들 업데이트 및 그리기
+    updateAndDrawEnemies(ctx, canvas);
+    
+    // 총알들 업데이트 및 그리기
+    updateAndDrawBullets(ctx, canvas);
+    
+    // 파티클들 업데이트 및 그리기
+    updateAndDrawParticles(ctx);
+    
+    // 폭발들 업데이트 및 그리기
+    updateAndDrawExplosions(ctx);
+    
+    // 파워업들 업데이트 및 그리기
+    updateAndDrawPowerUps(ctx, canvas);
+    
+    // 추진기 효과 감소
+    if (rocketGame.rocket.thruster > 0) {
+        rocketGame.rocket.thruster--;
+    }
+}
+
+// 별들 업데이트
+function updateStarField(ctx, canvas) {
+    rocketGame.background.stars.forEach(star => {
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+            star.y = -5;
+            star.x = Math.random() * canvas.width;
+        }
+        
+        // 별 그리기
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, 2 * Math.PI);
+        ctx.fill();
+    });
+}
+
+// 로켓 부드러운 이동
+function updateRocketMovement() {
+    const dx = rocketGame.rocket.targetX - rocketGame.rocket.x;
+    rocketGame.rocket.x += dx * 0.15; // 부드러운 이동
+    
+    // 로켓 기울기 계산
+    rocketGame.rocket.rotation = dx * 0.002;
+}
+
+// 적 생성 (향상된 버전)
+function spawnEnemies() {
+    if (Math.random() < 0.03) {
+        const enemyTypes = [
+            { type: 'basic', color: '#EF4444', size: 15, speed: 2, points: 100 },
+            { type: 'fast', color: '#F59E0B', size: 12, speed: 4, points: 150 },
+            { type: 'big', color: '#8B5CF6', size: 20, speed: 1, points: 200 },
+            { type: 'good', color: '#10B981', size: 15, speed: 2, points: -50 } // 좋은 적
+        ];
+        
+        const enemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+        
         rocketGame.enemies.push({
-            x: Math.random() * (canvas.width - 30),
-            y: -30,
-            type: Math.random() > 0.5 ? 'good' : 'bad'
+            x: Math.random() * (rocketGame.canvas.width - enemyType.size * 2),
+            y: -enemyType.size,
+            ...enemyType,
+            rotation: 0,
+            pulse: 0
         });
     }
-    
-    // 총알 자동 발사
-    if (Math.random() < 0.1) {
-        rocketGame.bullets.push({
-            x: rocketGame.rocket.x + rocketGame.rocket.width / 2 - 2,
-            y: rocketGame.rocket.y
+}
+
+// 파워업 생성
+function spawnPowerUps() {
+    if (Math.random() < 0.005) { // 0.5% 확률
+        rocketGame.powerUps.push({
+            x: Math.random() * (rocketGame.canvas.width - 20),
+            y: -20,
+            type: 'score',
+            rotation: 0,
+            pulse: 0
         });
     }
+}
+
+// 추진기 파티클 생성
+function createThrusterParticles() {
+    if (rocketGame.rocket.thruster > 0) {
+        for (let i = 0; i < 3; i++) {
+            rocketGame.particles.push({
+                x: rocketGame.rocket.x + rocketGame.rocket.width/2 + (Math.random() - 0.5) * 10,
+                y: rocketGame.rocket.y + rocketGame.rocket.height,
+                vx: (Math.random() - 0.5) * 2,
+                vy: Math.random() * 3 + 2,
+                life: 30,
+                maxLife: 30,
+                type: 'thruster'
+            });
+        }
+    }
+}
+
+// 향상된 로켓 그리기
+function drawEnhancedRocket(ctx) {
+    const rocket = rocketGame.rocket;
     
-    // 로켓 그리기
-    ctx.fillStyle = '#EF4444';
+    ctx.save();
+    ctx.translate(rocket.x + rocket.width/2, rocket.y + rocket.height/2);
+    ctx.rotate(rocket.rotation);
+    
+    // 로켓 본체 그라데이션
+    const gradient = ctx.createLinearGradient(0, -rocket.height/2, 0, rocket.height/2);
+    gradient.addColorStop(0, '#FF6B6B');
+    gradient.addColorStop(0.5, '#EE5A52');
+    gradient.addColorStop(1, '#DC2626');
+    
+    // 로켓 본체
+    ctx.fillStyle = gradient;
     ctx.beginPath();
-    ctx.moveTo(rocketGame.rocket.x + rocketGame.rocket.width / 2, rocketGame.rocket.y);
-    ctx.lineTo(rocketGame.rocket.x, rocketGame.rocket.y + rocketGame.rocket.height);
-    ctx.lineTo(rocketGame.rocket.x + rocketGame.rocket.width, rocketGame.rocket.y + rocketGame.rocket.height);
+    ctx.moveTo(0, -rocket.height/2);
+    ctx.lineTo(-rocket.width/2, rocket.height/2);
+    ctx.lineTo(rocket.width/2, rocket.height/2);
     ctx.closePath();
     ctx.fill();
     
-    // 적들 업데이트 및 그리기
-    rocketGame.enemies = rocketGame.enemies.filter(function(enemy) {
-        enemy.y += 2;
+    // 로켓 하이라이트
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.beginPath();
+    ctx.moveTo(0, -rocket.height/2);
+    ctx.lineTo(-rocket.width/4, rocket.height/4);
+    ctx.lineTo(0, rocket.height/4);
+    ctx.closePath();
+    ctx.fill();
+    
+    // 추진기 효과
+    if (rocket.thruster > 0) {
+        const thrusterGradient = ctx.createLinearGradient(0, rocket.height/2, 0, rocket.height/2 + 20);
+        thrusterGradient.addColorStop(0, '#FCD34D');
+        thrusterGradient.addColorStop(1, 'rgba(252, 211, 77, 0)');
         
-        // 적 그리기
-        ctx.fillStyle = enemy.type === 'good' ? '#10B981' : '#EF4444';
+        ctx.fillStyle = thrusterGradient;
         ctx.beginPath();
-        ctx.arc(enemy.x + 15, enemy.y + 15, 15, 0, 2 * Math.PI);
+        ctx.moveTo(-rocket.width/4, rocket.height/2);
+        ctx.lineTo(rocket.width/4, rocket.height/2);
+        ctx.lineTo(0, rocket.height/2 + rocket.thruster * 2);
+        ctx.closePath();
+        ctx.fill();
+    }
+    
+    ctx.restore();
+}
+        
+        return !hit;
+    });
+}
+
+// 적들 업데이트 및 그리기 (향상된 버전)
+function updateAndDrawEnemies(ctx, canvas) {
+    rocketGame.enemies = rocketGame.enemies.filter(function(enemy) {
+        enemy.y += enemy.speed;
+        enemy.rotation += 0.1;
+        enemy.pulse += 0.2;
+        
+        // 적 그리기 (더 멋지게)
+        ctx.save();
+        ctx.translate(enemy.x + enemy.size, enemy.y + enemy.size);
+        ctx.rotate(enemy.rotation);
+        
+        // 맥동 효과
+        const scale = 1 + Math.sin(enemy.pulse) * 0.1;
+        ctx.scale(scale, scale);
+        
+        // 적 그라데이션
+        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, enemy.size);
+        gradient.addColorStop(0, enemy.color);
+        gradient.addColorStop(1, enemy.color + '80');
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(0, 0, enemy.size, 0, 2 * Math.PI);
         ctx.fill();
         
+        // 적 하이라이트
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.beginPath();
+        ctx.arc(-enemy.size/3, -enemy.size/3, enemy.size/3, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        ctx.restore();
+        
         // 적이 화면 하단에 도달하면 제거
-        if (enemy.y > canvas.height) {
+        if (enemy.y > canvas.height + enemy.size) {
             return false;
         }
         
         // 로켓과 충돌 체크
-        if (enemy.x < rocketGame.rocket.x + rocketGame.rocket.width &&
-            enemy.x + 30 > rocketGame.rocket.x &&
-            enemy.y < rocketGame.rocket.y + rocketGame.rocket.height &&
-            enemy.y + 30 > rocketGame.rocket.y) {
-            
+        const rocketCenterX = rocketGame.rocket.x + rocketGame.rocket.width/2;
+        const rocketCenterY = rocketGame.rocket.y + rocketGame.rocket.height/2;
+        const enemyCenterX = enemy.x + enemy.size;
+        const enemyCenterY = enemy.y + enemy.size;
+        const distance = Math.sqrt(Math.pow(rocketCenterX - enemyCenterX, 2) + Math.pow(rocketCenterY - enemyCenterY, 2));
+        
+        if (distance < enemy.size + 20) {
             if (enemy.type === 'good') {
-                rocketGame.score += 100;
-                updateRocketScore();
+                rocketGame.score += enemy.points;
+                createExplosion(enemy.x + enemy.size, enemy.y + enemy.size, '#10B981');
+                if (rocketGame.sounds.powerUp) rocketGame.sounds.powerUp();
             } else {
+                createExplosion(enemy.x + enemy.size, enemy.y + enemy.size, enemy.color);
+                if (rocketGame.sounds.explosion) rocketGame.sounds.explosion();
                 gameOver();
             }
+            updateRocketScore();
             return false;
         }
         
         return true;
     });
-    
-    // 총알들 업데이트 및 그리기
+}
+
+// 총알들 업데이트 및 그리기 (향상된 버전)
+function updateAndDrawBullets(ctx, canvas) {
     rocketGame.bullets = rocketGame.bullets.filter(function(bullet) {
-        bullet.y -= 5;
+        bullet.y -= bullet.speed;
         
-        // 총알 그리기
+        // 총알 궤적 업데이트
+        bullet.trail.push({ x: bullet.x + 2, y: bullet.y + 6 });
+        if (bullet.trail.length > 5) {
+            bullet.trail.shift();
+        }
+        
+        // 총알 궤적 그리기
+        if (bullet.trail.length > 1) {
+            ctx.strokeStyle = 'rgba(252, 211, 77, 0.6)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(bullet.trail[0].x, bullet.trail[0].y);
+            for (let i = 1; i < bullet.trail.length; i++) {
+                ctx.lineTo(bullet.trail[i].x, bullet.trail[i].y);
+            }
+            ctx.stroke();
+        }
+        
+        // 총알 그리기 (글로우 효과)
+        const gradient = ctx.createRadialGradient(bullet.x + 2, bullet.y + 6, 0, bullet.x + 2, bullet.y + 6, 6);
+        gradient.addColorStop(0, '#FCD34D');
+        gradient.addColorStop(1, 'rgba(252, 211, 77, 0)');
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(bullet.x + 2, bullet.y + 6, 6, 0, 2 * Math.PI);
+        ctx.fill();
+        
         ctx.fillStyle = '#FCD34D';
         ctx.fillRect(bullet.x, bullet.y, 4, 12);
         
         // 화면 밖으로 나가면 제거
-        if (bullet.y < 0) return false;
+        if (bullet.y < -20) return false;
         
         // 적과 충돌 체크
         var hit = false;
         rocketGame.enemies = rocketGame.enemies.filter(function(enemy) {
-            if (bullet.x < enemy.x + 30 &&
-                bullet.x + 4 > enemy.x &&
-                bullet.y < enemy.y + 30 &&
-                bullet.y + 12 > enemy.y) {
-                
-                if (enemy.type === 'good') {
-                    rocketGame.score += 50;
-                } else {
-                    rocketGame.score += 100;
-                }
+            const distance = Math.sqrt(Math.pow(bullet.x + 2 - (enemy.x + enemy.size), 2) + Math.pow(bullet.y + 6 - (enemy.y + enemy.size), 2));
+            
+            if (distance < enemy.size + 5) {
+                rocketGame.score += enemy.points;
                 updateRocketScore();
+                
+                // 폭발 생성
+                createExplosion(enemy.x + enemy.size, enemy.y + enemy.size, enemy.color);
+                
+                if (rocketGame.sounds.explosion) rocketGame.sounds.explosion();
                 hit = true;
                 return false;
             }
@@ -903,24 +1410,155 @@ function updateRocketGame() {
     });
 }
 
+// 파티클들 업데이트 및 그리기
+function updateAndDrawParticles(ctx) {
+    rocketGame.particles = rocketGame.particles.filter(function(particle) {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.life--;
+        
+        const alpha = particle.life / particle.maxLife;
+        
+        if (particle.type === 'thruster') {
+            ctx.fillStyle = `rgba(252, 211, 77, ${alpha * 0.8})`;
+        } else {
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        }
+        
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, 2, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        return particle.life > 0;
+    });
+}
+
+// 폭발 생성
+function createExplosion(x, y, color) {
+    for (let i = 0; i < 15; i++) {
+        const angle = (Math.PI * 2 / 15) * i;
+        const speed = Math.random() * 5 + 2;
+        
+        rocketGame.particles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 30,
+            maxLife: 30,
+            type: 'explosion',
+            color: color
+        });
+    }
+}
+
+// 폭발들 업데이트 및 그리기
+function updateAndDrawExplosions(ctx) {
+    rocketGame.explosions = rocketGame.explosions.filter(function(explosion) {
+        explosion.life--;
+        explosion.radius += 2;
+        
+        const alpha = explosion.life / explosion.maxLife;
+        
+        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(explosion.x, explosion.y, explosion.radius, 0, 2 * Math.PI);
+        ctx.stroke();
+        
+        return explosion.life > 0;
+    });
+}
+
+// 파워업들 업데이트 및 그리기
+function updateAndDrawPowerUps(ctx, canvas) {
+    rocketGame.powerUps = rocketGame.powerUps.filter(function(powerUp) {
+        powerUp.y += 1.5;
+        powerUp.rotation += 0.1;
+        powerUp.pulse += 0.15;
+        
+        // 파워업 그리기
+        ctx.save();
+        ctx.translate(powerUp.x + 10, powerUp.y + 10);
+        ctx.rotate(powerUp.rotation);
+        
+        const scale = 1 + Math.sin(powerUp.pulse) * 0.2;
+        ctx.scale(scale, scale);
+        
+        // 글로우 효과
+        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 15);
+        gradient.addColorStop(0, '#60A5FA');
+        gradient.addColorStop(1, 'rgba(96, 165, 250, 0)');
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(0, 0, 15, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // 파워업 아이콘
+        ctx.fillStyle = '#60A5FA';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('★', 0, 5);
+        
+        ctx.restore();
+        
+        // 화면 밖으로 나가면 제거
+        if (powerUp.y > canvas.height) {
+            return false;
+        }
+        
+        // 로켓과 충돌 체크
+        const distance = Math.sqrt(Math.pow(rocketGame.rocket.x + rocketGame.rocket.width/2 - (powerUp.x + 10), 2) + Math.pow(rocketGame.rocket.y + rocketGame.rocket.height/2 - (powerUp.y + 10), 2));
+        
+        if (distance < 25) {
+            rocketGame.score += 500;
+            updateRocketScore();
+            createExplosion(powerUp.x + 10, powerUp.y + 10, '#60A5FA');
+            if (rocketGame.sounds.powerUp) rocketGame.sounds.powerUp();
+            return false;
+        }
+        
+        return true;
+    });
+}
+
 // 로켓 게임 점수 업데이트
 function updateRocketScore() {
     document.getElementById('rocketScore').textContent = rocketGame.score;
 }
 
-// 로켓 게임 일시정지
+// 로켓 게임 일시정지 (향상된 버전)
 function pauseRocketGame() {
     rocketGame.isRunning = false;
     clearInterval(rocketGame.gameLoop);
     document.getElementById('rocketStartBtn').style.display = 'inline-block';
     document.getElementById('rocketPauseBtn').style.display = 'none';
+    
+    // 배경음악 일시정지
+    if (rocketGame.sounds.background) {
+        rocketGame.sounds.background.pause();
+    }
 }
 
-// 게임 오버
+// 게임 오버 (향상된 버전)
 function gameOver() {
     pauseRocketGame();
-    gainOwlExp(Math.floor(rocketGame.score / 10));
-    alert('게임 오버! 점수: ' + rocketGame.score + '\n경험치 +' + Math.floor(rocketGame.score / 10));
+    
+    // 큰 폭발 효과
+    createExplosion(rocketGame.rocket.x + rocketGame.rocket.width/2, rocketGame.rocket.y + rocketGame.rocket.height/2, '#FF6B6B');
+    
+    const expGained = Math.floor(rocketGame.score / 10);
+    gainOwlExp(expGained);
+    
+    // 멋진 게임 오버 알림
+    setTimeout(() => {
+        const message = `🚀 게임 오버! 🚀\n\n` +
+                       `최종 점수: ${rocketGame.score.toLocaleString()}점\n` +
+                       `획득 경험치: +${expGained}\n\n` +
+                       `훌륭한 조종 실력이었습니다!`;
+        alert(message);
+    }, 500);
 }
 
 // 똑부리 쓰다듬기
