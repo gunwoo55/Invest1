@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- 캐시 무력화 메타태그 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="cache-buster" content="v2.1.0-20241216">
+    
+    <title>FINE U - 완전 실제 데이터 모의투자 앱</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.1.0" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css?v=2.1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js?v=2.1.0"></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            zoom: 1;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        .screen {
+            display: none;
+            min-height: 100vh;
+            position: relative;
+        }
+        .screen.active {
+            display: block;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
+        }
+        .stock-item {
+            transition: all 0.3s ease;
+        }
+        .stock-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .profit { color: #DC2626; }
+        .loss { color: #2563EB; }
+        
+        .level-badge-profile {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .level-badge-nav {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 12px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10;
+            cursor: pointer;
+        }
+        
+        .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
+        .level-orange { background: linear-gradient(135deg, #FB923C, #EA580C); }
+        .level-green { background: linear-gradient(135deg, #34D399, #059669); }
+        .level-blue { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+        .level-brown { background: linear-gradient(135deg, #A16207, #92400E); }
+        .level-black { background: linear-gradient(135deg, #374151, #111827); }
+        .level-red { background: linear-gradient(135deg, #EF4444, #DC2626); }
+        
+        .asset-category {
+            border-left: 4px solid;
+        }
+        .asset-stock { border-color: #3B82F6; }
+        .asset-bond { border-color: #10B981; }
+        .asset-deposit { border-color: #8B5CF6; }
+        .asset-etf { border-color: #F59E0B; }
+        .asset-crypto { border-color: #EF4444; }
+        .asset-commodity { border-color: #6B7280; }
+        .asset-cash { border-color: #6B7280; }
+        
+        .modal {
+            backdrop-filter: blur(10px);
+        }
+        
+        .profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            object-fit: cover;
+            border: 3px solid #e5e7eb;
+        }
+        
+        .login-container {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .level-up-animation {
+            animation: levelUp 2s ease-in-out;
+        }
+        
+        @keyframes levelUp {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        
+        .error-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #ef4444;
+        }
+
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 12px 0 8px 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 28rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            align-items: end;
+            position: relative;
+            height: 60px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-1px);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .nav-item.active i {
+            color: #3B82F6;
+        }
+
+        .nav-item.active span {
+            color: #3B82F6;
+        }
+
+        .nav-center {
+            grid-column: 3;
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            height: 100%;
+            position: relative;
+        }
+
+        .profile-menu {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            padding: 12px;
+            display: none;
+            z-index: 100;
+            min-width: 150px;
+        }
+
+        .profile-menu.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .profile-menu-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .profile-menu-item i {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 로그인 화면 -->
+<div id="loginScreen" class="screen active">
+    <div class="min-h-screen relative">
+        <img src="https://page.gensparksite.com/v1/base64_upload/d70cd4313a281cd622151fc21c31a361" 
+             alt="Login Background" 
+             class="absolute inset-0 w-full h-full object-cover">
+        
+        <div class="login-container">
+            <div class="space-y-3">
+                <input type="text" id="userId" placeholder="ID" 
+                       class="w-full px-4 py-2.5 rounded-lg bg-white bg-opacity-90 border-0 text-gray-800 placeholder-gray-500 text-sm">
+                <input type="password" id="userPassword" placeholder="PASSWORD" 
+                       class="w-full px-4 py-2.5 rounded-lg bg-white bg-opacity-90 border-0 text-gray-800 placeholder-gray-500 text-sm">
+                <button onclick="performLogin()" 
+                        class="w-full py-2.5 btn-primary text-white rounded-lg font-medium text-sm">
+                    로그인
+                </button>
+            </div>
+            <div class="text-center mt-4">
+                <a href="#" onclick="showRegisterModal()" class="text-white text-xs underline opacity-90">회원가입</a>
+                <span class="text-white mx-2 text-xs opacity-90">|</span>
+                <a href="#" onclick="showFindModal()" class="text-white text-xs underline opacity-90">아이디 & 비밀번호 찾기</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 메인 화면 -->
+<div id="mainScreen" class="screen">
+    <div class="min-h-screen bg-gray-100">
+        <!-- 상단 헤더 -->
+        <div class="bg-white shadow-sm p-4">
+            <div class="flex items-center justify-between max-w-md mx-auto">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-star text-yellow-400 text-lg"></i>
+                    <h1 class="text-2xl font-bold text-blue-400">FINE U</h1>
+                </div>
+                <button onclick="toggleProfileMenu()" class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <img id="headerProfileImage" src="" alt="Profile" class="w-10 h-10 rounded-full object-cover hidden">
+                    <i id="headerProfileIcon" class="fas fa-user text-blue-400"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 프로필 메뉴 -->
+        <div id="profileMenu" class="profile-menu">
+            <div class="profile-menu-item" onclick="showProfileModal()">
+                <i class="fas fa-user"></i>
+                <span>프로필 설정</span>
+            </div>
+            <div class="profile-menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>로그아웃</span>
+            </div>
+        </div>
+
+        <!-- 프로필 섹션 -->
+        <div class="max-w-md mx-auto px-4 py-6">
+            <div class="bg-white rounded-2xl p-6 card-shadow mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold">PROFILE</h2>
+                    <i class="fas fa-paperclip text-gray-400"></i>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <img id="profileImage" src="" alt="Profile" class="profile-image hidden">
+                        <div id="profilePlaceholder" class="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-user text-blue-400 text-2xl"></i>
+                        </div>
+                        <button onclick="uploadProfileImage()" class="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-camera text-white text-xs"></i>
+                        </button>
+                        <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                    </div>
+                    <div class="flex-1">
+                        <div id="userLevel" class="level-badge-profile level-yellow mb-2">
+                            YELLOW
+                        </div>
+                        <p class="font-bold text-gray-800" id="userName">사용자</p>
+                        <p class="text-xs text-gray-500" id="userExp">0 / 3000 EXP</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 자산 현황 -->
+            <div class="bg-white rounded-2xl p-6 card-shadow mb-6">
+                <h2 class="text-xl font-bold mb-4">ASSETS</h2>
+                <div class="bg-blue-50 rounded-xl p-4 mb-4">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <span class="text-2xl font-bold text-gray-800" id="totalAssets">10,000,000원</span>
+                    </div>
+                    <div class="text-sm">
+                        <span class="text-gray-600">평가손익: </span>
+                        <span id="totalProfitLoss" class="font-semibold text-green-600">+0원 (0.00%)</span>
+                    </div>
+                </div>
+                <div id="assetsList" class="space-y-3">
+                    <!-- 자산 목록이 여기에 표시됩니다 -->
+                </div>
+            </div>
+
+            <!-- 포트폴리오 섹션 -->
+            <div class="bg-white rounded-2xl p-6 card-shadow mb-24">
+                <h2 class="text-xl font-bold mb-4">PORTFOLIO</h2>
+                <div class="relative mb-4">
+                    <canvas id="portfolioChart" style="height: 200px;"></canvas>
+                </div>
+                <div id="portfolioDetails" class="space-y-3">
+                    <!-- 포트폴리오 상세 정보가 여기에 표시됩니다 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 하단 네비게이션 -->
+        <div class="bottom-navigation">
+            <div class="nav-container">
+                <button onclick="showMainScreen()" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>홈</span>
+                </button>
+                <button onclick="navigateToPage('a2.html')" class="nav-item">
+                    <i class="fas fa-newspaper text-gray-400"></i>
+                    <span class="text-gray-400">뉴스</span>
+                </button>
+                <div class="nav-center">
+                    <div id="navLevelBadge" class="level-badge-nav level-yellow" onclick="navigateToPage('a5.html')">
+                        YELLOW
+                    </div>
+                </div>
+                <button onclick="navigateToPage('a4.html')" class="nav-item">
+                    <i class="fas fa-gamepad text-gray-400"></i>
+                    <span class="text-gray-400">게임</span>
+                </button>
+                <button onclick="navigateToPage('a3.html')" class="nav-item">
+                    <i class="fas fa-ellipsis-h text-gray-400"></i>
+                    <span class="text-gray-400">더보기</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 회원가입 모달 -->
+<div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-2xl w-full max-w-sm mx-4 p-6">
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-bold">회원가입</h3>
+            </div>
+            <div class="space-y-4 mb-6">
+                <input type="text" id="registerUserId" placeholder="아이디" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+                <input type="password" id="registerPassword" placeholder="비밀번호" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+                <input type="password" id="registerPasswordConfirm" placeholder="비밀번호 확인" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+                <input type="text" id="registerName" placeholder="이름" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="hideRegisterModal()" 
+                        class="bg-gray-300 text-gray-700 py-3 rounded-xl font-semibold">
+                    취소
+                </button>
+                <button onclick="register()" 
+                        class="bg-blue-500 text-white py-3 rounded-xl font-semibold">
+                    가입
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 아이디/비밀번호 찾기 모달 -->
+<div id="findModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-2xl w-full max-w-sm mx-4 p-6">
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-bold">계정 찾기</h3>
+            </div>
+            <div class="space-y-4 mb-6">
+                <input type="text" id="findName" placeholder="이름" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+                <input type="email" id="findEmail" placeholder="이메일" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="hideFindModal()" 
+                        class="bg-gray-300 text-gray-700 py-3 rounded-xl font-semibold">
+                    취소
+                </button>
+                <button onclick="findAccount()" 
+                        class="bg-blue-500 text-white py-3 rounded-xl font-semibold">
+                    찾기
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 프로필 모달 -->
+<div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-2xl w-full max-w-sm mx-4 p-6">
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-bold">프로필 설정</h3>
+            </div>
+            <div class="text-center mb-6">
+                <div class="relative inline-block">
+                    <img id="modalProfileImage" src="" alt="Profile" class="profile-image hidden mx-auto">
+                    <div id="modalProfilePlaceholder" class="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto">
+                        <i class="fas fa-user text-blue-400 text-2xl"></i>
+                    </div>
+                    <button onclick="uploadProfileImage()" class="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-camera text-white text-xs"></i>
+                    </button>
+                </div>
+                <p class="mt-2 text-sm text-gray-500">프로필 사진을 변경하려면 카메라 버튼을 클릭하세요</p>
+            </div>
+            <div class="space-y-4 mb-6">
+                <input type="text" id="modalUserName" placeholder="이름" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="hideProfileModal()" 
+                        class="bg-gray-300 text-gray-700 py-3 rounded-xl font-semibold">
+                    취소
+                </button>
+                <button onclick="updateProfile()" 
+                        class="bg-blue-500 text-white py-3 rounded-xl font-semibold">
+                    저장
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 전역 변수
+var currentUser = null;
+var userAssets = {};
+var userLevel = 'yellow';
+var userExp = 0;
+var totalAssets = 10000000;
+var cash = 10000000;
+var portfolioChart = null;
+
+// 레벨 시스템 설정
+var levelSystem = {
+    yellow: { name: 'YELLOW', exp: 0, max: 3000, class: 'level-yellow' },
+    orange: { name: 'ORANGE', exp: 3000, max: 6000, class: 'level-orange' },
+    green: { name: 'GREEN', exp: 6000, max: 10000, class: 'level-green' },
+    blue: { name: 'BLUE', exp: 10000, max: 15000, class: 'level-blue' },
+    brown: { name: 'BROWN', exp: 15000, max: 25000, class: 'level-brown' },
+    black: { name: 'BLACK', exp: 25000, max: 50000, class: 'level-black' },
+    red: { name: 'RED', exp: 50000, max: 100000, class: 'level-red' }
+};
+
+// 페이지 이동 함수 (캐시 무력화 적용)
+function navigateToPage(page) {
+    try {
+        // 현재 시간을 이용한 캐시 버스터
+        var cacheBuster = '?v=' + new Date().getTime();
+        var currentHost = window.location.origin;
+        var targetUrl = currentHost + '/' + page + cacheBuster;
+        
+        // 사용자 데이터 저장
+        saveUserData();
+        
+        // 페이지 이동
+        window.location.href = targetUrl;
+    } catch (error) {
+        console.error('페이지 이동 오류:', error);
+        // 오류 시 기본 이동
+        window.location.href = page;
+    }
+}
+
+// 자동 로그인 확인
+function checkAutoLogin() {
+    try {
+        var savedUser = localStorage.getItem('fineu_current_user');
+        if (savedUser) {
+            var userData = JSON.parse(savedUser);
+            if (userData.id) {
+                // 자동 로그인 실행
+                showMainScreen(userData.id);
+                return true;
+            }
+        }
+    } catch (error) {
+        console.error('자동 로그인 확인 오류:', error);
+    }
+    return false;
+}
+
+// 로그인 함수
+function performLogin() {
+    try {
+        var userId = document.getElementById('userId');
+        var password = document.getElementById('userPassword');
+        
+        if (!userId || !password) {
+            alert('입력 필드를 찾을 수 없습니다.');
+            return;
+        }
+        
+        var userIdValue = userId.value.trim();
+        var passwordValue = password.value.trim();
+        
+        if (!userIdValue || !passwordValue) {
+            alert('아이디와 비밀번호를 입력해주세요.');
+            return;
+        }
+        
+        showMainScreen(userIdValue);
+    } catch (error) {
+        console.error('로그인 오류:', error);
+        alert('로그인 중 오류가 발생했습니다.');
+    }
+}
+
+// 메인 화면 표시
+function showMainScreen(userId) {
+    try {
+        if (userId) {
+            setupUser(userId);
+        }
+        
+        var loginScreen = document.getElementById('loginScreen');
+        var mainScreen = document.getElementById('mainScreen');
+        
+        if (loginScreen) {
+            loginScreen.classList.remove('active');
+        }
+        
+        if (mainScreen) {
+            mainScreen.classList.add('active');
+        }
+        
+        updateDisplay();
+    } catch (error) {
+        console.error('화면 전환 오류:', error);
+    }
+}
+
+// 사용자 초기화
+function setupUser(userId) {
+    try {
+        currentUser = {
+            id: userId,
+            name: userId,
+            level: 'yellow',
+            exp: 0,
+            assets: {},
+            totalAssets: 10000000,
+            cash: 10000000
+        };
+        
+        // 기존 사용자 데이터 불러오기
+        var savedData = localStorage.getItem('user_' + userId);
+        if (savedData) {
+            var userData = JSON.parse(savedData);
+            currentUser = Object.assign(currentUser, userData);
+            userLevel = currentUser.level || 'yellow';
+            userExp = currentUser.exp || 0;
+            totalAssets = currentUser.totalAssets || 10000000;
+            cash = currentUser.cash || 10000000;
+            userAssets = currentUser.assets || {};
+        }
+        
+        // 현재 사용자 저장
+        localStorage.setItem('fineu_current_user', JSON.stringify(currentUser));
+        
+    } catch (error) {
+        console.error('사용자 설정 오류:', error);
+    }
+}
+
+// 화면 표시 업데이트
+function updateDisplay() {
+    try {
+        if (!currentUser) return;
+        
+        // 사용자 이름 업데이트
+        var userNameElement = document.getElementById('userName');
+        if (userNameElement) {
+            userNameElement.textContent = currentUser.name;
+        }
+        
+        // 레벨 업데이트
+        updateLevelDisplay();
+        
+        // 자산 업데이트
+        updateAssetsDisplay();
+        
+        // 포트폴리오 업데이트
+        updatePortfolioDisplay();
+        
+    } catch (error) {
+        console.error('화면 업데이트 오류:', error);
+    }
+}
+
+// 레벨 표시 업데이트
+function updateLevelDisplay() {
+    try {
+        var level = levelSystem[userLevel];
+        if (!level) return;
+        
+        var levelElements = document.querySelectorAll('#userLevel, #navLevelBadge');
+        
+        levelElements.forEach(function(element) {
+            if (element) {
+                element.className = element.className.includes('level-badge-profile') ? 
+                    'level-badge-profile ' + level.class : 
+                    'level-badge-nav ' + level.class;
+                element.textContent = level.name;
+            }
+        });
+        
+        var expElement = document.getElementById('userExp');
+        if (expElement) {
+            expElement.textContent = userExp + ' / ' + level.max + ' EXP';
+        }
+    } catch (error) {
+        console.error('레벨 업데이트 오류:', error);
+    }
+}
+
+// 자산 표시 업데이트
+function updateAssetsDisplay() {
+    try {
+        // 총 자산 표시
+        var totalAssetsElement = document.getElementById('totalAssets');
+        if (totalAssetsElement) {
+            totalAssetsElement.textContent = totalAssets.toLocaleString() + '원';
+        }
+        
+        // 수익률 계산
+        var profitLoss = totalAssets - 10000000;
+        var profitRate = (profitLoss / 10000000 * 100).toFixed(2);
+        var profitText = (profitLoss >= 0 ? '+' : '') + profitLoss.toLocaleString() + '원 (' + profitRate + '%)';
+        var profitClass = profitLoss >= 0 ? 'text-red-600' : 'text-blue-600';
+        
+        var profitElement = document.getElementById('totalProfitLoss');
+        if (profitElement) {
+            profitElement.textContent = profitText;
+            profitElement.className = 'font-semibold ' + profitClass;
+        }
+        
+        // 자산 리스트 업데이트
+        updateAssetsList();
+        
+    } catch (error) {
+        console.error('자산 업데이트 오류:', error);
+    }
+}
+
+// 자산 리스트 업데이트
+function updateAssetsList() {
+    try {
+        var assetsList = document.getElementById('assetsList');
+        if (!assetsList) return;
+        
+        var assetsHTML = '';
+        
+        // 현금 자산 표시
+        assetsHTML += '<div class="bg-white rounded-xl p-4 card-shadow asset-category asset-cash">';
+        assetsHTML += '<div class="flex justify-between items-center">';
+        assetsHTML += '<div><p class="font-semibold">현금</p><p class="text-sm text-gray-500">보유 현금</p></div>';
+        assetsHTML += '<div class="text-right"><p class="font-bold">' + cash.toLocaleString() + '원</p></div>';
+        assetsHTML += '</div></div>';
+        
+        // 투자 자산 표시 (있는 경우)
+        for (var assetId in userAssets) {
+            var assetData = userAssets[assetId];
+            var totalValue = assetData.quantity * assetData.avgPrice;
+            
+            assetsHTML += '<div class="bg-white rounded-xl p-4 card-shadow asset-category asset-' + assetData.type + '">';
+            assetsHTML += '<div class="flex justify-between items-center">';
+            assetsHTML += '<div><p class="font-semibold">' + assetData.name + '</p>';
+            assetsHTML += '<p class="text-sm text-gray-500">' + assetData.quantity + '개 보유</p></div>';
+            assetsHTML += '<div class="text-right"><p class="font-bold">' + totalValue.toLocaleString() + '원</p></div>';
+            assetsHTML += '</div></div>';
+        }
+        
+        assetsList.innerHTML = assetsHTML;
+        
+    } catch (error) {
+        console.error('자산 리스트 업데이트 오류:', error);
+    }
+}
+
+// 포트폴리오 표시 업데이트
+function updatePortfolioDisplay() {
+    try {
+        setTimeout(function() {
+            initPortfolioChart();
+        }, 100);
+        
+        var portfolioDetails = document.getElementById('portfolioDetails');
+        if (!portfolioDetails) return;
+        
+        var detailsHTML = '';
+        
+        // 현금 비중
+        var cashRatio = (cash / totalAssets * 100).toFixed(1);
+        detailsHTML += '<div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">';
+        detailsHTML += '<div class="flex items-center space-x-2">';
+        detailsHTML += '<div class="w-4 h-4 bg-gray-400 rounded-full"></div>';
+        detailsHTML += '<span class="font-semibold">현금</span></div>';
+        detailsHTML += '<span class="font-bold">' + cashRatio + '%</span></div>';
+        
+        portfolioDetails.innerHTML = detailsHTML;
+        
+    } catch (error) {
+        console.error('포트폴리오 업데이트 오류:', error);
+    }
+}
+
+// 포트폴리오 차트 초기화
+function initPortfolioChart() {
+    try {
+        var canvas = document.getElementById('portfolioChart');
+        if (!canvas) return;
+        
+        var ctx = canvas.getContext('2d');
+        
+        if (portfolioChart) {
+            portfolioChart.destroy();
+        }
+        
+        var labels = ['현금'];
+        var data = [cash];
+        var colors = ['#6B7280'];
+        
+        portfolioChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+        
+    } catch (error) {
+        console.error('포트폴리오 차트 오류:', error);
+    }
+}
+
+// 프로필 메뉴 토글
+function toggleProfileMenu() {
+    try {
+        var menu = document.getElementById('profileMenu');
+        if (menu) {
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+            } else {
+                menu.classList.add('show');
+            }
+        }
+    } catch (error) {
+        console.error('프로필 메뉴 토글 오류:', error);
+    }
+}
+
+// 로그아웃
+function logout() {
+    try {
+        // 사용자 데이터 저장
+        saveUserData();
+        
+        // 현재 사용자 정보 삭제
+        localStorage.removeItem('fineu_current_user');
+        
+        // 로그인 화면으로 이동
+        var loginScreen = document.getElementById('loginScreen');
+        var mainScreen = document.getElementById('mainScreen');
+        
+        if (mainScreen) {
+            mainScreen.classList.remove('active');
+        }
+        
+        if (loginScreen) {
+            loginScreen.classList.add('active');
+        }
+        
+        // 입력 필드 초기화
+        var userIdInput = document.getElementById('userId');
+        var passwordInput = document.getElementById('userPassword');
+        if (userIdInput) userIdInput.value = '';
+        if (passwordInput) passwordInput.value = '';
+        
+        // 프로필 메뉴 숨기기
+        hideProfileMenu();
+        
+    } catch (error) {
+        console.error('로그아웃 오류:', error);
+    }
+}
+
+// 프로필 메뉴 숨기기
+function hideProfileMenu() {
+    var menu = document.getElementById('profileMenu');
+    if (menu) {
+        menu.classList.remove('show');
+    }
+}
+
+// 사용자 데이터 저장
+function saveUserData() {
+    try {
+        if (currentUser) {
+            currentUser.assets = userAssets;
+            currentUser.level = userLevel;
+            currentUser.exp = userExp;
+            currentUser.totalAssets = totalAssets;
+            currentUser.cash = cash;
+            localStorage.setItem('user_' + currentUser.id, JSON.stringify(currentUser));
+        }
+    } catch (error) {
+        console.error('데이터 저장 오류:', error);
+    }
+}
+
+// 기타 함수들
+function uploadProfileImage() {
+    var fileInput = document.getElementById('imageUpload');
+    if (fileInput) {
+        fileInput.click();
+    }
+}
+
+function handleImageUpload(event) {
+    // 이미지 업로드 처리 로직
+}
+
+function showRegisterModal() {
+    var modal = document.getElementById('registerModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+function hideRegisterModal() {
+    var modal = document.getElementById('registerModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+function showFindModal() {
+    var modal = document.getElementById('findModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+function hideFindModal() {
+    var modal = document.getElementById('findModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+function showProfileModal() {
+    hideProfileMenu();
+    var modal = document.getElementById('profileModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+function hideProfileModal() {
+    var modal = document.getElementById('profileModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+function register() {
+    alert('회원가입 기능은 준비 중입니다.');
+    hideRegisterModal();
+}
+
+function findAccount() {
+    alert('계정 찾기 기능은 준비 중입니다.');
+    hideFindModal();
+}
+
+function updateProfile() {
+    alert('프로필 업데이트 기능은 준비 중입니다.');
+    hideProfileModal();
+}
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        // 자동 로그인 확인
+        if (!checkAutoLogin()) {
+            // 자동 로그인이 실패한 경우 로그인 화면 유지
+            console.log('자동 로그인 실패 - 로그인 화면 표시');
+        }
+        
+        // 엔터 키 이벤트
+        var passwordInput = document.getElementById('userPassword');
+        if (passwordInput) {
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performLogin();
+                }
+            });
+        }
+        
+        // 외부 클릭시 프로필 메뉴 숨기기
+        document.addEventListener('click', function(e) {
+            var profileMenu = document.getElementById('profileMenu');
+            var profileButton = document.querySelector('button[onclick="toggleProfileMenu()"]');
+            
+            if (profileMenu && profileMenu.classList.contains('show')) {
+                if (!profileMenu.contains(e.target) && !profileButton.contains(e.target)) {
+                    hideProfileMenu();
+                }
+            }
+        });
+        
+    } catch (error) {
+        console.error('초기화 오류:', error);
+    }
+});
+
+// 캐시 우회를 위한 강제 새로고침 함수
+function forceRefresh() {
+    window.location.reload(true);
+}
+
+// 페이지 언로드 시 데이터 저장
+window.addEventListener('beforeunload', function() {
+    saveUserData();
+});
+</script>
+
+</body>
+</html>
+
+
+

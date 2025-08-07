@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>FINE U - 더보기</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            zoom: 1;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        .screen {
+            display: none;
+            min-height: 100vh;
+            position: relative;
+        }
+        .screen.active {
+            display: block;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
+        }
+        
+        .level-badge-nav {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 12px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+        
+        .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
+        
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 12px 0 8px 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 28rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            align-items: end;
+            position: relative;
+            height: 60px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-1px);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .nav-item.active i {
+            color: #3B82F6;
+        }
+
+        .nav-item.active span {
+            color: #3B82F6;
+        }
+
+        .nav-center {
+            grid-column: 3;
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            height: 100%;
+            position: relative;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .icon-fss { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+        .icon-consumer { background: linear-gradient(135deg, #10B981, #059669); }
+        .icon-dart { background: linear-gradient(135deg, #F59E0B, #D97706); }
+        .icon-ecenter { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .external-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 8px 8px 8px 0;
+            transition: all 0.2s ease;
+        }
+
+        .external-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .info-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 더보기 화면 -->
+<div id="moreScreen" class="screen active">
+    <div class="min-h-screen bg-gray-100">
+        <div class="bg-white shadow-sm p-4">
+            <div class="flex items-center justify-between max-w-md mx-auto">
+                <button onclick="goToHome()" class="text-gray-600">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-xl font-bold">더보기</h1>
+                <div class="w-6"></div>
+            </div>
+        </div>
+
+        <div class="max-w-md mx-auto px-4 py-6">
+            
+            <!-- 금융감독원 공식 홈페이지 -->
+            <div class="service-card" onclick="openFSSModal()">
+                <div class="service-icon icon-fss">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">금융감독원 공식 홈페이지</h3>
+                <p class="text-gray-600 text-sm">금융감독원의 공식 정보와 정책, 공지사항을 확인하세요</p>
+                <div class="flex items-center justify-between mt-3">
+                    <span class="text-blue-500 text-sm font-semibold">바로가기</span>
+                    <i class="fas fa-external-link-alt text-blue-500"></i>
+                </div>
+            </div>
+
+            <!-- 금융 소비자 정보 포털 -->
+            <div class="service-card" onclick="openConsumerModal()">
+                <div class="service-icon icon-consumer">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">금융 소비자 정보 포털</h3>
+                <p class="text-gray-600 text-sm">금융상품 비교, 분쟁조정, 소비자 보호 정보를 제공합니다</p>
+                <div class="flex items-center justify-between mt-3">
+                    <span class="text-green-500 text-sm font-semibold">바로가기</span>
+                    <i class="fas fa-external-link-alt text-green-500"></i>
+                </div>
+            </div>
+
+            <!-- 금융감독원 전자공시시스템 -->
+            <div class="service-card" onclick="openDartModal()">
+                <div class="service-icon icon-dart">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">전자공시시스템 (DART)</h3>
+                <p class="text-gray-600 text-sm">상장회사의 공시정보를 검색하고 열람할 수 있습니다</p>
+                <div class="flex items-center justify-between mt-3">
+                    <span class="text-orange-500 text-sm font-semibold">바로가기</span>
+                    <i class="fas fa-external-link-alt text-orange-500"></i>
+                </div>
+            </div>
+
+            <!-- e-금융센터 -->
+            <div class="service-card" onclick="openECenterModal()">
+                <div class="service-icon icon-ecenter">
+                    <i class="fas fa-laptop"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">금융감독 e-금융센터</h3>
+                <p class="text-gray-600 text-sm">온라인 금융서비스 및 전자금융업 관련 정보를 제공합니다</p>
+                <div class="flex items-center justify-between mt-3">
+                    <span class="text-purple-500 text-sm font-semibold">바로가기</span>
+                    <i class="fas fa-external-link-alt text-purple-500"></i>
+                </div>
+            </div>
+
+            <div style="height: 100px;"></div>
+        </div>
+
+        <!-- 하단 네비게이션 -->
+        <div class="bottom-navigation">
+            <div class="nav-container">
+                <button onclick="goToHome()" class="nav-item">
+                    <i class="fas fa-home text-gray-400"></i>
+                    <span class="text-gray-400">홈</span>
+                </button>
+                <button onclick="goToNews()" class="nav-item">
+                    <i class="fas fa-newspaper text-gray-400"></i>
+                    <span class="text-gray-400">뉴스</span>
+                </button>
+                <div class="nav-center">
+                    <div onclick="goToGrade()" class="level-badge-nav level-yellow">
+                        YELLOW
+                    </div>
+                </div>
+                <button onclick="goToGame()" class="nav-item">
+                    <i class="fas fa-gamepad text-gray-400"></i>
+                    <span class="text-gray-400">게임</span>
+                </button>
+                <button onclick="goToMore()" class="nav-item active">
+                    <i class="fas fa-ellipsis-h"></i>
+                    <span>더보기</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 금융감독원 모달 -->
+<div id="fssModal" class="modal">
+    <div class="modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">금융감독원 공식 홈페이지</h3>
+            <button onclick="closeFSSModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="info-section">
+            <h4 class="font-semibold mb-2">주요 서비스</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• 금융정책 및 규정 정보</li>
+                <li>• 금융기관 감독 현황</li>
+                <li>• 소비자 보호 정책</li>
+                <li>• 공시 및 통계 자료</li>
+            </ul>
+        </div>
+        
+        <div class="text-center">
+            <a href="https://www.fss.or.kr" target="_blank" class="external-link">
+                <i class="fas fa-external-link-alt mr-2"></i>
+                금융감독원 바로가기
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- 금융 소비자 정보 포털 모달 -->
+<div id="consumerModal" class="modal">
+    <div class="modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">금융 소비자 정보 포털</h3>
+            <button onclick="closeConsumerModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="info-section">
+            <h4 class="font-semibold mb-2">주요 서비스</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• 금융상품 통합비교</li>
+                <li>• 금융분쟁 조정신청</li>
+                <li>• 소비자 교육자료</li>
+                <li>• 금융사고 신고센터</li>
+            </ul>
+        </div>
+        
+        <div class="text-center">
+            <a href="https://fine.fss.or.kr" target="_blank" class="external-link">
+                <i class="fas fa-external-link-alt mr-2"></i>
+                소비자포털 바로가기
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- DART 모달 -->
+<div id="dartModal" class="modal">
+    <div class="modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">전자공시시스템 (DART)</h3>
+            <button onclick="closeDartModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="info-section">
+            <h4 class="font-semibold mb-2">제공 정보</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• 상장회사 공시정보</li>
+                <li>• 사업보고서, 감사보고서</li>
+                <li>• 분기보고서, 반기보고서</li>
+                <li>• 주요사항보고서</li>
+            </ul>
+        </div>
+        
+        <div class="text-center">
+            <a href="https://dart.fss.or.kr" target="_blank" class="external-link">
+                <i class="fas fa-external-link-alt mr-2"></i>
+                DART 바로가기
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- e-금융센터 모달 -->
+<div id="eCenterModal" class="modal">
+    <div class="modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">금융감독 e-금융센터</h3>
+            <button onclick="closeECenterModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="info-section">
+            <h4 class="font-semibold mb-2">주요 서비스</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• 전자금융업 등록 신청</li>
+                <li>• 온라인 금융서비스 정보</li>
+                <li>• 전자금융 관련 법규</li>
+                <li>• 핀테크 혁신 지원</li>
+            </ul>
+        </div>
+        
+        <div class="text-center">
+            <a href="https://efinance.fss.or.kr" target="_blank" class="external-link">
+                <i class="fas fa-external-link-alt mr-2"></i>
+                e-금융센터 바로가기
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+var currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+// 페이지 이동 함수들
+function goToHome() {
+    window.location.href = 'index.html?v=' + Date.now();
+}
+
+function goToNews() {
+    window.location.href = 'a2.html?v=' + Date.now();
+}
+
+function goToGrade() {
+    window.location.href = 'a5.html?v=' + Date.now();
+}
+
+function goToGame() {
+    window.location.href = 'a4.html?v=' + Date.now();
+}
+
+function goToMore() {
+    // 현재 페이지이므로 아무것도 하지 않음
+}
+
+// 모달 관련 함수들
+function openFSSModal() {
+    document.getElementById('fssModal').classList.add('show');
+}
+
+function closeFSSModal() {
+    document.getElementById('fssModal').classList.remove('show');
+}
+
+function openConsumerModal() {
+    document.getElementById('consumerModal').classList.add('show');
+}
+
+function closeConsumerModal() {
+    document.getElementById('consumerModal').classList.remove('show');
+}
+
+function openDartModal() {
+    document.getElementById('dartModal').classList.add('show');
+}
+
+function closeDartModal() {
+    document.getElementById('dartModal').classList.remove('show');
+}
+
+function openECenterModal() {
+    document.getElementById('eCenterModal').classList.add('show');
+}
+
+function closeECenterModal() {
+    document.getElementById('eCenterModal').classList.remove('show');
+}
+
+// 모달 외부 클릭시 닫기
+document.addEventListener('click', function(e) {
+    var modals = document.querySelectorAll('.modal');
+    modals.forEach(function(modal) {
+        if (e.target === modal) {
+            modal.classList.remove('show');
+        }
+    });
+});
+
+// 페이지 로드시 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    // 사용자 레벨 표시 업데이트
+    if (currentUser) {
+        var levelBadge = document.querySelector('.level-badge-nav');
+        if (levelBadge) {
+            levelBadge.textContent = currentUser.level ? currentUser.level.toUpperCase() : 'YELLOW';
+        }
+    }
+    
+    console.log('더보기 페이지 로드 완료');
+});
+</script>
+
+</body>
+</html>
+
+

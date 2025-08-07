@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FINE U - 투자</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            zoom: 1;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        .screen {
+            display: none;
+            min-height: 100vh;
+            position: relative;
+        }
+        .screen.active {
+            display: block;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
+        }
+        .stock-item {
+            transition: all 0.3s ease;
+        }
+        .stock-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .profit { color: #DC2626; }
+        .loss { color: #2563EB; }
+        
+        .level-badge-nav {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 12px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+        
+        .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
+        .level-orange { background: linear-gradient(135deg, #FB923C, #EA580C); }
+        .level-green { background: linear-gradient(135deg, #34D399, #059669); }
+        .level-blue { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+        .level-brown { background: linear-gradient(135deg, #A16207, #92400E); }
+        .level-black { background: linear-gradient(135deg, #374151, #111827); }
+        .level-red { background: linear-gradient(135deg, #EF4444, #DC2626); }
+        
+        .asset-category {
+            border-left: 4px solid;
+        }
+        .asset-stock { border-color: #3B82F6; }
+        .asset-bond { border-color: #10B981; }
+        .asset-deposit { border-color: #8B5CF6; }
+        .asset-etf { border-color: #F59E0B; }
+        .asset-crypto { border-color: #EF4444; }
+        .asset-commodity { border-color: #6B7280; }
+
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 12px 0 8px 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 28rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            align-items: end;
+            position: relative;
+            height: 60px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-1px);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .nav-item.active i {
+            color: #3B82F6;
+        }
+
+        .nav-item.active span {
+            color: #3B82F6;
+        }
+
+        .nav-center {
+            grid-column: 3;
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            height: 100%;
+            position: relative;
+        }
+
+        .investment-menu {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            padding: 16px;
+            display: none;
+            z-index: 100;
+            min-width: 200px;
+        }
+
+        .investment-menu.show {
+            display: block;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .investment-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .investment-menu-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .investment-menu-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .modal {
+            backdrop-filter: blur(10px);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        
+        .error-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #ef4444;
+        }
+
+        #tradingModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+        
+        #tradingModal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .trading-modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 250px;
+            margin-bottom: 20px;
+        }
+        
+        .trading-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .buy-button {
+            background: linear-gradient(135deg, #DC2626, #B91C1C);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .sell-button {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .buy-button:hover,
+        .sell-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .trading-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .trading-input input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 주식 화면 -->
+<div id="stockScreen" class="screen active">
+    <div class="min-h-screen bg-gray-100">
+        <div class="bg-white shadow-sm p-4">
+            <div class="flex items-center justify-between max-w-md mx-auto">
+                <button onclick="goToMainPage()" class="text-gray-600">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-xl font-bold">주식 투자</h1>
+                <button onclick="refreshStockData()" class="text-blue-500">
+                    <i class="fas fa-sync-alt text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="max-w-md mx-auto px-4 py-6">
+            <div class="bg-white rounded-xl p-4 card-shadow mb-6">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-search text-gray-400"></i>
+                    <input type="text" id="stockSearch" placeholder="종목명 또는 종목코드 검색" 
+                           class="flex-1 bg-transparent outline-none" onkeyup="searchStocks()">
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-lg font-bold mb-4">국내 주식</h2>
+                <div id="domesticStocks" class="space-y-3">
+                    <div class="text-center py-8">
+                        <div class="loading mx-auto mb-4"></div>
+                        <p class="text-gray-500">한국 주식 데이터 로딩 중...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-lg font-bold mb-4">해외 주식</h2>
+                <div id="foreignStocks" class="space-y-3">
+                    <div class="text-center py-8">
+                        <div class="loading mx-auto mb-4"></div>
+                        <p class="text-gray-500">해외 주식 데이터 로딩 중...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 암호화폐 화면 -->
+<div id="cryptoScreen" class="screen">
+    <div class="min-h-screen bg-gray-100">
+        <div class="bg-white shadow-sm p-4">
+            <div class="flex items-center justify-between max-w-md mx-auto">
+                <button onclick="showScreen('stockScreen')" class="text-gray-600">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-xl font-bold">암호화폐</h1>
+                <button onclick="refreshCryptoData()" class="text-yellow-500">
+                    <i class="fas fa-sync-alt text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="max-w-md mx-auto px-4 py-6">
+            <div id="cryptoList" class="space-y-3 mb-24">
+                <div class="text-center py-8">
+                    <div class="loading mx-auto mb-4"></div>
+                    <p class="text-gray-500">암호화폐 데이터 로딩 중...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 채권 화면 -->
+<div id="bondScreen" class="screen">
+    <div class="min-h-screen bg-gray-100">
+        <div class="bg-white shadow-sm p-4">
+            <div class="flex items-center justify-between max-w-md mx-auto">
+                <button onclick="showScreen('stockScreen')" class="text-gray-600">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-xl font-bold">채권 투자</h1>
+                <button onclick="refreshBondData()" class="text-green-500">
+                    <i class="fas fa-sync-alt text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="max-w-md mx-auto px-4 py-6">
+            <div id="bondList" class="space-y-3 mb-24">
+                <div class="text-center py-8">
+                    <div class="loading mx-auto mb-4"></div>
+                    <p class="text-gray-500">채권 데이터 로딩 중...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 예적금 화면 -->
+<div id="depositScreen" class="screen">
+    <div class="min-h-screen bg-gray-100">
+        <div class="bg-white shadow-sm p-4">
+            <div class="flex items-center justify-between max-w-md mx-auto">
+                <button onclick="showScreen('stockScreen')" class="text-gray-600">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-xl font-bold">예적금</h1>
+                <button onclick="refreshDepositData()" class="text-purple-500">
+                    <i class="fas fa-sync-alt text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="max-w-md mx-auto px-4 py-6">
+            <div id="depositProducts" class="space-y-3 mb-24">
+                <div class="text-center py-8">
+                    <div class="loading mx-auto mb-4"></div>
+                    <p class="text-gray-500">예적금 상품 로딩 중...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ETF/펀드 화면 -->
+<div id="etfScreen" class="screen">
+    <div class="min-h-screen bg-gray-100">
+        <div class="bg-white shadow-sm p-4">
+            <div class="flex items-center justify-between max-w-md mx-auto">
+                <button onclick="showScreen('stockScreen')" class="text-gray-600">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-xl font-bold">ETF/펀드</h1>
+                <button onclick="refreshETFData()" class="text-orange-500">
+                    <i class="fas fa-sync-alt text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="max-w-md mx-auto px-4 py-6">
+            <div id="etfList" class="space-y-3 mb-24">
+                <div class="text-center py-8">
+                    <div class="loading mx-auto mb-4"></div>
+                    <p class="text-gray-500">ETF 데이터 로딩 중...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 귀금속 화면 -->
+<div id="commodityScreen" class="screen">
+    <div class="min-h-screen bg-gray-100">
+        <div class="bg-white shadow-sm p-4">
+            <div class="flex items-center justify-between max-w-md mx-auto">
+                <button onclick="showScreen('stockScreen')" class="text-gray-600">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-xl font-bold">귀금속</h1>
+                <button onclick="refreshCommodityData()" class="text-gray-500">
+                    <i class="fas fa-sync-alt text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="max-w-md mx-auto px-4 py-6">
+            <div id="commodityList" class="space-y-3 mb-24">
+                <div class="text-center py-8">
+                    <div class="loading mx-auto mb-4"></div>
+                    <p class="text-gray-500">귀금속 데이터 로딩 중...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 하단 네비게이션 -->
+<div class="bottom-navigation">
+    <div class="nav-container">
+        <button onclick="goToMainPage()" class="nav-item">
+            <i class="fas fa-home text-gray-400"></i>
+            <span class="text-gray-400">홈</span>
+        </button>
+        <button onclick="goToNewsPage()" class="nav-item">
+            <i class="fas fa-newspaper text-gray-400"></i>
+            <span class="text-gray-400">뉴스</span>
+        </button>
+        <div class="nav-center">
+            <div id="navLevelBadge" class="level-badge-nav level-yellow" onclick="toggleInvestmentMenu()">
+                YELLOW
+            </div>
+        </div>
+        <button onclick="goToGamePage()" class="nav-item">
+            <i class="fas fa-gamepad text-gray-400"></i>
+            <span class="text-gray-400">게임</span>
+        </button>
+        <button onclick="goToMorePage()" class="nav-item">
+            <i class="fas fa-ellipsis-h text-gray-400"></i>
+            <span class="text-gray-400">더보기</span>
+        </button>
+    </div>
+</div>
+
+<!-- 투자 메뉴 -->
+<div id="investmentMenu" class="investment-menu">
+    <div class="investment-menu-item" onclick="showScreen('stockScreen')">
+        <i class="fas fa-chart-line text-blue-500"></i>
+        <span>주식</span>
+    </div>
+    <div class="investment-menu-item" onclick="showScreen('cryptoScreen')">
+        <i class="fas fa-coins text-yellow-500"></i>
+        <span>암호화폐</span>
+    </div>
+    <div class="investment-menu-item" onclick="showScreen('bondScreen')">
+        <i class="fas fa-certificate text-green-500"></i>
+        <span>채권</span>
+    </div>
+    <div class="investment-menu-item" onclick="showScreen('depositScreen')">
+        <i class="fas fa-piggy-bank text-purple-500"></i>
+        <span>예적금</span>
+    </div>
+    <div class="investment-menu-item" onclick="showScreen('etfScreen')">
+        <i class="fas fa-layer-group text-orange-500"></i>
+        <span>ETF/펀드</span>
+    </div>
+    <div class="investment-menu-item" onclick="showScreen('commodityScreen')">
+        <i class="fas fa-gem text-gray-500"></i>
+        <span>귀금속</span>
+    </div>
+</div>
+
+<!-- 트레이딩 모달 -->
+<div id="tradingModal">
+    <div class="trading-modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h3 id="tradingAssetName" class="text-xl font-bold">자산 거래</h3>
+            <button onclick="closeTradingModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="mb-4">
+            <div class="flex justify-between items-center">
+                <span id="tradingCurrentPrice" class="text-2xl font-bold">$0.00</span>
+                <span id="tradingPriceChange" class="text-sm">+0.00%</span>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="tradingChart" style="height: 250px;"></canvas>
+        </div>
+        
+        <div class="trading-input">
+            <span class="text-sm text-gray-600">수량:</span>
+            <input type="number" id="tradingQuantity" value="1" min="0.01" step="0.01" class="trading-input-field">
+            <span class="text-sm text-gray-600">개</span>
+        </div>
+        
+        <div class="trading-input">
+            <span class="text-sm text-gray-600">총액:</span>
+            <span id="tradingTotalAmount" class="font-bold">$0.00</span>
+        </div>
+        
+        <div class="trading-buttons">
+            <button id="buyButton" class="buy-button" onclick="executeTrade('buy')">
+                매수 <i class="fas fa-arrow-up ml-1"></i>
+            </button>
+            <button id="sellButton" class="sell-button" onclick="executeTrade('sell')">
+                매도 <i class="fas fa-arrow-down ml-1"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// 전역 변수
+var currentUser = null;
+var userAssets = {};
+var userLevel = 'yellow';
+var userExp = 0;
+var totalAssets = 10000000;
+var cash = 10000000;
+var currentTradingAsset = null;
+var tradingChart = null;
+
+// API 키 설정
+var API_KEYS = {
+    ALPHA_VANTAGE: 'ABCDEFGHIJ123456',
+    NEWS_API: '2b4b509767814a05ab2cc4e8cd2c1234',
+    FRED_API: '1234567890abcdefghijklmnopqrstuv',
+    GEMINI_AI: 'AIzaSyD1234567890abcdefghijklmnopqrstuvwxyz'
+};
+
+// 레벨 시스템 설정
+var levelSystem = {
+    yellow: { name: 'YELLOW', exp: 0, max: 3000, class: 'level-yellow' },
+    orange: { name: 'ORANGE', exp: 3000, max: 6000, class: 'level-orange' },
+    green: { name: 'GREEN', exp: 6000, max: 10000, class: 'level-green' },
+    blue: { name: 'BLUE', exp: 10000, max: 15000, class: 'level-blue' },
+    brown: { name: 'BROWN', exp: 15000, max: 25000, class: 'level-brown' },
+    black: { name: 'BLACK', exp: 25000, max: 50000, class: 'level-black' },
+    red: { name: 'RED', exp: 50000, max: 100000, class: 'level-red' }
+};
+
+// 페이지 이동 함수들
+function goToMainPage() {
+    window.location.href = 'index.html';
+}
+
+function goToNewsPage() {
+    window.location.href = 'a2.html';
+}
+
+function goToGamePage() {
+    window.location.href = 'a2.html';
+}
+
+function goToMorePage() {
+    window.location.href = 'a3.html';
+}
+
+// 화면 전환
+function showScreen(screenId) {
+    try {
+        document.querySelectorAll('.screen').forEach(function(screen) {
+            screen.classList.remove('active');
+        });
+        
+        var targetScreen = document.getElementById(screenId);
+        if (targetScreen) {
+            targetScreen.classList.add('active');
+        }
+        
+        hideInvestmentMenu();
+        
+        // 특정 화면 로드
+        switch(screenId) {
+            case 'stockScreen':
+                loadKoreanStocks();
+                loadForeignStocks();
+                break;
+            case 'cryptoScreen':
+                loadRealCryptoData();
+                break;
+            case 'bondScreen':
+                loadBondData();
+                break;
+            case 'depositScreen':
+                loadDepositData();
+                break;
+            case 'etfScreen':
+                loadETFData();
+                break;
+            case 'commodityScreen':
+                loadCommodityData();
+                break;
+        }
+    } catch (error) {
+        console.error('화면 전환 오류:', error);
+    }
+}
+
+// 한국 주식 데이터 로드
+function loadKoreanStocks() {
+    var container = document.getElementById('domesticStocks');
+    if (!container) return;
+
+    // 주요 한국 주식 종목들 (실제 종목코드)
+    var koreanStocks = [
+        { symbol: '005930.KS', name: '삼성전자', code: '005930' },
+        { symbol: '000660.KS', name: 'SK하이닉스', code: '000660' },
+        { symbol: '373220.KS', name: 'LG에너지솔루션', code: '373220' },
+        { symbol: '035720.KS', name: '카카오', code: '035720' },
+        { symbol: '035420.KS', name: 'NAVER', code: '035420' },
+        { symbol: '005380.KS', name: '현대차', code: '005380' },
+        { symbol: '068270.KS', name: '셀트리온', code: '068270' },
+        { symbol: '207940.KS', name: '삼성바이오로직스', code: '207940' }
+    ];
+
+    container.innerHTML = '<div class="text-center py-4"><div class="loading mx-auto mb-4"></div><p class="text-gray-500">한국 주식 데이터 로딩 중...</p></div>';
+
+    // Yahoo Finance API를 사용 (더 안정적)
+    Promise.all(koreanStocks.map(function(stock) {
+        return fetch('https://query1.finance.yahoo.com/v8/finance/chart/' + stock.symbol)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data && data.chart && data.chart.result && data.chart.result[0]) {
+                    var result = data.chart.result[0];
+                    var meta = result.meta;
+                    return {
+                        ...stock,
+                        price: meta.regularMarketPrice,
+                        change: meta.regularMarketPrice - meta.previousClose,
+                        changePercent: ((meta.regularMarketPrice - meta.previousClose) / meta.previousClose) * 100
+                    };
+                }
+                // API 실패시 임시 데이터
+                return {
+                    ...stock,
+                    price: Math.floor(Math.random() * 100000) + 10000,
+                    change: (Math.random() - 0.5) * 10000,
+                    changePercent: (Math.random() - 0.5) * 10
+                };
+            })
+            .catch(function() {
+                // 오류시 임시 데이터
+                return {
+                    ...stock,
+                    price: Math.floor(Math.random() * 100000) + 10000,
+                    change: (Math.random() - 0.5) * 10000,
+                    changePercent: (Math.random() - 0.5) * 10
+                };
+            });
+    }))
+    .then(function(results) {
+        container.innerHTML = '';
+        
+        results.forEach(function(stock) {
+            if (stock && stock.price) {
+                var changeClass = stock.change >= 0 ? 'text-red-600' : 'text-blue-600';
+                var changeSymbol = stock.change >= 0 ? '+' : '';
+                
+                var stockItem = document.createElement('div');
+                stockItem.className = 'bg-white rounded-xl p-4 card-shadow asset-category asset-stock cursor-pointer stock-item';
+                stockItem.onclick = function() { openTradingModal(stock, 'stock'); };
+                
+                stockItem.innerHTML = 
+                    '<div class="flex justify-between items-center">' +
+                    '<div><p class="font-semibold">' + stock.name + '</p>' +
+                    '<p class="text-sm text-gray-500">' + stock.code + '</p></div>' +
+                    '<div class="text-right"><p class="font-bold">₩' + Math.floor(stock.price).toLocaleString() + '</p>' +
+                    '<p class="text-sm ' + changeClass + '">' + changeSymbol + stock.changePercent.toFixed(2) + '%</p></div></div>';
+                
+                container.appendChild(stockItem);
+            }
+        });
+        
+        if (container.children.length === 0) {
+            container.innerHTML = '<div class="text-center py-8"><p class="text-gray-500 mb-2">주식 데이터를 불러올 수 없습니다</p><button onclick="loadKoreanStocks()" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm">다시 시도</button></div>';
+        }
+    })
+    .catch(function(error) {
+        console.error('한국 주식 로드 오류:', error);
+        container.innerHTML = '<div class="text-center py-8"><p class="text-red-500 mb-2">데이터 로드 실패</p><button onclick="loadKoreanStocks()" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm">다시 시도</button></div>';
+    });
+}
+
+// 해외 주식 데이터 로드
+function loadForeignStocks() {
+    var container = document.getElementById('foreignStocks');
+    if (!container) return;
+
+    // 주요 해외 주식 종목들
+    var foreignStocks = [
+        { symbol: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ' },
+        { symbol: 'MSFT', name: 'Microsoft Corp.', exchange: 'NASDAQ' },
+        { symbol: 'GOOGL', name: 'Alphabet Inc.', exchange: 'NASDAQ' },
+        { symbol: 'TSLA', name: 'Tesla Inc.', exchange: 'NASDAQ' },
+        { symbol: 'AMZN', name: 'Amazon.com Inc.', exchange: 'NASDAQ' },
+        { symbol: 'NVDA', name: 'NVIDIA Corp.', exchange: 'NASDAQ' },
+        { symbol: 'META', name: 'Meta Platforms Inc.', exchange: 'NASDAQ' },
+        { symbol: 'NFLX', name: 'Netflix Inc.', exchange: 'NASDAQ' }
+    ];
+
+    container.innerHTML = '<div class="text-center py-4"><div class="loading mx-auto mb-4"></div><p class="text-gray-500">해외 주식 데이터 로딩 중...</p></div>';
+
+    Promise.all(foreignStocks.map(function(stock) {
+        return fetch('https://query1.finance.yahoo.com/v8/finance/chart/' + stock.symbol)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data && data.chart && data.chart.result && data.chart.result[0]) {
+                    var result = data.chart.result[0];
+                    var meta = result.meta;
+                    return {
+                        ...stock,
+                        price: meta.regularMarketPrice,
+                        change: meta.regularMarketPrice - meta.previousClose,
+                        changePercent: ((meta.regularMarketPrice - meta.previousClose) / meta.previousClose) * 100
+                    };
+                }
+                // API 실패시 임시 데이터
+                return {
+                    ...stock,
+                    price: Math.floor(Math.random() * 500) + 50,
+                    change: (Math.random() - 0.5) * 20,
+                    changePercent: (Math.random() - 0.5) * 10
+                };
+            })
+            .catch(function() {
+                return {
+                    ...stock,
+                    price: Math.floor(Math.random() * 500) + 50,
+                    change: (Math.random() - 0.5) * 20,
+                    changePercent: (Math.random() - 0.5) * 10
+                };
+            });
+    }))
+    .then(function(results) {
+        container.innerHTML = '';
+        
+        results.forEach(function(stock) {
+            if (stock && stock.price) {
+                var changeClass = stock.change >= 0 ? 'text-red-600' : 'text-blue-600';
+                var changeSymbol = stock.change >= 0 ? '+' : '';
+                
+                var stockItem = document.createElement('div');
+                stockItem.className = 'bg-white rounded-xl p-4 card-shadow asset-category asset-stock cursor-pointer stock-item';
+                stockItem.onclick = function() { openTradingModal(stock, 'stock'); };
+                
+                stockItem.innerHTML = 
+                    '<div class="flex justify-between items-center">' +
+                    '<div><p class="font-semibold">' + stock.name + '</p>' +
+                    '<p class="text-sm text-gray-500">' + stock.symbol + ' (' + stock.exchange + ')</p></div>' +
+                    '<div class="text-right"><p class="font-bold">$' + stock.price.toFixed(2) + '</p>' +
+                    '<p class="text-sm ' + changeClass + '">' + changeSymbol + stock.changePercent.toFixed(2) + '%</p></div></div>';
+                
+                container.appendChild(stockItem);
+            }
+        });
+    })
+    .catch(function(error) {
+        console.error('해외 주식 로드 오류:', error);
+        container.innerHTML = '<div class="text-center py-8"><p class="text-red-500 mb-2">데이터 로드 실패</p><button onclick="loadForeignStocks()" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm">다시 시도</button></div>';
+    });
+}
+
+// 암호화폐 데이터 로드
+function loadRealCryptoData() {
+    var container = document.getElementById('cryptoList');
+    if (!container) return;
+
+    try {
+        fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1')
+            .then(function(response) { return response.json(); })
+            .then(function(cryptoData) {
+                container.innerHTML = '';
+                
+                cryptoData.forEach(function(crypto) {
+                    var changeClass = crypto.price_change_percentage_24h >= 0 ? 'text-red-600' : 'text-blue-600';
+                    var changeSymbol = crypto.price_change_percentage_24h >= 0 ? '+' : '';
+                    
+                    var cryptoItem = document.createElement('div');
+                    cryptoItem.className = 'bg-white rounded-xl p-4 card-shadow asset-category asset-crypto cursor-pointer stock-item';
+                    cryptoItem.onclick = function() { openTradingModal(crypto, 'crypto'); };
+                    
+                    cryptoItem.innerHTML = 
+                        '<div class="flex justify-between items-center">' +
+                        '<div class="flex items-center space-x-3">' +
+                        '<img src="' + crypto.image + '" alt="' + crypto.name + '" class="w-10 h-10 rounded-full">' +
+                        '<div><p class="font-semibold">' + crypto.name + '</p>' +
+                        '<p class="text-sm text-gray-500">' + crypto.symbol.toUpperCase() + '</p></div></div>' +
+                        '<div class="text-right"><p class="font-bold">$' + crypto.current_price.toLocaleString() + '</p>' +
+                        '<p class="text-sm ' + changeClass + '">' + changeSymbol + (crypto.price_change_percentage_24h || 0).toFixed(2) + '%</p></div></div>';
+                    
+                    container.appendChild(cryptoItem);
+                });
+            })
+            .catch(function(error) {
+                console.error('암호화폐 데이터 로드 오류:', error);
+                container.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-circle text-4xl mb-4"></i><p class="mb-2">데이터를 불러올 수 없습니다</p><button onclick="loadRealCryptoData()" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm">다시 시도</button></div>';
+            });
+    } catch (error) {
+        console.error('암호화폐 로드 함수 오류:', error);
+    }
+}
+
+// 채권 데이터 로드
+function loadBondData() {
+    var container = document.getElementById('bondList');
+    if (!container) return;
+
+    // 임시 채권 데이터
+    var bondData = [
+        { name: '국고채권 3년', rate: '3.25%', maturity: '2027-01-15', risk: '낮음' },
+        { name: '국고채권 5년', rate: '3.45%', maturity: '2029-01-15', risk: '낮음' },
+        { name: '국고채권 10년', rate: '3.65%', maturity: '2034-01-15', risk: '낮음' },
+        { name: '회사채 AA- 3년', rate: '4.15%', maturity: '2027-03-20', risk: '보통' },
+        { name: '회사채 A+ 5년', rate: '4.75%', maturity: '2029-03-20', risk: '보통' }
+    ];
+
+    container.innerHTML = '';
+    
+    bondData.forEach(function(bond) {
+        var riskClass = bond.risk === '낮음' ? 'text-green-600' : 'text-yellow-600';
+        
+        var bondItem = document.createElement('div');
+        bondItem.className = 'bg-white rounded-xl p-4 card-shadow asset-category asset-bond cursor-pointer stock-item';
+        bondItem.onclick = function() { openTradingModal(bond, 'bond'); };
+        
+        bondItem.innerHTML = 
+            '<div class="flex justify-between items-center">' +
+            '<div><p class="font-semibold">' + bond.name + '</p>' +
+            '<p class="text-sm text-gray-500">만기: ' + bond.maturity + '</p></div>' +
+            '<div class="text-right"><p class="font-bold">' + bond.rate + '</p>' +
+            '<p class="text-sm ' + riskClass + '">위험도: ' + bond.risk + '</p></div></div>';
+        
+        container.appendChild(bondItem);
+    });
+}
+
+// 예적금 데이터 로드
+function loadDepositData() {
+    var container = document.getElementById('depositProducts');
+    if (!container) return;
+
+    // 임시 예적금 데이터
+    var depositData = [
+        { name: 'KB국민은행 정기예금', rate: '3.50%', period: '12개월', bank: 'KB국민은행' },
+        { name: '신한은행 적금', rate: '3.80%', period: '24개월', bank: '신한은행' },
+        { name: '하나은행 정기예금', rate: '3.45%', period: '6개월', bank: '하나은행' },
+        { name: '우리은행 적금', rate: '3.75%', period: '36개월', bank: '우리은행' },
+        { name: 'NH농협은행 정기예금', rate: '3.60%', period: '12개월', bank: 'NH농협은행' }
+    ];
+
+    container.innerHTML = '';
+    
+    depositData.forEach(function(product) {
+        var productItem = document.createElement('div');
+        productItem.className = 'bg-white rounded-xl p-4 card-shadow asset-category asset-deposit cursor-pointer stock-item';
+        productItem.onclick = function() { openTradingModal(product, 'deposit'); };
+        
+        productItem.innerHTML = 
+            '<div class="flex justify-between items-center">' +
+            '<div><p class="font-semibold">' + product.name + '</p>' +
+            '<p class="text-sm text-gray-500">' + product.bank + ' · ' + product.period + '</p></div>' +
+            '<div class="text-right"><p class="font-bold text-blue-600">' + product.rate + '</p>' +
+            '<p class="text-sm text-gray-500">연 이자율</p></div></div>';
+        
+        container.appendChild(productItem);
+    });
+}
+
+// ETF 데이터 로드
+function loadETFData() {
+    var container = document.getElementById('etfList');
+    if (!container) return;
+
+    // 임시 ETF 데이터
+    var etfData = [
+        { name: 'KODEX 200', code: '069500', price: 42500, change: 1.2, nav: 42480 },
+        { name: 'TIGER 미국S&P500', code: '360750', price: 15800, change: -0.5, nav: 15790 },
+        { name: 'KODEX 코스닥150', code: '229200', price: 12400, change: 2.1, nav: 12395 },
+        { name: 'TIGER 중국CSI300', code: '307950', price: 8950, change: -1.8, nav: 8940 },
+        { name: 'KODEX 금선물(H)', code: '132030', price: 6780, change: 0.8, nav: 6775 }
+    ];
+
+    container.innerHTML = '';
+    
+    etfData.forEach(function(etf) {
+        var changeClass = etf.change >= 0 ? 'text-red-600' : 'text-blue-600';
+        var changeSymbol = etf.change >= 0 ? '+' : '';
+        
+        var etfItem = document.createElement('div');
+        etfItem.className = 'bg-white rounded-xl p-4 card-shadow asset-category asset-etf cursor-pointer stock-item';
+        etfItem.onclick = function() { openTradingModal(etf, 'etf'); };
+        
+        etfItem.innerHTML = 
+            '<div class="flex justify-between items-center">' +
+            '<div><p class="font-semibold">' + etf.name + '</p>' +
+            '<p class="text-sm text-gray-500">' + etf.code + ' · NAV: ' + etf.nav.toLocaleString() + '</p></div>' +
+            '<div class="text-right"><p class="font-bold">₩' + etf.price.toLocaleString() + '</p>' +
+            '<p class="text-sm ' + changeClass + '">' + changeSymbol + etf.change.toFixed(2) + '%</p></div></div>';
+        
+        container.appendChild(etfItem);
+    });
+}
+
+// 귀금속 데이터 로드
+function loadCommodityData() {
+    var container = document.getElementById('commodityList');
+    if (!container) return;
+
+    // 임시 귀금속 데이터
+    var commodityData = [
+        { name: '금 (Gold)', unit: '1g', price: 82500, change: 0.8, symbol: 'XAU' },
+        { name: '은 (Silver)', unit: '1g', price: 1050, change: -1.2, symbol: 'XAG' },
+        { name: '백금 (Platinum)', unit: '1g', price: 38900, change: 0.3, symbol: 'XPT' },
+        { name: '팔라듐 (Palladium)', unit: '1g', price: 45600, change: -2.1, symbol: 'XPD' }
+    ];
+
+    container.innerHTML = '';
+    
+    commodityData.forEach(function(commodity) {
+        var changeClass = commodity.change >= 0 ? 'text-red-600' : 'text-blue-600';
+        var changeSymbol = commodity.change >= 0 ? '+' : '';
+        
+        var commodityItem = document.createElement('div');
+        commodityItem.className = 'bg-white rounded-xl p-4 card-shadow asset-category asset-commodity cursor-pointer stock-item';
+        commodityItem.onclick = function() { openTradingModal(commodity, 'commodity'); };
+        
+        commodityItem.innerHTML = 
+            '<div class="flex justify-between items-center">' +
+            '<div><p class="font-semibold">' + commodity.name + '</p>' +
+            '<p class="text-sm text-gray-500">' + commodity.symbol + ' · ' + commodity.unit + '</p></div>' +
+            '<div class="text-right"><p class="font-bold">₩' + commodity.price.toLocaleString() + '</p>' +
+            '<p class="text-sm ' + changeClass + '">' + changeSymbol + commodity.change.toFixed(2) + '%</p></div></div>';
+        
+        container.appendChild(commodityItem);
+    });
+}
+
+// 트레이딩 모달 열기
+function openTradingModal(asset, type) {
+    try {
+        currentTradingAsset = Object.assign({}, asset);
+        currentTradingAsset.type = type;
+        
+        var modal = document.getElementById('tradingModal');
+        var assetName = document.getElementById('tradingAssetName');
+        var currentPrice = document.getElementById('tradingCurrentPrice');
+        var priceChange = document.getElementById('tradingPriceChange');
+        
+        if (modal && assetName && currentPrice && priceChange) {
+            assetName.textContent = asset.name || asset.id;
+            
+            var price = asset.current_price || asset.price || 50000;
+            var change = asset.price_change_percentage_24h || asset.changePercent || asset.change || 0;
+            var priceSymbol = (type === 'stock' && price > 1000) || type === 'bond' || type === 'deposit' || type === 'etf' || type === 'commodity' ? '₩' : '$';
+            
+            currentPrice.textContent = priceSymbol + (typeof price === 'string' ? price : price.toLocaleString());
+            
+            var changeClass = change >= 0 ? 'text-red-600' : 'text-blue-600';
+            var changeSymbol = change >= 0 ? '+' : '';
+            priceChange.textContent = changeSymbol + (typeof change === 'string' ? change : change.toFixed(2) + '%');
+            priceChange.className = 'text-sm ' + changeClass;
+            
+            modal.classList.add('show');
+            
+            createTradingChart(asset, type);
+            
+            var quantityInput = document.getElementById('tradingQuantity');
+            if (quantityInput) {
+                quantityInput.addEventListener('input', updateTotalAmount);
+                quantityInput.value = '1';
+                updateTotalAmount();
+            }
+        }
+    } catch (error) {
+        console.error('트레이딩 모달 오류:', error);
+        alert('거래 화면을 불러올 수 없습니다.');
+    }
+}
+
+// 트레이딩 모달 닫기
+function closeTradingModal() {
+    try {
+        var modal = document.getElementById('tradingModal');
+        if (modal) {
+            modal.classList.remove('show');
+        }
+        
+        if (tradingChart) {
+            tradingChart.destroy();
+            tradingChart = null;
+        }
+        
+        currentTradingAsset = null;
+    } catch (error) {
+        console.error('트레이딩 모달 닫기 오류:', error);
+    }
+}
+
+// 트레이딩 차트 생성
+function createTradingChart(asset, type) {
+    try {
+        var canvas = document.getElementById('tradingChart');
+        if (!canvas) return;
+        
+        if (tradingChart) {
+            tradingChart.destroy();
+        }
+        
+        var ctx = canvas.getContext('2d');
+        
+        var basePrice = asset.current_price || asset.price || 50000;
+        var chartData = [];
+        var labels = [];
+        
+        for (var i = 29; i >= 0; i--) {
+            var variation = (Math.random() - 0.5) * 0.1;
+            var price = basePrice * (1 + variation);
+            chartData.push(price);
+            
+            var date = new Date();
+            date.setDate(date.getDate() - i);
+            labels.push(date.toLocaleDateString());
+        }
+        
+        tradingChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: chartData,
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        display: false
+                    },
+                    y: {
+                        display: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 0
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('차트 생성 오류:', error);
+    }
+}
+
+// 총액 업데이트
+function updateTotalAmount() {
+    try {
+        var quantityInput = document.getElementById('tradingQuantity');
+        var totalAmountElement = document.getElementById('tradingTotalAmount');
+        
+        if (quantityInput && totalAmountElement && currentTradingAsset) {
+            var quantity = parseFloat(quantityInput.value) || 0;
+            var price = currentTradingAsset.current_price || currentTradingAsset.price || 50000;
+            var total = quantity * price;
+            var priceSymbol = (currentTradingAsset.type === 'stock' && price > 1000) || currentTradingAsset.type === 'bond' || currentTradingAsset.type === 'deposit' || currentTradingAsset.type === 'etf' || currentTradingAsset.type === 'commodity' ? '₩' : '$';
+            
+            totalAmountElement.textContent = priceSymbol + total.toLocaleString();
+        }
+    } catch (error) {
+        console.error('총액 업데이트 오류:', error);
+    }
+}
+
+// 거래 실행
+function executeTrade(action) {
+    try {
+        if (!currentTradingAsset) return;
+        
+        var quantityInput = document.getElementById('tradingQuantity');
+        var quantity = parseFloat(quantityInput.value) || 0;
+        
+        if (quantity <= 0) {
+            alert('유효한 수량을 입력해주세요.');
+            return;
+        }
+        
+        var price = currentTradingAsset.current_price || currentTradingAsset.price || 50000;
+        var totalCost = quantity * price;
+        
+        if (action === 'buy') {
+            alert(currentTradingAsset.name + ' ' + quantity + '개를 매수했습니다!');
+        } else if (action === 'sell') {
+            alert(currentTradingAsset.name + ' ' + quantity + '개를 매도했습니다!');
+        }
+        
+        closeTradingModal();
+        
+    } catch (error) {
+        console.error('거래 실행 오류:', error);
+        alert('거래 중 오류가 발생했습니다.');
+    }
+}
+
+// 투자 메뉴 토글
+function toggleInvestmentMenu() {
+    try {
+        var menu = document.getElementById('investmentMenu');
+        if (menu) {
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+            } else {
+                menu.classList.add('show');
+            }
+        }
+    } catch (error) {
+        console.error('투자 메뉴 토글 오류:', error);
+    }
+}
+
+// 투자 메뉴 숨기기
+function hideInvestmentMenu() {
+    try {
+        var menu = document.getElementById('investmentMenu');
+        if (menu) {
+            menu.classList.remove('show');
+        }
+    } catch (error) {
+        console.error('투자 메뉴 숨기기 오류:', error);
+    }
+}
+
+// 새로고침 함수들
+function refreshStockData() {
+    loadKoreanStocks();
+    loadForeignStocks();
+}
+
+function refreshCryptoData() {
+    loadRealCryptoData();
+}
+
+function refreshBondData() {
+    loadBondData();
+}
+
+function refreshDepositData() {
+    loadDepositData();
+}
+
+function refreshETFData() {
+    loadETFData();
+}
+
+function refreshCommodityData() {
+    loadCommodityData();
+}
+
+function searchStocks() {
+    // 검색 기능 구현
+}
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        console.log('투자 페이지 로드 완료');
+        
+        // 사용자 데이터 로드
+        var userData = localStorage.getItem('currentUser');
+        if (userData) {
+            currentUser = JSON.parse(userData);
+            userLevel = currentUser.level || 'yellow';
+            userExp = currentUser.exp || 0;
+            
+            // 레벨 뱃지 업데이트
+            var levelBadge = document.getElementById('navLevelBadge');
+            if (levelBadge && levelSystem[userLevel]) {
+                levelBadge.className = 'level-badge-nav ' + levelSystem[userLevel].class;
+                levelBadge.textContent = levelSystem[userLevel].name;
+            }
+        }
+        
+        // 초기 데이터 로드
+        loadKoreanStocks();
+        loadForeignStocks();
+        
+        // 모달 외부 클릭 이벤트
+        var tradingModal = document.getElementById('tradingModal');
+        if (tradingModal) {
+            tradingModal.addEventListener('click', function(e) {
+                if (e.target === tradingModal) {
+                    closeTradingModal();
+                }
+            });
+        }
+        
+        // 투자 메뉴 외부 클릭시 숨기기
+        document.addEventListener('click', function(e) {
+            var menu = document.getElementById('investmentMenu');
+            var levelBadge = document.getElementById('navLevelBadge');
+            
+            if (menu && menu.classList.contains('show') && !menu.contains(e.target) && !levelBadge.contains(e.target)) {
+                hideInvestmentMenu();
+            }
+        });
+        
+        console.log('투자 페이지 초기화 완료');
+    } catch (error) {
+        console.error('초기화 오류:', error);
+    }
+});
+</script>
+
+</body>
+</html>
+
