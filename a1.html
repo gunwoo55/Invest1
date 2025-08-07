@@ -1256,7 +1256,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('투자 페이지 로드 완료');
         
         // 사용자 데이터 로드
-        var userData = localStorage.getItem('currentUser');
+        var userData = localStorage.getItem('fineu_current_user');
         if (userData) {
             currentUser = JSON.parse(userData);
             userLevel = currentUser.level || 'yellow';

@@ -588,7 +588,7 @@ function performLogin() {
             return;
         }
         
-        showMainScreen(userIdValue);
+        showMainScreen(userIdValue, passwordValue);
     } catch (error) {
         console.error('로그인 오류:', error);
         alert('로그인 중 오류가 발생했습니다.');
@@ -596,10 +596,10 @@ function performLogin() {
 }
 
 // 메인 화면 표시
-function showMainScreen(userId) {
+function showMainScreen(userId, password) {
     try {
         if (userId) {
-            setupUser(userId);
+            setupUser(userId, password);
         }
         
         var loginScreen = document.getElementById('loginScreen');
@@ -620,12 +620,18 @@ function showMainScreen(userId) {
 }
 
 // 사용자 초기화
-function setupUser(userId) {
+function setupUser(userId, password) {
     try {
+        // test/test 로그인 시 black 레벨로 시작 (새 로그인일 때만)
+        var defaultLevel = 'yellow';
+        if (userId === 'test' && password === 'test') {
+            defaultLevel = 'black';
+        }
+        
         currentUser = {
             id: userId,
             name: userId,
-            level: 'yellow',
+            level: defaultLevel,
             exp: 0,
             assets: {},
             totalAssets: 10000000,
@@ -637,11 +643,21 @@ function setupUser(userId) {
         if (savedData) {
             var userData = JSON.parse(savedData);
             currentUser = Object.assign(currentUser, userData);
-            userLevel = currentUser.level || 'yellow';
+            // test/test의 경우 새 로그인일 때만 black 레벨로 강제 설정
+            if (userId === 'test' && password === 'test') {
+                currentUser.level = 'black';
+            }
+            userLevel = currentUser.level || defaultLevel;
             userExp = currentUser.exp || 0;
             totalAssets = currentUser.totalAssets || 10000000;
             cash = currentUser.cash || 10000000;
             userAssets = currentUser.assets || {};
+        } else {
+            userLevel = currentUser.level;
+            userExp = currentUser.exp;
+            totalAssets = currentUser.totalAssets;
+            cash = currentUser.cash;
+            userAssets = currentUser.assets;
         }
         
         // 현재 사용자 저장
