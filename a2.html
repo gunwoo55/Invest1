@@ -39,18 +39,59 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 800;
             color: white;
-            font-size: 12px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-size: 11px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.7);
             position: absolute;
-            top: -8px;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25), 0 4px 8px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -2px 0 rgba(0,0,0,0.25);
             z-index: 10;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+            border: 2px solid rgba(255,255,255,0.25);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.4px;
+            backdrop-filter: blur(4px);
         }
         .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
+        .level-orange { background: linear-gradient(135deg, #FDBA74, #EA580C); }
+        .level-green { background: linear-gradient(135deg, #6EE7B7, #059669); }
+        .level-blue { background: linear-gradient(135deg, #93C5FD, #2563EB); }
+        .level-brown { background: linear-gradient(135deg, #D6D3D1, #78716C); }
+        .level-black { background: linear-gradient(135deg, #6B7280, #1F2937); }
+        .level-red { background: linear-gradient(135deg, #FCA5A5, #DC2626); }
+        .level-badge-nav::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.35) 40deg, rgba(255,255,255,0) 80deg);
+            animation: badgeShimmer 6s linear infinite;
+            pointer-events: none;
+        }
+        .level-badge-nav::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 18% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
+                radial-gradient(circle at 72% 24%, rgba(255,255,255,0.7) 0 2px, transparent 3px),
+                radial-gradient(circle at 38% 72%, rgba(255,255,255,0.85) 0 2px, transparent 3px),
+                radial-gradient(circle at 80% 66%, rgba(255,255,255,0.55) 0 2px, transparent 3px);
+            mix-blend-mode: screen;
+            animation: sparkleTwinkle 4s linear infinite;
+            pointer-events: none;
+        }
+        .level-badge-nav:hover { transform: translateX(-50%) scale(1.1) rotate(5deg); }
+        .level-badge-nav:active { transform: translateX(-50%) scale(0.95); }
+        @keyframes badgeShimmer { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes sparkleTwinkle { 0% { opacity:.6; transform:translateY(0) scale(1); filter:blur(0);} 25% { opacity:1; transform:translateY(-1px) scale(1.05);} 50% { opacity:.4; transform:translateY(1px) scale(.95); filter:blur(.3px);} 75% { opacity:.9; transform:translateY(-1px) scale(1.08);} 100% { opacity:.6; transform:translateY(0) scale(1); filter:blur(0);} }
 
         .bottom-navigation {
             position: fixed;
@@ -1120,6 +1161,24 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('뉴스 페이지 로드 완료');
     // 콘텐츠 자동 업데이트 확인
     updateAllContentIfStale();
+    // 레벨 배지 등급 색/텍스트 동기화
+    if (window.levelManager && window.levelManager.currentUser) {
+        window.levelManager.updateLevelDisplay();
+    } else {
+        // 레거시: localStorage에서 fineu_current_user 조회
+        try {
+            var saved = localStorage.getItem('fineu_current_user');
+            if (saved) {
+                var u = JSON.parse(saved);
+                var levelKey = u.level || 'yellow';
+                var badge = document.querySelector('.level-badge-nav');
+                if (badge) {
+                    badge.className = 'level-badge-nav level-' + levelKey;
+                    badge.textContent = (levelKey||'YELLOW').toUpperCase();
+                }
+            }
+        } catch(e) { console.warn('레거시 레벨 반영 실패', e); }
+    }
 });
 </script>
 

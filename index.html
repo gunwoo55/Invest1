@@ -60,8 +60,8 @@
         
         .level-badge-profile {
             display: inline-block;
-            padding: 8px 20px;
-            border-radius: 12px; /* 둥근 모서리 네모 스타일 */
+            padding: 10px 24px; /* 조금 더 큼직하게 */
+            border-radius: 18px; /* 더 둥근 사각형 */
             font-size: 12px;
             font-weight: 700;
             color: white;
@@ -77,17 +77,26 @@
             border: 2px solid rgba(255,255,255,0.2);
             min-width: 80px;
             text-align: center;
+            backdrop-filter: blur(3px);
         }
 
+        /* 프로필 배지 내부 광택 (수평 스윕) */
         .level-badge-profile::before {
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
-            width: 100%;
+            left: -120%;
+            width: 120%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.6s;
+            background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.35) 45%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.35) 55%, transparent 100%);
+            animation: profileShine 5s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes profileShine {
+            0% { left: -120%; }
+            60% { left: 120%; }
+            100% { left: 120%; }
         }
 
         .level-badge-profile:hover {
@@ -98,8 +107,29 @@
                 inset 0 -1px 0 rgba(0,0,0,0.3);
         }
 
-        .level-badge-profile:hover::before {
-            left: 100%;
+        .level-badge-profile:hover::before { filter: brightness(1.1); }
+
+        /* 공통 반짝이 (sparkle) 효과: 등급 색 위에 작은 별/입자 깜빡임 */
+        .level-badge-profile::after, .level-badge-nav::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
+                radial-gradient(circle at 70% 25%, rgba(255,255,255,0.7) 0 2px, transparent 3px),
+                radial-gradient(circle at 35% 70%, rgba(255,255,255,0.85) 0 2px, transparent 3px),
+                radial-gradient(circle at 80% 65%, rgba(255,255,255,0.6) 0 2px, transparent 3px);
+            mix-blend-mode: screen;
+            animation: sparkleTwinkle 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes sparkleTwinkle {
+            0% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
+            25% { opacity: 1; transform: translateY(-1px) scale(1.05); }
+            50% { opacity: 0.4; transform: translateY(1px) scale(0.95); filter: blur(0.3px); }
+            75% { opacity: 0.9; transform: translateY(-1px) scale(1.08); }
+            100% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
         }
         
         .level-badge-nav {
@@ -125,6 +155,7 @@
             position: relative;
             overflow: hidden;
             letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
         }
 
         .level-badge-nav::before {
@@ -134,8 +165,9 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: badgeShimmer 3s infinite;
+            background: conic-gradient(from 0deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.35) 40deg, rgba(255,255,255,0) 80deg);
+            animation: badgeShimmer 6s linear infinite;
+            pointer-events: none;
         }
 
         .level-badge-nav:hover {
@@ -148,8 +180,8 @@
         }
 
         @keyframes badgeShimmer {
-            0% { transform: rotate(0deg) translateY(-100%); }
-            100% { transform: rotate(360deg) translateY(-100%); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         /* Enhanced metallic level colors with depth and shine */
