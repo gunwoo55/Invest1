@@ -663,6 +663,11 @@ function updateDisplay() {
             userNameElement.textContent = currentUser.name;
         }
         
+        // 프로필 이미지 업데이트
+        if (currentUser.profileImage) {
+            updateProfileImages(currentUser.profileImage);
+        }
+        
         // 레벨 업데이트
         updateLevelDisplay();
         
@@ -924,7 +929,82 @@ function uploadProfileImage() {
 }
 
 function handleImageUpload(event) {
-    // 이미지 업로드 처리 로직
+    try {
+        var file = event.target.files[0];
+        if (!file) return;
+        
+        // 파일 타입 확인
+        if (!file.type.startsWith('image/')) {
+            alert('이미지 파일만 업로드 가능합니다.');
+            return;
+        }
+        
+        // 파일 크기 확인 (5MB 제한)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('파일 크기는 5MB 이하여야 합니다.');
+            return;
+        }
+        
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var imageData = e.target.result;
+            
+            // 프로필 이미지 업데이트
+            updateProfileImages(imageData);
+            
+            // 사용자 데이터에 이미지 저장
+            if (currentUser) {
+                currentUser.profileImage = imageData;
+                localStorage.setItem('user_' + currentUser.id, JSON.stringify(currentUser));
+                localStorage.setItem('fineu_current_user', JSON.stringify(currentUser));
+            }
+            
+            alert('프로필 사진이 성공적으로 업데이트되었습니다!');
+        };
+        
+        reader.onerror = function() {
+            alert('이미지 읽기 중 오류가 발생했습니다.');
+        };
+        
+        reader.readAsDataURL(file);
+        
+    } catch (error) {
+        console.error('이미지 업로드 오류:', error);
+        alert('이미지 업로드 중 오류가 발생했습니다.');
+    }
+}
+
+// 프로필 이미지 업데이트 함수
+function updateProfileImages(imageData) {
+    try {
+        // 메인 프로필 이미지들 업데이트
+        var profileImages = [
+            document.getElementById('profileImage'),
+            document.getElementById('headerProfileImage'),
+            document.getElementById('modalProfileImage')
+        ];
+        
+        var placeholders = [
+            document.getElementById('profilePlaceholder'),
+            document.getElementById('headerProfileIcon'),
+            document.getElementById('modalProfilePlaceholder')
+        ];
+        
+        profileImages.forEach(function(img, index) {
+            if (img) {
+                img.src = imageData;
+                img.classList.remove('hidden');
+                
+                // 해당 플레이스홀더 숨기기
+                if (placeholders[index]) {
+                    placeholders[index].style.display = 'none';
+                }
+            }
+        });
+        
+    } catch (error) {
+        console.error('프로필 이미지 업데이트 오류:', error);
+    }
 }
 
 function showRegisterModal() {
