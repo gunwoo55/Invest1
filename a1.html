@@ -490,11 +490,11 @@
 <!-- 하단 네비게이션 -->
 <div class="bottom-navigation">
     <div class="nav-container">
-        <button onclick="goToMainPage()" class="nav-item">
+        <button onclick="navigateToPage('index.html')" class="nav-item">
             <i class="fas fa-home text-gray-400"></i>
             <span class="text-gray-400">홈</span>
         </button>
-        <button onclick="goToNewsPage()" class="nav-item">
+        <button onclick="navigateToPage('a2.html')" class="nav-item">
             <i class="fas fa-newspaper text-gray-400"></i>
             <span class="text-gray-400">뉴스</span>
         </button>
@@ -503,11 +503,11 @@
                 YELLOW
             </div>
         </div>
-        <button onclick="goToGamePage()" class="nav-item">
+        <button onclick="navigateToPage('a4.html')" class="nav-item">
             <i class="fas fa-gamepad text-gray-400"></i>
             <span class="text-gray-400">게임</span>
         </button>
-        <button onclick="goToMorePage()" class="nav-item">
+        <button onclick="navigateToPage('a3.html')" class="nav-item">
             <i class="fas fa-ellipsis-h text-gray-400"></i>
             <span class="text-gray-400">더보기</span>
         </button>
@@ -596,14 +596,6 @@ var cash = 10000000;
 var currentTradingAsset = null;
 var tradingChart = null;
 
-// API 키 설정
-var API_KEYS = {
-    ALPHA_VANTAGE: 'ABCDEFGHIJ123456',
-    NEWS_API: '2b4b509767814a05ab2cc4e8cd2c1234',
-    FRED_API: '1234567890abcdefghijklmnopqrstuv',
-    GEMINI_AI: 'AIzaSyD1234567890abcdefghijklmnopqrstuvwxyz'
-};
-
 // 레벨 시스템 설정
 var levelSystem = {
     yellow: { name: 'YELLOW', exp: 0, max: 3000, class: 'level-yellow' },
@@ -612,24 +604,52 @@ var levelSystem = {
     blue: { name: 'BLUE', exp: 10000, max: 15000, class: 'level-blue' },
     brown: { name: 'BROWN', exp: 15000, max: 25000, class: 'level-brown' },
     black: { name: 'BLACK', exp: 25000, max: 50000, class: 'level-black' },
+    blackplus: { name: 'BLACK+', exp: 25000, max: 50000, class: 'level-black' },
     red: { name: 'RED', exp: 50000, max: 100000, class: 'level-red' }
 };
 
-// 페이지 이동 함수들
+// API 키 설정
+var API_KEYS = {
+    ALPHA_VANTAGE: 'ABCDEFGHIJ123456',
+    NEWS_API: '2b4b509767814a05ab2cc4e8cd2c1234',
+    FRED_API: '1234567890abcdefghijklmnopqrstuv',
+    GEMINI_AI: 'AIzaSyD1234567890abcdefghijklmnopqrstuvwxyz'
+};
+
+// 페이지 이동 함수들 (캐시 무력화 적용)
+function navigateToPage(page) {
+    try {
+        // 현재 시간을 이용한 캐시 버스터
+        var cacheBuster = '?v=' + new Date().getTime();
+        var currentHost = window.location.origin;
+        var targetUrl = currentHost + '/' + page + cacheBuster;
+        
+        // 사용자 데이터 저장
+        saveUserData();
+        
+        // 페이지 이동
+        window.location.href = targetUrl;
+    } catch (error) {
+        console.error('페이지 이동 오류:', error);
+        // 오류 시 기본 이동
+        window.location.href = page;
+    }
+}
+
 function goToMainPage() {
-    window.location.href = 'index.html';
+    navigateToPage('index.html');
 }
 
 function goToNewsPage() {
-    window.location.href = 'a2.html';
+    navigateToPage('a2.html');
 }
 
 function goToGamePage() {
-    window.location.href = 'a2.html';
+    navigateToPage('a4.html');
 }
 
 function goToMorePage() {
-    window.location.href = 'a3.html';
+    navigateToPage('a3.html');
 }
 
 // 화면 전환
@@ -1176,19 +1196,193 @@ function executeTrade(action) {
         }
         
         var price = currentTradingAsset.current_price || currentTradingAsset.price || 50000;
+        if (typeof price === 'string') {
+            price = parseFloat(price.replace(/[^\d.]/g, '')) || 50000;
+        }
+        
         var totalCost = quantity * price;
+        var assetId = currentTradingAsset.id || currentTradingAsset.symbol || currentTradingAsset.name;
+        
+        // 사용자 데이터 로드
+        loadUserData();
         
         if (action === 'buy') {
-            alert(currentTradingAsset.name + ' ' + quantity + '개를 매수했습니다!');
+            // 매수 로직
+            if (cash < totalCost) {
+                alert('보유 현금이 부족합니다.\n필요 금액: ₩' + totalCost.toLocaleString() + '\n보유 현금: ₩' + cash.toLocaleString());
+                return;
+            }
+            
+            // 현금 차감
+            cash -= totalCost;
+            
+            // 자산에 추가
+            if (!userAssets[assetId]) {
+                userAssets[assetId] = {
+                    name: currentTradingAsset.name,
+                    type: currentTradingAsset.type,
+                    quantity: 0,
+                    avgPrice: 0,
+                    totalInvestment: 0
+                };
+            }
+            
+            // 평균 단가 계산
+            var existingInvestment = userAssets[assetId].quantity * userAssets[assetId].avgPrice;
+            var newInvestment = quantity * price;
+            var totalInvestment = existingInvestment + newInvestment;
+            var totalQuantity = userAssets[assetId].quantity + quantity;
+            
+            userAssets[assetId].quantity = totalQuantity;
+            userAssets[assetId].avgPrice = totalInvestment / totalQuantity;
+            userAssets[assetId].totalInvestment = totalInvestment;
+            
+            // 총 자산 업데이트
+            totalAssets = cash + calculatePortfolioValue();
+            
+            // 경험치 추가
+            userExp += Math.floor(totalCost / 100000) * 10; // 10만원당 10 EXP
+            
+            alert('✅ 매수 완료!\n' + 
+                  currentTradingAsset.name + ' ' + quantity + '개\n' +
+                  '매수 금액: ₩' + totalCost.toLocaleString() + '\n' +
+                  '평균 단가: ₩' + userAssets[assetId].avgPrice.toLocaleString() + '\n' +
+                  '보유 수량: ' + userAssets[assetId].quantity + '개\n' +
+                  '잔여 현금: ₩' + cash.toLocaleString());
+            
         } else if (action === 'sell') {
-            alert(currentTradingAsset.name + ' ' + quantity + '개를 매도했습니다!');
+            // 매도 로직
+            if (!userAssets[assetId] || userAssets[assetId].quantity < quantity) {
+                var holdingQuantity = userAssets[assetId] ? userAssets[assetId].quantity : 0;
+                alert('보유 수량이 부족합니다.\n매도 요청: ' + quantity + '개\n보유 수량: ' + holdingQuantity + '개');
+                return;
+            }
+            
+            // 현금 증가
+            cash += totalCost;
+            
+            // 자산에서 차감
+            userAssets[assetId].quantity -= quantity;
+            
+            // 수량이 0이 되면 자산 제거
+            if (userAssets[assetId].quantity <= 0) {
+                delete userAssets[assetId];
+            }
+            
+            // 총 자산 업데이트
+            totalAssets = cash + calculatePortfolioValue();
+            
+            // 경험치 추가
+            userExp += Math.floor(totalCost / 200000) * 5; // 20만원당 5 EXP
+            
+            var profitLoss = (price - (userAssets[assetId] ? userAssets[assetId].avgPrice : price)) * quantity;
+            var profitText = profitLoss >= 0 ? '+₩' + profitLoss.toLocaleString() : '-₩' + Math.abs(profitLoss).toLocaleString();
+            
+            alert('✅ 매도 완료!\n' + 
+                  currentTradingAsset.name + ' ' + quantity + '개\n' +
+                  '매도 금액: ₩' + totalCost.toLocaleString() + '\n' +
+                  '손익: ' + profitText + '\n' +
+                  '보유 현금: ₩' + cash.toLocaleString());
         }
+        
+        // 사용자 데이터 저장
+        saveUserData();
+        
+        // 레벨업 확인
+        checkLevelUp();
         
         closeTradingModal();
         
     } catch (error) {
         console.error('거래 실행 오류:', error);
         alert('거래 중 오류가 발생했습니다.');
+    }
+}
+
+// 포트폴리오 가치 계산
+function calculatePortfolioValue() {
+    var portfolioValue = 0;
+    
+    for (var assetId in userAssets) {
+        var asset = userAssets[assetId];
+        var currentPrice = getCurrentAssetPrice(assetId, asset.type);
+        portfolioValue += asset.quantity * currentPrice;
+    }
+    
+    return portfolioValue;
+}
+
+// 현재 자산 가격 조회
+function getCurrentAssetPrice(assetId, type) {
+    // 실제 구현에서는 현재 시장 가격을 조회
+    // 여기서는 평균 단가 기준으로 ±5% 변동 적용
+    var basePrice = userAssets[assetId] ? userAssets[assetId].avgPrice : 50000;
+    var variation = (Math.random() - 0.5) * 0.1; // ±5% 변동
+    return Math.max(basePrice * (1 + variation), 1000); // 최소 1000원
+}
+
+// 레벨업 확인
+function checkLevelUp() {
+    var levelKeys = Object.keys(levelSystem);
+    var currentLevelIndex = levelKeys.indexOf(userLevel);
+    
+    // 다음 레벨 확인
+    for (var i = currentLevelIndex + 1; i < levelKeys.length; i++) {
+        var nextLevel = levelKeys[i];
+        if (userExp >= levelSystem[nextLevel].exp) {
+            userLevel = nextLevel;
+            
+            // 레벨업 알림
+            alert('🎉 레벨업!\n' + levelSystem[nextLevel].name + ' 등급이 되었습니다!\n' +
+                  '새로운 투자 상품이 해제되었습니다.');
+            
+            // 레벨 뱃지 업데이트
+            updateLevelBadge();
+        }
+    }
+}
+
+// 레벨 뱃지 업데이트
+function updateLevelBadge() {
+    var levelBadge = document.getElementById('navLevelBadge');
+    if (levelBadge && levelSystem[userLevel]) {
+        levelBadge.className = 'level-badge-nav ' + levelSystem[userLevel].class;
+        levelBadge.textContent = levelSystem[userLevel].name;
+    }
+}
+
+// 사용자 데이터 로드
+function loadUserData() {
+    try {
+        var userData = localStorage.getItem('fineu_current_user');
+        if (userData) {
+            currentUser = JSON.parse(userData);
+            userLevel = currentUser.level || 'yellow';
+            userExp = currentUser.exp || 0;
+            totalAssets = currentUser.totalAssets || 10000000;
+            cash = currentUser.cash || 10000000;
+            userAssets = currentUser.assets || {};
+        }
+    } catch (error) {
+        console.error('사용자 데이터 로드 오류:', error);
+    }
+}
+
+// 사용자 데이터 저장
+function saveUserData() {
+    try {
+        if (currentUser) {
+            currentUser.assets = userAssets;
+            currentUser.level = userLevel;
+            currentUser.exp = userExp;
+            currentUser.totalAssets = totalAssets;
+            currentUser.cash = cash;
+            
+            localStorage.setItem('fineu_current_user', JSON.stringify(currentUser));
+            localStorage.setItem('user_' + currentUser.id, JSON.stringify(currentUser));
+        }
+    } catch (error) {
+        console.error('사용자 데이터 저장 오류:', error);
     }
 }
 
@@ -1256,19 +1450,10 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('투자 페이지 로드 완료');
         
         // 사용자 데이터 로드
-        var userData = localStorage.getItem('currentUser');
-        if (userData) {
-            currentUser = JSON.parse(userData);
-            userLevel = currentUser.level || 'yellow';
-            userExp = currentUser.exp || 0;
-            
-            // 레벨 뱃지 업데이트
-            var levelBadge = document.getElementById('navLevelBadge');
-            if (levelBadge && levelSystem[userLevel]) {
-                levelBadge.className = 'level-badge-nav ' + levelSystem[userLevel].class;
-                levelBadge.textContent = levelSystem[userLevel].name;
-            }
-        }
+        loadUserData();
+        
+        // 레벨 뱃지 업데이트
+        updateLevelBadge();
         
         // 초기 데이터 로드
         loadKoreanStocks();
