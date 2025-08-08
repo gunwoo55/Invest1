@@ -60,8 +60,8 @@
         
         .level-badge-profile {
             display: inline-block;
-            padding: 10px 24px; /* 조금 더 큼직하게 */
-            border-radius: 14px; /* 더 둥근 사각형 모양 */
+            padding: 6px 12px; /* 컴팩트하게 축소 */
+            border-radius: 8px; /* 텍스트에 맞는 적당한 둥글기 */
             font-size: 12px;
             font-weight: 700;
             color: white;
@@ -75,7 +75,6 @@
                 inset 0 1px 0 rgba(255,255,255,0.3),
                 inset 0 -1px 0 rgba(0,0,0,0.2);
             border: 2px solid rgba(255,255,255,0.2);
-            min-width: 80px;
             text-align: center;
             backdrop-filter: blur(3px);
         }
@@ -133,25 +132,29 @@
         }
         
         .level-badge-nav {
-            width: 64px;
-            height: 64px;
+            width: 56px; /* 약간 작게 조정하여 더 균형잡힌 모습 */
+            height: 56px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
             color: white;
-            font-size: 11px;
+            font-size: 10px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.7);
             position: absolute;
-            top: -12px;
+            top: -8px; /* 크기 감소에 맞춰 위치 조정 */
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
+            box-shadow: 
+                0 6px 20px rgba(0,0,0,0.25), 
+                0 3px 6px rgba(0,0,0,0.15), 
+                inset 0 2px 0 rgba(255,255,255,0.3), 
+                inset 0 -2px 0 rgba(0,0,0,0.2);
             z-index: 10;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.25);
             position: relative;
             overflow: hidden;
             letter-spacing: 0.3px;
