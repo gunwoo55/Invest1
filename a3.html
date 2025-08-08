@@ -6,13 +6,27 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="cache-buster" content="v2.5.0-20250108160000">
+    <meta name="cache-buster" content="v2.1.0-20241216">
     <title>FINE U - 더보기</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.5.0-20250108160000" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css?v=2.5.0-20250108160000">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.1.0" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     
     <!-- 전역 레벨 관리 시스템 -->
-    <script src="js/levelManager.js?v=2.5.0-20250108160000"></script>
+    <script src="js/levelManager.js"></script>
+    <!-- 개인정보 분리 및 보안 시스템 -->
+    <script src="js/userDataManager.js"></script>
+
+    <script>
+        // Cache busting for local resources
+        (function() {
+            var version = new Date().getTime();
+            var scripts = document.querySelectorAll('script[src^="js/"]');
+            scripts.forEach(function(script) {
+                var src = script.getAttribute('src');
+                script.src = src + '?v=' + version;
+            });
+        })();
+    </script>
     
     <style>
         body {
@@ -42,47 +56,33 @@
             box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
         }
         
-        .level-badge-nav-v2 {
-            width: 54px !important;
-            height: 54px !important;
-            border-radius: 50% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-weight: 800 !important;
-            color: white !important;
-            font-size: 9px !important;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.8) !important;
-            position: absolute !important;
-            top: -6px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            box-shadow: 
-                0 8px 25px rgba(0,0,0,0.3) !important, 
-                0 4px 8px rgba(0,0,0,0.2) !important, 
-                inset 0 3px 0 rgba(255,255,255,0.4) !important, 
-                inset 0 -3px 0 rgba(0,0,0,0.25) !important,
-                0 0 0 2px rgba(255,255,255,0.1) !important;
-            z-index: 10 !important;
-            cursor: pointer !important;
-            transition: all 0.4s cubic-bezier(0.4,0,0.2,1) !important;
-            border: 2px solid rgba(255,255,255,0.3) !important;
-            position: relative !important;
-            overflow: hidden !important;
-            letter-spacing: 0.2px !important;
-            backdrop-filter: blur(6px) !important;
+        .level-badge-nav {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            font-size: 11px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
         }
-        
-        .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
-        .level-orange { background: linear-gradient(135deg, #FDBA74, #EA580C); }
-        .level-green { background: linear-gradient(135deg, #6EE7B7, #059669); }
-        .level-blue { background: linear-gradient(135deg, #93C5FD, #2563EB); }
-        .level-brown { background: linear-gradient(135deg, #D6D3D1, #78716C); }
-        .level-black { background: linear-gradient(135deg, #6B7280, #1F2937); }
-        .level-red { background: linear-gradient(135deg, #FCA5A5, #DC2626); }
 
-        /* 회전 광택 */
-        .level-badge-nav-v2::before {
+        .level-badge-nav::before {
             content: '';
             position: absolute;
             top: -30%;
@@ -101,112 +101,70 @@
             pointer-events: none;
         }
 
-        /* 반짝이 입자 */
-        .level-badge-nav-v2::after {
+        .level-badge-nav:hover {
+            transform: translateX(-50%) scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 6px 12px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.3);
+        }
+
+        .level-badge-nav:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        @keyframes badgeShimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Enhanced metallic level colors with depth and shine */
+        .level-yellow, .level-bronze { 
+            background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 25%, #D97706 50%, #92400E 75%, #F59E0B 100%);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+        }
+        .level-orange, .level-silver { 
+            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #E2E8F0 100%);
+            box-shadow: 0 8px 24px rgba(148, 163, 184, 0.3);
+        }
+        .level-green, .level-gold { 
+            background: linear-gradient(135deg, #FEF3C7 0%, #FCD34D 25%, #F59E0B 50%, #D97706 75%, #FCD34D 100%);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+        }
+        .level-blue, .level-platinum { 
+            background: linear-gradient(135deg, #F0F9FF 0%, #DBEAFE 25%, #93C5FD 50%, #3B82F6 75%, #DBEAFE 100%);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+        .level-brown, .level-diamond { 
+            background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 25%, #5EEAD4 50%, #14B8A6 75%, #CCFBF1 100%);
+            box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3);
+        }
+        .level-black, .level-black-diamond { 
+            background: linear-gradient(135deg, #4B5563 0%, #374151 25%, #1F2937 50%, #111827 75%, #374151 100%);
+            box-shadow: 0 8px 24px rgba(17, 24, 39, 0.5);
+        }
+        .level-red, .level-ruby { 
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 25%, #F87171 50%, #EF4444 75%, #DC2626 100%);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+        }
+
+        .level-badge-nav::after {
             content: '';
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(circle at 20% 25%, rgba(255,255,255,0.8) 0 1px, transparent 2px),
-                radial-gradient(circle at 75% 30%, rgba(255,255,255,0.6) 0 1px, transparent 2px),
-                radial-gradient(circle at 40% 75%, rgba(255,255,255,0.7) 0 1px, transparent 2px);
+                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
+                radial-gradient(circle at 70% 25%, rgba(255,255,255,0.7) 0 2px, transparent 3px),
+                radial-gradient(circle at 35% 70%, rgba(255,255,255,0.85) 0 2px, transparent 3px),
+                radial-gradient(circle at 80% 65%, rgba(255,255,255,0.6) 0 2px, transparent 3px);
             mix-blend-mode: screen;
             animation: sparkleTwinkleCompact 3s ease-in-out infinite;
             pointer-events: none;
         }
 
-        .level-badge-nav-v2:hover { 
-            transform: translateX(-50%) scale(1.08) rotate(3deg) !important;
-            box-shadow: 
-                0 12px 35px rgba(0,0,0,0.35) !important, 
-                0 6px 15px rgba(0,0,0,0.25) !important, 
-                inset 0 3px 0 rgba(255,255,255,0.5) !important, 
-                inset 0 -3px 0 rgba(0,0,0,0.35) !important,
-                0 0 0 3px rgba(255,255,255,0.15) !important,
-                0 0 20px rgba(255,255,255,0.3) !important;
-        }
-        .level-badge-nav-v2:active { transform: translateX(-50%) scale(0.96) !important; }
-
-        /* V4 Badge Styles - Enhanced design with improved compactness and cache busting */
-        .level-badge-profile-v4 {
-            display: inline-block !important;
-            padding: 4px 8px !important; /* Ultra-compact design */
-            border-radius: 50% !important; /* Circular design restored */
-            font-size: 12px !important;
-            font-weight: 700 !important;
-            color: white !important;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.7) !important;
-            position: relative !important;
-            overflow: hidden !important;
-            letter-spacing: 0.3px !important; /* Minimal spacing */
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 
-                0 3px 12px rgba(0,0,0,0.2) !important, 
-                inset 0 1px 0 rgba(255,255,255,0.4) !important,
-                inset 0 -1px 0 rgba(0,0,0,0.25) !important;
-            border: 1px solid rgba(255,255,255,0.3) !important;
-            text-align: center !important;
-            backdrop-filter: blur(2px) !important;
-            line-height: 1.2 !important;
-            white-space: nowrap !important;
-        }
-
-        .level-badge-nav-v4 {
-            width: 54px !important; /* Optimized proportions */
-            height: 54px !important; /* Balanced design */
-            border-radius: 50% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-weight: 800 !important;
-            color: white !important;
-            font-size: 9px !important;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.8) !important;
-            position: absolute !important;
-            top: -6px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            box-shadow: 
-                0 8px 25px rgba(0,0,0,0.3) !important, 
-                0 4px 8px rgba(0,0,0,0.2) !important, 
-                inset 0 3px 0 rgba(255,255,255,0.4) !important, 
-                inset 0 -3px 0 rgba(0,0,0,0.25) !important,
-                0 0 0 2px rgba(255,255,255,0.1) !important;
-            z-index: 10 !important;
-            cursor: pointer !important;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            border: 2px solid rgba(255,255,255,0.3) !important;
-            position: relative !important;
-            overflow: hidden !important;
-            letter-spacing: 0.2px !important;
-            backdrop-filter: blur(6px) !important; /* Premium effect */
-        }
-
-        .level-badge-nav-v4:hover {
-            transform: translateX(-50%) scale(1.08) rotate(3deg) !important;
-            box-shadow: 
-                0 12px 35px rgba(0,0,0,0.35) !important, 
-                0 6px 15px rgba(0,0,0,0.25) !important, 
-                inset 0 3px 0 rgba(255,255,255,0.5) !important, 
-                inset 0 -3px 0 rgba(0,0,0,0.35) !important,
-                0 0 0 3px rgba(255,255,255,0.15) !important,
-                0 0 20px rgba(255,255,255,0.3) !important;
-        }
-
-        .level-badge-nav-v4:active {
-            transform: translateX(-50%) scale(0.96) !important;
-        }
-
-        @keyframes badgeShimmerEnhanced { 
-            0% { transform: rotate(0deg) scale(1); opacity: 0.6; }
-            50% { transform: rotate(180deg) scale(1.05); opacity: 1; }
-            100% { transform: rotate(360deg) scale(1); opacity: 0.6; }
-        }
-        @keyframes sparkleTwinkleCompact {
-            0% { opacity: 0.5; transform: scale(1); }
-            33% { opacity: 1; transform: scale(1.1); }
-            66% { opacity: 0.3; transform: scale(0.9); }
-            100% { opacity: 0.5; transform: scale(1); }
+        @keyframes sparkleTwinkle {
+            0% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
+            25% { opacity: 1; transform: translateY(-1px) scale(1.05); }
+            50% { opacity: 0.4; transform: translateY(1px) scale(0.95); filter: blur(0.3px); }
+            75% { opacity: 0.9; transform: translateY(-1px) scale(1.08); }
+            100% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
         }
         
         .bottom-navigation {
@@ -431,24 +389,24 @@
         <!-- 하단 네비게이션 -->
         <div class="bottom-navigation">
             <div class="nav-container">
-                <button onclick="goToHome()" class="nav-item">
+                <button onclick="navigateToPage('index.html')" class="nav-item">
                     <i class="fas fa-home text-gray-400"></i>
                     <span class="text-gray-400">홈</span>
                 </button>
-                <button onclick="goToNews()" class="nav-item">
+                <button onclick="navigateToPage('a2.html')" class="nav-item">
                     <i class="fas fa-newspaper text-gray-400"></i>
                     <span class="text-gray-400">뉴스</span>
                 </button>
                 <div class="nav-center">
-                    <div onclick="goToGrade()" class="level-badge-nav-v4" style="width: 54px !important; height: 54px !important;">
+                    <div id="navLevelBadge" class="level-badge-nav" onclick="navigateToPage('a5.html')">
                         BRONZE
                     </div>
                 </div>
-                <button onclick="goToGame()" class="nav-item">
+                <button onclick="navigateToPage('a4.html')" class="nav-item">
                     <i class="fas fa-gamepad text-gray-400"></i>
                     <span class="text-gray-400">게임</span>
                 </button>
-                <button onclick="goToMore()" class="nav-item active">
+                <button onclick="showMainScreen()" class="nav-item active">
                     <i class="fas fa-ellipsis-h"></i>
                     <span>더보기</span>
                 </button>
@@ -575,6 +533,68 @@
 
 <script>
 var currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+// 페이지 이동 함수 (캐시 무력화 적용)
+function navigateToPage(page) {
+    try {
+        var cacheBuster = '?v=' + new Date().getTime();
+        var targetUrl = page + cacheBuster;
+        saveUserData();
+        window.location.href = targetUrl;
+    } catch (error) {
+        console.error('페이지 이동 오류:', error);
+        window.location.href = page;
+    }
+}
+
+function showMainScreen() {
+    // a3.html에서는 이 함수가 현재 페이지를 새로고침하는 역할을 할 수 있습니다.
+    window.location.reload();
+}
+
+// 사용자 데이터 저장 (userDataManager.js와 연동)
+function saveUserData() {
+    if (window.saveCurrentUser) {
+        window.saveCurrentUser();
+    }
+}
+
+// 레벨 표시 업데이트
+function updateLevelDisplay() {
+    try {
+        var currentUser = JSON.parse(localStorage.getItem('fineu_current_user'));
+        if (!currentUser) return;
+
+        var userLevel = currentUser.level;
+        var level = getLevel(userLevel);
+        
+        var navBadge = document.getElementById('navLevelBadge');
+        if (navBadge) {
+            navBadge.textContent = level.name.toUpperCase();
+            
+            var classesToRemove = Array.from(navBadge.classList).filter(c => c.startsWith('level-'));
+            classesToRemove.forEach(c => navBadge.classList.remove(c));
+
+            navBadge.classList.add(level.colorClass);
+        }
+    } catch (error) {
+        console.error('레벨 업데이트 오류:', error);
+    }
+}
+
+// 레벨 정보 가져오기 (levelManager.js와 연동)
+function getLevel(level) {
+    return LEVEL_SYSTEM.find(l => level >= l.min && level <= l.max) || LEVEL_SYSTEM[0];
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateLevelDisplay();
+});
+
+// 페이지 언로드 시 데이터 저장
+window.addEventListener('beforeunload', function() {
+    saveUserData();
+});
 
 // 페이지 이동 함수들
 function goToHome() {

@@ -3,16 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <meta name="cache-buster" content="v2.5.0-20250108160000">
+    <meta name="cache-buster" content="v2.1.0-20241216">
     <title>FINE U - 게임</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.5.0-20250108160000" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css?v=2.5.0-20250108160000">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.1.0" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     
     <!-- 전역 레벨 관리 시스템 -->
-    <script src="js/levelManager.js?v=2.5.0-20250108160000"></script>
+    <script src="js/levelManager.js"></script>
+    <!-- 개인정보 분리 및 보안 시스템 -->
+    <script src="js/userDataManager.js"></script>
+
+    <script>
+        // Cache busting for local resources
+        (function() {
+            var version = new Date().getTime();
+            var scripts = document.querySelectorAll('script[src^="js/"]');
+            scripts.forEach(function(script) {
+                var src = script.getAttribute('src');
+                script.src = src + '?v=' + version;
+            });
+        })();
+    </script>
     
     <style>
         body {
@@ -42,154 +53,109 @@
             box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
         }
         
-        .level-badge-nav-v2 {
-            width: 54px !important;
-            height: 54px !important;
-            border-radius: 50% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-weight: 800 !important;
-            color: white !important;
-            font-size: 9px !important;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.8) !important;
-            position: absolute !important;
-            top: -6px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            box-shadow: 
-                0 8px 25px rgba(0,0,0,0.3) !important, 
-                0 4px 8px rgba(0,0,0,0.2) !important, 
-                inset 0 3px 0 rgba(255,255,255,0.4) !important, 
-                inset 0 -3px 0 rgba(0,0,0,0.25) !important,
-                0 0 0 2px rgba(255,255,255,0.1) !important;
-            z-index: 10 !important;
-            cursor: pointer !important;
-            transition: all 0.4s cubic-bezier(0.4,0,0.2,1) !important;
-            border: 2px solid rgba(255,255,255,0.3) !important;
-            position: relative !important;
-            overflow: hidden !important;
-            letter-spacing: 0.2px !important;
-            backdrop-filter: blur(6px) !important;
+        .level-badge-nav {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            font-size: 11px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
         }
 
-        .level-badge-nav-v2::before {
+        .level-badge-nav::before {
             content: '';
             position: absolute;
-            top: -30%;
-            left: -30%;
-            width: 160%;
-            height: 160%;
-            background: conic-gradient(
-                from 0deg, 
-                rgba(255,255,255,0) 0deg, 
-                rgba(255,255,255,0.5) 30deg, 
-                rgba(255,255,255,0.8) 45deg, 
-                rgba(255,255,255,0.5) 60deg, 
-                rgba(255,255,255,0) 90deg
-            );
-            animation: badgeShimmerEnhanced 5s ease-in-out infinite !important;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.35) 40deg, rgba(255,255,255,0) 80deg);
+            animation: badgeShimmer 6s linear infinite;
             pointer-events: none;
         }
 
-        .level-badge-nav-v2:hover {
-            transform: translateX(-50%) scale(1.08) rotate(3deg) !important;
-            box-shadow: 
-                0 12px 35px rgba(0,0,0,0.35) !important, 
-                0 6px 15px rgba(0,0,0,0.25) !important, 
-                inset 0 3px 0 rgba(255,255,255,0.5) !important, 
-                inset 0 -3px 0 rgba(0,0,0,0.35) !important,
-                0 0 0 3px rgba(255,255,255,0.15) !important,
-                0 0 20px rgba(255,255,255,0.3) !important;
+        .level-badge-nav:hover {
+            transform: translateX(-50%) scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 6px 12px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.3);
         }
 
-        .level-badge-nav-v2:active {
-            transform: translateX(-50%) scale(0.96) !important;
+        .level-badge-nav:active {
+            transform: translateX(-50%) scale(0.95);
         }
 
-        /* V4 Badge Styles - Enhanced design with improved compactness and cache busting */
-        .level-badge-profile-v4 {
-            display: inline-block !important;
-            padding: 4px 8px !important; /* Ultra-compact design */
-            border-radius: 50% !important; /* Circular design restored */
-            font-size: 12px !important;
-            font-weight: 700 !important;
-            color: white !important;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.7) !important;
-            position: relative !important;
-            overflow: hidden !important;
-            letter-spacing: 0.3px !important; /* Minimal spacing */
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 
-                0 3px 12px rgba(0,0,0,0.2) !important, 
-                inset 0 1px 0 rgba(255,255,255,0.4) !important,
-                inset 0 -1px 0 rgba(0,0,0,0.25) !important;
-            border: 1px solid rgba(255,255,255,0.3) !important;
-            text-align: center !important;
-            backdrop-filter: blur(2px) !important;
-            line-height: 1.2 !important;
-            white-space: nowrap !important;
-        }
-
-        .level-badge-nav-v4 {
-            width: 54px !important; /* Optimized proportions */
-            height: 54px !important; /* Balanced design */
-            border-radius: 50% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-weight: 800 !important;
-            color: white !important;
-            font-size: 9px !important;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.8) !important;
-            position: absolute !important;
-            top: -6px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            box-shadow: 
-                0 8px 25px rgba(0,0,0,0.3) !important, 
-                0 4px 8px rgba(0,0,0,0.2) !important, 
-                inset 0 3px 0 rgba(255,255,255,0.4) !important, 
-                inset 0 -3px 0 rgba(0,0,0,0.25) !important,
-                0 0 0 2px rgba(255,255,255,0.1) !important;
-            z-index: 10 !important;
-            cursor: pointer !important;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            border: 2px solid rgba(255,255,255,0.3) !important;
-            position: relative !important;
-            overflow: hidden !important;
-            letter-spacing: 0.2px !important;
-            backdrop-filter: blur(6px) !important; /* Premium effect */
-        }
-
-        .level-badge-nav-v4:hover {
-            transform: translateX(-50%) scale(1.08) rotate(3deg) !important;
-            box-shadow: 
-                0 12px 35px rgba(0,0,0,0.35) !important, 
-                0 6px 15px rgba(0,0,0,0.25) !important, 
-                inset 0 3px 0 rgba(255,255,255,0.5) !important, 
-                inset 0 -3px 0 rgba(0,0,0,0.35) !important,
-                0 0 0 3px rgba(255,255,255,0.15) !important,
-                0 0 20px rgba(255,255,255,0.3) !important;
-        }
-
-        .level-badge-nav-v4:active {
-            transform: translateX(-50%) scale(0.96) !important;
-        }
-
-        @keyframes badgeShimmerEnhanced {
-            0% { transform: rotate(0deg) scale(1); opacity: 0.6; }
-            50% { transform: rotate(180deg) scale(1.05); opacity: 1; }
-            100% { transform: rotate(360deg) scale(1); opacity: 0.6; }
+        @keyframes badgeShimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
-        .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
-        .level-orange { background: linear-gradient(135deg, #FB923C, #EA580C); }
-        .level-green { background: linear-gradient(135deg, #34D399, #059669); }
-        .level-blue { background: linear-gradient(135deg, #60A5FA, #2563EB); }
-        .level-brown { background: linear-gradient(135deg, #A16207, #92400E); }
-        .level-black { background: linear-gradient(135deg, #374151, #111827); }
-        .level-red { background: linear-gradient(135deg, #EF4444, #DC2626); }
+        /* Enhanced metallic level colors with depth and shine */
+        .level-yellow, .level-bronze { 
+            background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 25%, #D97706 50%, #92400E 75%, #F59E0B 100%);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+        }
+        .level-orange, .level-silver { 
+            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #E2E8F0 100%);
+            box-shadow: 0 8px 24px rgba(148, 163, 184, 0.3);
+        }
+        .level-green, .level-gold { 
+            background: linear-gradient(135deg, #FEF3C7 0%, #FCD34D 25%, #F59E0B 50%, #D97706 75%, #FCD34D 100%);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+        }
+        .level-blue, .level-platinum { 
+            background: linear-gradient(135deg, #F0F9FF 0%, #DBEAFE 25%, #93C5FD 50%, #3B82F6 75%, #DBEAFE 100%);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+        .level-brown, .level-diamond { 
+            background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 25%, #5EEAD4 50%, #14B8A6 75%, #CCFBF1 100%);
+            box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3);
+        }
+        .level-black, .level-black-diamond { 
+            background: linear-gradient(135deg, #4B5563 0%, #374151 25%, #1F2937 50%, #111827 75%, #374151 100%);
+            box-shadow: 0 8px 24px rgba(17, 24, 39, 0.5);
+        }
+        .level-red, .level-ruby { 
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 25%, #F87171 50%, #EF4444 75%, #DC2626 100%);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+        }
+
+        .level-badge-nav::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
+                radial-gradient(circle at 70% 25%, rgba(255,255,255,0.7) 0 2px, transparent 3px),
+                radial-gradient(circle at 35% 70%, rgba(255,255,255,0.85) 0 2px, transparent 3px),
+                radial-gradient(circle at 80% 65%, rgba(255,255,255,0.6) 0 2px, transparent 3px);
+            mix-blend-mode: screen;
+            animation: sparkleTwinkle 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes sparkleTwinkle {
+            0% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
+            25% { opacity: 1; transform: translateY(-1px) scale(1.05); }
+            50% { opacity: 0.4; transform: translateY(1px) scale(0.95); filter: blur(0.3px); }
+            75% { opacity: 0.9; transform: translateY(-1px) scale(1.08); }
+            100% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
+        }
 
         .bottom-navigation {
             position: fixed;
@@ -352,10 +318,10 @@
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(circle at 18% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
-                radial-gradient(circle at 72% 24%, rgba(255,255,255,0.7) 0 2px, transparent 3px),
-                radial-gradient(circle at 38% 72%, rgba(255,255,255,0.85) 0 2px, transparent 3px),
-                radial-gradient(circle at 80% 66%, rgba(255,255,255,0.55) 0 2px, transparent 3px);
+                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
+                radial-gradient(circle at 70% 25%, rgba(255,255,255,0.7) 0 2px, transparent 3px),
+                radial-gradient(circle at 35% 70%, rgba(255,255,255,0.85) 0 2px, transparent 3px),
+                radial-gradient(circle at 80% 65%, rgba(255,255,255,0.6) 0 2px, transparent 3px);
             mix-blend-mode: screen;
             animation: sparkleTwinkle 4s linear infinite;
             pointer-events: none;
@@ -797,24 +763,24 @@
         <!-- 하단 네비게이션 -->
         <div class="bottom-navigation">
             <div class="nav-container">
-                <button onclick="goToMainPage()" class="nav-item">
+                <button onclick="navigateToPage('index.html')" class="nav-item">
                     <i class="fas fa-home text-gray-400"></i>
                     <span class="text-gray-400">홈</span>
                 </button>
-                <button onclick="goToNewsPage()" class="nav-item">
+                <button onclick="navigateToPage('a2.html')" class="nav-item">
                     <i class="fas fa-newspaper text-gray-400"></i>
                     <span class="text-gray-400">뉴스</span>
                 </button>
                 <div class="nav-center">
-                    <div id="navLevelBadge" class="level-badge-nav-v4" onclick="goToGradePage()" style="width: 54px !important; height: 54px !important;">
+                    <div id="navLevelBadge" class="level-badge-nav" onclick="navigateToPage('a5.html')">
                         BRONZE
                     </div>
                 </div>
-                <button onclick="goToGamePage()" class="nav-item active">
+                <button onclick="showMainScreen()" class="nav-item active">
                     <i class="fas fa-gamepad"></i>
                     <span>게임</span>
                 </button>
-                <button onclick="goToMorePage()" class="nav-item">
+                <button onclick="navigateToPage('a3.html')" class="nav-item">
                     <i class="fas fa-ellipsis-h text-gray-400"></i>
                     <span class="text-gray-400">더보기</span>
                 </button>
@@ -824,1053 +790,66 @@
 </div>
 
 <script>
-// 전역 게임 변수들
-var currentUser = null;
-var quizQuestions = [];
-var currentQuizIndex = 0;
-var quizScore = 0;
-
-// 로켓 게임 변수들 (향상된 버전)
-var rocketGame = {
-    canvas: null,
-    ctx: null,
-    rocket: { 
-        x: 160, 
-        y: 350, 
-        width: 40, 
-        height: 60,
-        targetX: 160,
-        rotation: 0,
-        thruster: 0
-    },
-    enemies: [],
-    bullets: [],
-    particles: [],
-    explosions: [],
-    powerUps: [],
-    score: 0,
-    gameLoop: null,
-    isRunning: false,
-    keys: {},
-    sounds: {
-        shoot: null,
-        explosion: null,
-        powerUp: null,
-        background: null
-    },
-    background: {
-        stars: [],
-        speed: 1
-    }
-};
-
-// 똑부리 게임 변수들
-var owlData = JSON.parse(localStorage.getItem('owlData')) || {
-    name: '똑부리',
-    level: 1,
-    exp: 300,
-    maxExp: 1000,
-    knowledge: 85,
-    investment: 42,
-    happiness: 78,
-    money: 1250
-};
-
-// 페이지 이동 함수들
-function goToMainPage() {
-    window.location.href = 'index.html?v=' + Date.now();
-}
-
-function goToNewsPage() {
-    window.location.href = 'a2.html?v=' + Date.now();
-}
-
-function goToGradePage() {
-    window.location.href = 'a5.html?v=' + Date.now();
-}
-
-function goToGamePage() {
-    window.location.href = 'a4.html?v=' + Date.now();
-}
-
-function goToMorePage() {
-    window.location.href = 'a3.html?v=' + Date.now();
-}
-
-// 경제 퀴즈 시작
-function startEconomicQuiz() {
-    generateQuizQuestions();
-    currentQuizIndex = 0;
-    quizScore = 0;
-    showQuizQuestion();
-}
-
-// 퀴즈 문제 생성
-function generateQuizQuestions() {
-    quizQuestions = [
-        {
-            question: "GDP는 무엇의 줄임말인가요?",
-            options: ["Gross Domestic Product", "Global Development Program", "General Data Processing", "Great Digital Platform"],
-            correct: 0,
-            explanation: "GDP는 Gross Domestic Product(국내총생산)의 줄임말로, 한 나라의 경제 규모를 나타내는 지표입니다."
-        },
-        {
-            question: "중앙은행의 기준금리 인상 효과는?",
-            options: ["경기 부양", "인플레이션 억제", "수출 증가", "실업률 감소"],
-            correct: 1,
-            explanation: "기준금리 인상은 시중의 돈의 양을 줄여 인플레이션을 억제하는 효과가 있습니다."
-        },
-        {
-            question: "주식의 PER이 높다는 것은?",
-            options: ["저평가", "고평가", "적정가치", "위험 낮음"],
-            correct: 1,
-            explanation: "PER이 높다는 것은 주가가 수익에 비해 높게 평가되고 있다는 의미입니다."
-        },
-        {
-            question: "분산투자의 목적은?",
-            options: ["수익 극대화", "위험 감소", "거래비용 절약", "세금 절약"],
-            correct: 1,
-            explanation: "분산투자는 여러 자산에 투자하여 위험을 분산시키는 것이 주목적입니다."
-        },
-        {
-            question: "인플레이션의 원인이 아닌 것은?",
-            options: ["통화량 증가", "수요 증가", "공급 감소", "저축 증가"],
-            correct: 3,
-            explanation: "저축 증가는 소비 감소를 의미하므로 인플레이션과는 반대 효과를 가져옵니다."
-        }
-    ];
-    
-    // 문제 순서 랜덤화
-    quizQuestions.sort(() => Math.random() - 0.5);
-}
-
-// 퀴즈 문제 표시
-function showQuizQuestion() {
-    if (currentQuizIndex >= quizQuestions.length) {
-        showQuizResult();
-        return;
-    }
-    
-    var question = quizQuestions[currentQuizIndex];
-    var html = '<div class="mb-6">';
-    html += '<h4 class="text-lg font-bold mb-4">문제 ' + (currentQuizIndex + 1) + '/' + quizQuestions.length + '</h4>';
-    html += '<p class="text-gray-700 mb-4">' + question.question + '</p>';
-    
-    question.options.forEach(function(option, index) {
-        html += '<div class="bg-gray-50 p-3 rounded-lg mb-2 cursor-pointer hover:bg-blue-50 transition-colors" onclick="selectAnswer(' + index + ')">';
-        html += '<span>' + (index + 1) + '. ' + option + '</span>';
-        html += '</div>';
-    });
-    
-    html += '</div>';
-    document.getElementById('quizContainer').innerHTML = html;
-}
-
-// 퀴즈 답 선택
-function selectAnswer(selectedIndex) {
-    var question = quizQuestions[currentQuizIndex];
-    var isCorrect = selectedIndex === question.correct;
-    
-    if (isCorrect) {
-        quizScore++;
-        gainOwlExp(50);
-    }
-    
-    // 정답 표시
-    var options = document.querySelectorAll('#quizContainer .bg-gray-50');
-    options.forEach(function(option, index) {
-        option.onclick = null;
-        if (index === question.correct) {
-            option.classList.add('bg-green-100', 'border-green-500');
-            option.classList.remove('bg-gray-50');
-        } else if (index === selectedIndex && !isCorrect) {
-            option.classList.add('bg-red-100', 'border-red-500');
-            option.classList.remove('bg-gray-50');
-        }
-    });
-    
-    // 설명 표시
-    setTimeout(function() {
-        var explanation = document.createElement('div');
-        explanation.className = 'mt-4 p-4 bg-blue-50 rounded-lg';
-        explanation.innerHTML = '<p class="text-sm text-blue-800"><strong>해설:</strong> ' + question.explanation + '</p>';
-        document.getElementById('quizContainer').appendChild(explanation);
-        
-        var nextBtn = document.createElement('button');
-        nextBtn.className = 'game-button mt-4';
-        nextBtn.textContent = currentQuizIndex < quizQuestions.length - 1 ? '다음 문제' : '결과 보기';
-        nextBtn.onclick = function() {
-            currentQuizIndex++;
-            showQuizQuestion();
-        };
-        document.getElementById('quizContainer').appendChild(nextBtn);
-    }, 1500);
-}
-
-// 퀴즈 결과 표시
-function showQuizResult() {
-    var percentage = Math.round((quizScore / quizQuestions.length) * 100);
-    var expGained = quizScore * 100;
-    
-    var html = '<div class="text-center py-6">';
-    html += '<i class="fas fa-trophy text-6xl text-yellow-500 mb-4"></i>';
-    html += '<h3 class="text-2xl font-bold mb-4">퀴즈 완료!</h3>';
-    html += '<p class="text-lg mb-2">점수: ' + quizScore + '/' + quizQuestions.length + ' (' + percentage + '%)</p>';
-    html += '<p class="text-green-600 font-semibold mb-4">획득 EXP: +' + expGained + '</p>';
-    
-    if (percentage >= 80) {
-        html += '<p class="text-blue-600 mb-4">🎉 훌륭합니다!</p>';
-    } else if (percentage >= 60) {
-        html += '<p class="text-green-600 mb-4">👍 좋은 성과입니다!</p>';
-    } else {
-        html += '<p class="text-orange-600 mb-4">💪 더 열심히 공부해보세요!</p>';
-    }
-    
-    html += '<button onclick="startEconomicQuiz()" class="game-button mr-2">다시 도전</button>';
-    html += '<button onclick="location.reload()" class="game-button">메인으로</button>';
-    html += '</div>';
-    
-    document.getElementById('quizContainer').innerHTML = html;
-    gainOwlExp(expGained);
-}
-
-// 로켓 게임 시작 (향상된 버전)
-function startRocketGame() {
+// 페이지 이동 함수 (캐시 무력화 적용)
+function navigateToPage(page) {
     try {
-        console.log('Starting rocket game...');
-        rocketGame.canvas = document.getElementById('rocketCanvas');
-        
-        if (!rocketGame.canvas) {
-            console.error('Canvas element not found!');
-            alert('게임 캔버스를 찾을 수 없습니다.');
-            return;
-        }
-        
-        rocketGame.ctx = rocketGame.canvas.getContext('2d');
-        
-        if (!rocketGame.ctx) {
-            console.error('Cannot get 2D context!');
-            alert('캔버스 컨텍스트를 가져올 수 없습니다.');
-            return;
-        }
-        
-        // 오디오 초기화
-        initializeGameAudio();
-        
-        // 배경 별들 초기화
-        initializeStarField();
-        
-        // 터치 이벤트 추가
-        rocketGame.canvas.addEventListener('touchstart', handleTouch, { passive: false });
-        rocketGame.canvas.addEventListener('touchmove', handleTouch, { passive: false });
-        
-        // 클릭 이벤트 추가
-        rocketGame.canvas.addEventListener('click', handleClick);
-        
-        resetRocketGame();
-        rocketGame.isRunning = true;
-        document.getElementById('rocketStartBtn').style.display = 'none';
-        document.getElementById('rocketPauseBtn').style.display = 'inline-block';
-        
-        // 배경음악 재생
-        if (rocketGame.sounds.background) {
-            rocketGame.sounds.background.play().catch(e => console.log('오디오 재생 실패:', e));
-        }
-        
-        rocketGame.gameLoop = setInterval(updateRocketGame, 16); // 60 FPS
-        console.log('Rocket game started successfully!');
-        
+        var cacheBuster = '?v=' + new Date().getTime();
+        var targetUrl = page + cacheBuster;
+        saveUserData();
+        window.location.href = targetUrl;
     } catch (error) {
-        console.error('로켓 게임 시작 오류:', error);
-        alert('게임을 시작할 수 없습니다: ' + error.message);
+        console.error('페이지 이동 오류:', error);
+        window.location.href = page;
     }
 }
 
-// 게임 오디오 초기화
-function initializeGameAudio() {
+function showMainScreen() {
+    // a4.html에서는 이 함수가 현재 페이지를 새로고침하는 역할을 할 수 있습니다.
+    window.location.reload();
+}
+
+// 사용자 데이터 저장 (userDataManager.js와 연동)
+function saveUserData() {
+    if (window.saveCurrentUser) {
+        window.saveCurrentUser();
+    }
+}
+
+// 레벨 표시 업데이트
+function updateLevelDisplay() {
     try {
-        // Web Audio API 사용하여 사운드 생성
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        var currentUser = JSON.parse(localStorage.getItem('fineu_current_user'));
+        if (!currentUser) return;
+
+        var userLevel = currentUser.level;
+        var level = getLevel(userLevel);
         
-        // 슈팅 사운드
-        rocketGame.sounds.shoot = createShootSound(audioContext);
-        
-        // 폭발 사운드  
-        rocketGame.sounds.explosion = createExplosionSound(audioContext);
-        
-        // 파워업 사운드
-        rocketGame.sounds.powerUp = createPowerUpSound(audioContext);
-        
+        var navBadge = document.getElementById('navLevelBadge');
+        if (navBadge) {
+            navBadge.textContent = level.name.toUpperCase();
+            
+            var classesToRemove = Array.from(navBadge.classList).filter(c => c.startsWith('level-'));
+            classesToRemove.forEach(c => navBadge.classList.remove(c));
+
+            navBadge.classList.add(level.colorClass);
+        }
     } catch (error) {
-        console.log('오디오 초기화 실패:', error);
+        console.error('레벨 업데이트 오류:', error);
     }
 }
 
-// 슈팅 사운드 생성
-function createShootSound(audioContext) {
-    return function() {
-        try {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.1);
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.1);
-        } catch (e) {}
-    };
+// 레벨 정보 가져오기 (levelManager.js와 연동)
+function getLevel(level) {
+    return LEVEL_SYSTEM.find(l => level >= l.min && level <= l.max) || LEVEL_SYSTEM[0];
 }
 
-// 폭발 사운드 생성
-function createExplosionSound(audioContext) {
-    return function() {
-        try {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            const filterNode = audioContext.createBiquadFilter();
-            
-            oscillator.connect(filterNode);
-            filterNode.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(30, audioContext.currentTime + 0.3);
-            
-            filterNode.frequency.setValueAtTime(1000, audioContext.currentTime);
-            filterNode.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.3);
-            
-            gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.3);
-        } catch (e) {}
-    };
-}
-
-// 파워업 사운드 생성
-function createPowerUpSound(audioContext) {
-    return function() {
-        try {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.2);
-            
-            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.2);
-        } catch (e) {}
-    };
-}
-
-// 배경 별들 초기화
-function initializeStarField() {
-    rocketGame.background.stars = [];
-    for (let i = 0; i < 50; i++) {
-        rocketGame.background.stars.push({
-            x: Math.random() * rocketGame.canvas.width,
-            y: Math.random() * rocketGame.canvas.height,
-            size: Math.random() * 2 + 1,
-            speed: Math.random() * 2 + 1,
-            brightness: Math.random() * 0.5 + 0.5
-        });
-    }
-}
-
-// 터치 이벤트 처리 (향상된 버전)
-function handleTouch(e) {
-    e.preventDefault();
-    var rect = rocketGame.canvas.getBoundingClientRect();
-    var touch = e.touches[0] || e.changedTouches[0];
-    var x = touch.clientX - rect.left;
-    
-    // 부드러운 이동을 위해 목표 위치만 설정
-    rocketGame.rocket.targetX = Math.max(rocketGame.rocket.width/2, Math.min(x, rocketGame.canvas.width - rocketGame.rocket.width/2));
-    
-    // 추진기 효과 활성화
-    rocketGame.rocket.thruster = 10;
-}
-
-// 클릭 이벤트 처리 (향상된 버전)
-function handleClick(e) {
-    var rect = rocketGame.canvas.getBoundingClientRect();
-    var x = e.clientX - rect.left;
-    
-    // 부드러운 이동을 위해 목표 위치만 설정
-    rocketGame.rocket.targetX = Math.max(rocketGame.rocket.width/2, Math.min(x, rocketGame.canvas.width - rocketGame.rocket.width/2));
-    
-    // 추진기 효과 활성화
-    rocketGame.rocket.thruster = 10;
-    
-    // 총알 발사
-    shootBullet();
-}
-
-// 총알 발사 함수
-function shootBullet() {
-    rocketGame.bullets.push({
-        x: rocketGame.rocket.x + rocketGame.rocket.width / 2 - 2,
-        y: rocketGame.rocket.y,
-        speed: 8,
-        trail: []
-    });
-    
-    // 슈팅 사운드 재생
-    if (rocketGame.sounds.shoot) {
-        rocketGame.sounds.shoot();
-    }
-}
-
-// 로켓 게임 초기화 (향상된 버전)
-function resetRocketGame() {
-    rocketGame.rocket.x = 160;
-    rocketGame.rocket.y = 350;
-    rocketGame.rocket.targetX = 160;
-    rocketGame.rocket.rotation = 0;
-    rocketGame.rocket.thruster = 0;
-    rocketGame.enemies = [];
-    rocketGame.bullets = [];
-    rocketGame.particles = [];
-    rocketGame.explosions = [];
-    rocketGame.powerUps = [];
-    rocketGame.score = 0;
-    updateRocketScore();
-}
-
-// 로켓 게임 업데이트 (완전히 향상된 버전)
-function updateRocketGame() {
-    if (!rocketGame.isRunning) return;
-    
-    var ctx = rocketGame.ctx;
-    var canvas = rocketGame.canvas;
-    
-    // 배경 그라데이션
-    var gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, '#0f0f23');
-    gradient.addColorStop(0.5, '#1a1a40');
-    gradient.addColorStop(1, '#2d1b69');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 별들 업데이트 및 그리기
-    updateStarField(ctx, canvas);
-    
-    // 로켓 부드러운 이동
-    updateRocketMovement();
-    
-    // 적 생성 (더 다양하고 스마트하게)
-    spawnEnemies();
-    
-    // 파워업 생성
-    spawnPowerUps();
-    
-    // 자동 총알 발사 (더 부드럽게)
-    if (Math.random() < 0.15) {
-        shootBullet();
-    }
-    
-    // 추진기 파티클 생성
-    createThrusterParticles();
-    
-    // 로켓 그리기 (더 멋지게)
-    drawEnhancedRocket(ctx);
-    
-    // 적들 업데이트 및 그리기
-    updateAndDrawEnemies(ctx, canvas);
-    
-    // 총알들 업데이트 및 그리기
-    updateAndDrawBullets(ctx, canvas);
-    
-    // 파티클들 업데이트 및 그리기
-    updateAndDrawParticles(ctx);
-    
-    // 폭발들 업데이트 및 그리기
-    updateAndDrawExplosions(ctx);
-    
-    // 파워업들 업데이트 및 그리기
-    updateAndDrawPowerUps(ctx, canvas);
-    
-    // 추진기 효과 감소
-    if (rocketGame.rocket.thruster > 0) {
-        rocketGame.rocket.thruster--;
-    }
-}
-
-// 별들 업데이트
-function updateStarField(ctx, canvas) {
-    rocketGame.background.stars.forEach(star => {
-        star.y += star.speed;
-        if (star.y > canvas.height) {
-            star.y = -5;
-            star.x = Math.random() * canvas.width;
-        }
-        
-        // 별 그리기
-        ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`;
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.size, 0, 2 * Math.PI);
-        ctx.fill();
-    });
-}
-
-// 로켓 부드러운 이동
-function updateRocketMovement() {
-    const dx = rocketGame.rocket.targetX - rocketGame.rocket.x;
-    rocketGame.rocket.x += dx * 0.15; // 부드러운 이동
-    
-    // 로켓 기울기 계산
-    rocketGame.rocket.rotation = dx * 0.002;
-}
-
-// 적 생성 (향상된 버전)
-function spawnEnemies() {
-    if (Math.random() < 0.03) {
-        const enemyTypes = [
-            { type: 'basic', color: '#EF4444', size: 15, speed: 2, points: 100 },
-            { type: 'fast', color: '#F59E0B', size: 12, speed: 4, points: 150 },
-            { type: 'big', color: '#8B5CF6', size: 20, speed: 1, points: 200 },
-            { type: 'good', color: '#10B981', size: 15, speed: 2, points: -50 } // 좋은 적
-        ];
-        
-        const enemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-        
-        rocketGame.enemies.push({
-            x: Math.random() * (rocketGame.canvas.width - enemyType.size * 2),
-            y: -enemyType.size,
-            ...enemyType,
-            rotation: 0,
-            pulse: 0
-        });
-    }
-}
-
-// 파워업 생성
-function spawnPowerUps() {
-    if (Math.random() < 0.005) { // 0.5% 확률
-        rocketGame.powerUps.push({
-            x: Math.random() * (rocketGame.canvas.width - 20),
-            y: -20,
-            type: 'score',
-            rotation: 0,
-            pulse: 0
-        });
-    }
-}
-
-// 추진기 파티클 생성
-function createThrusterParticles() {
-    if (rocketGame.rocket.thruster > 0) {
-        for (let i = 0; i < 3; i++) {
-            rocketGame.particles.push({
-                x: rocketGame.rocket.x + rocketGame.rocket.width/2 + (Math.random() - 0.5) * 10,
-                y: rocketGame.rocket.y + rocketGame.rocket.height,
-                vx: (Math.random() - 0.5) * 2,
-                vy: Math.random() * 3 + 2,
-                life: 30,
-                maxLife: 30,
-                type: 'thruster'
-            });
-        }
-    }
-}
-
-// 향상된 로켓 그리기
-function drawEnhancedRocket(ctx) {
-    const rocket = rocketGame.rocket;
-    
-    ctx.save();
-    ctx.translate(rocket.x + rocket.width/2, rocket.y + rocket.height/2);
-    ctx.rotate(rocket.rotation);
-    
-    // 로켓 본체 그라데이션
-    const gradient = ctx.createLinearGradient(0, -rocket.height/2, 0, rocket.height/2);
-    gradient.addColorStop(0, '#FF6B6B');
-    gradient.addColorStop(0.5, '#EE5A52');
-    gradient.addColorStop(1, '#DC2626');
-    
-    // 로켓 본체
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.moveTo(0, -rocket.height/2);
-    ctx.lineTo(-rocket.width/2, rocket.height/2);
-    ctx.lineTo(rocket.width/2, rocket.height/2);
-    ctx.closePath();
-    ctx.fill();
-    
-    // 로켓 하이라이트
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-    ctx.beginPath();
-    ctx.moveTo(0, -rocket.height/2);
-    ctx.lineTo(-rocket.width/4, rocket.height/4);
-    ctx.lineTo(0, rocket.height/4);
-    ctx.closePath();
-    ctx.fill();
-    
-    // 추진기 효과
-    if (rocket.thruster > 0) {
-        const thrusterGradient = ctx.createLinearGradient(0, rocket.height/2, 0, rocket.height/2 + 20);
-        thrusterGradient.addColorStop(0, '#FCD34D');
-        thrusterGradient.addColorStop(1, 'rgba(252, 211, 77, 0)');
-        
-        ctx.fillStyle = thrusterGradient;
-        ctx.beginPath();
-        ctx.moveTo(-rocket.width/4, rocket.height/2);
-        ctx.lineTo(rocket.width/4, rocket.height/2);
-        ctx.lineTo(0, rocket.height/2 + rocket.thruster * 2);
-        ctx.closePath();
-        ctx.fill();
-    }
-    
-    ctx.restore();
-}
-
-// 적들 업데이트 및 그리기 (향상된 버전)
-function updateAndDrawEnemies(ctx, canvas) {
-    rocketGame.enemies = rocketGame.enemies.filter(function(enemy) {
-        enemy.y += enemy.speed;
-        enemy.rotation += 0.1;
-        enemy.pulse += 0.2;
-        
-        // 적 그리기 (더 멋지게)
-        ctx.save();
-        ctx.translate(enemy.x + enemy.size, enemy.y + enemy.size);
-        ctx.rotate(enemy.rotation);
-        
-        // 맥동 효과
-        const scale = 1 + Math.sin(enemy.pulse) * 0.1;
-        ctx.scale(scale, scale);
-        
-        // 적 그라데이션
-        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, enemy.size);
-        gradient.addColorStop(0, enemy.color);
-        gradient.addColorStop(1, enemy.color + '80');
-        
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(0, 0, enemy.size, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        // 적 하이라이트
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.beginPath();
-        ctx.arc(-enemy.size/3, -enemy.size/3, enemy.size/3, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        ctx.restore();
-        
-        // 적이 화면 하단에 도달하면 제거
-        if (enemy.y > canvas.height + enemy.size) {
-            return false;
-        }
-        
-        // 로켓과 충돌 체크
-        const rocketCenterX = rocketGame.rocket.x + rocketGame.rocket.width/2;
-        const rocketCenterY = rocketGame.rocket.y + rocketGame.rocket.height/2;
-        const enemyCenterX = enemy.x + enemy.size;
-        const enemyCenterY = enemy.y + enemy.size;
-        const distance = Math.sqrt(Math.pow(rocketCenterX - enemyCenterX, 2) + Math.pow(rocketCenterY - enemyCenterY, 2));
-        
-        if (distance < enemy.size + 20) {
-            if (enemy.type === 'good') {
-                rocketGame.score += enemy.points;
-                createExplosion(enemy.x + enemy.size, enemy.y + enemy.size, '#10B981');
-                if (rocketGame.sounds.powerUp) rocketGame.sounds.powerUp();
-            } else {
-                createExplosion(enemy.x + enemy.size, enemy.y + enemy.size, enemy.color);
-                if (rocketGame.sounds.explosion) rocketGame.sounds.explosion();
-                gameOver();
-            }
-            updateRocketScore();
-            return false;
-        }
-        
-        return true;
-    });
-}
-
-// 총알들 업데이트 및 그리기 (향상된 버전)
-function updateAndDrawBullets(ctx, canvas) {
-    rocketGame.bullets = rocketGame.bullets.filter(function(bullet) {
-        bullet.y -= bullet.speed;
-        
-        // 총알 궤적 업데이트
-        bullet.trail.push({ x: bullet.x + 2, y: bullet.y + 6 });
-        if (bullet.trail.length > 5) {
-            bullet.trail.shift();
-        }
-        
-        // 총알 궤적 그리기
-        if (bullet.trail.length > 1) {
-            ctx.strokeStyle = 'rgba(252, 211, 77, 0.6)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(bullet.trail[0].x, bullet.trail[0].y);
-            for (let i = 1; i < bullet.trail.length; i++) {
-                ctx.lineTo(bullet.trail[i].x, bullet.trail[i].y);
-            }
-            ctx.stroke();
-        }
-        
-        // 총알 그리기 (글로우 효과)
-        const gradient = ctx.createRadialGradient(bullet.x + 2, bullet.y + 6, 0, bullet.x + 2, bullet.y + 6, 6);
-        gradient.addColorStop(0, '#FCD34D');
-        gradient.addColorStop(1, 'rgba(252, 211, 77, 0)');
-        
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(bullet.x + 2, bullet.y + 6, 6, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        ctx.fillStyle = '#FCD34D';
-        ctx.fillRect(bullet.x, bullet.y, 4, 12);
-        
-        // 화면 밖으로 나가면 제거
-        if (bullet.y < -20) return false;
-        
-        // 적과 충돌 체크
-        var hit = false;
-        rocketGame.enemies = rocketGame.enemies.filter(function(enemy) {
-            const distance = Math.sqrt(Math.pow(bullet.x + 2 - (enemy.x + enemy.size), 2) + Math.pow(bullet.y + 6 - (enemy.y + enemy.size), 2));
-            
-            if (distance < enemy.size + 5) {
-                rocketGame.score += enemy.points;
-                updateRocketScore();
-                
-                // 폭발 생성
-                createExplosion(enemy.x + enemy.size, enemy.y + enemy.size, enemy.color);
-                
-                if (rocketGame.sounds.explosion) rocketGame.sounds.explosion();
-                hit = true;
-                return false;
-            }
-            return true;
-        });
-        
-        return !hit;
-    });
-}
-
-// 파티클들 업데이트 및 그리기
-function updateAndDrawParticles(ctx) {
-    rocketGame.particles = rocketGame.particles.filter(function(particle) {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        particle.life--;
-        
-        const alpha = particle.life / particle.maxLife;
-        
-        if (particle.type === 'thruster') {
-            ctx.fillStyle = `rgba(252, 211, 77, ${alpha * 0.8})`;
-        } else {
-            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-        }
-        
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, 2, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        return particle.life > 0;
-    });
-}
-
-// 폭발 생성
-function createExplosion(x, y, color) {
-    for (let i = 0; i < 15; i++) {
-        const angle = (Math.PI * 2 / 15) * i;
-        const speed = Math.random() * 5 + 2;
-        
-        rocketGame.particles.push({
-            x: x,
-            y: y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            life: 30,
-            maxLife: 30,
-            type: 'explosion',
-            color: color
-        });
-    }
-}
-
-// 폭발들 업데이트 및 그리기
-function updateAndDrawExplosions(ctx) {
-    rocketGame.explosions = rocketGame.explosions.filter(function(explosion) {
-        explosion.life--;
-        explosion.radius += 2;
-        
-        const alpha = explosion.life / explosion.maxLife;
-        
-        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(explosion.x, explosion.y, explosion.radius, 0, 2 * Math.PI);
-        ctx.stroke();
-        
-        return explosion.life > 0;
-    });
-}
-
-// 파워업들 업데이트 및 그리기
-function updateAndDrawPowerUps(ctx, canvas) {
-    rocketGame.powerUps = rocketGame.powerUps.filter(function(powerUp) {
-        powerUp.y += 1.5;
-        powerUp.rotation += 0.1;
-        powerUp.pulse += 0.15;
-        
-        // 파워업 그리기
-        ctx.save();
-        ctx.translate(powerUp.x + 10, powerUp.y + 10);
-        ctx.rotate(powerUp.rotation);
-        
-        const scale = 1 + Math.sin(powerUp.pulse) * 0.2;
-        ctx.scale(scale, scale);
-        
-        // 글로우 효과
-        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 15);
-        gradient.addColorStop(0, '#60A5FA');
-        gradient.addColorStop(1, 'rgba(96, 165, 250, 0)');
-        
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(0, 0, 15, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        // 파워업 아이콘
-        ctx.fillStyle = '#60A5FA';
-        ctx.font = '16px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('★', 0, 5);
-        
-        ctx.restore();
-        
-        // 화면 밖으로 나가면 제거
-        if (powerUp.y > canvas.height) {
-            return false;
-        }
-        
-        // 로켓과 충돌 체크
-        const distance = Math.sqrt(Math.pow(rocketGame.rocket.x + rocketGame.rocket.width/2 - (powerUp.x + 10), 2) + Math.pow(rocketGame.rocket.y + rocketGame.rocket.height/2 - (powerUp.y + 10), 2));
-        
-        if (distance < 25) {
-            rocketGame.score += 500;
-            updateRocketScore();
-            createExplosion(powerUp.x + 10, powerUp.y + 10, '#60A5FA');
-            if (rocketGame.sounds.powerUp) rocketGame.sounds.powerUp();
-            return false;
-        }
-        
-        return true;
-    });
-}
-
-// 로켓 게임 점수 업데이트
-function updateRocketScore() {
-    document.getElementById('rocketScore').textContent = rocketGame.score;
-}
-
-// 로켓 게임 일시정지 (향상된 버전)
-function pauseRocketGame() {
-    rocketGame.isRunning = false;
-    clearInterval(rocketGame.gameLoop);
-    document.getElementById('rocketStartBtn').style.display = 'inline-block';
-    document.getElementById('rocketPauseBtn').style.display = 'none';
-    
-    // 배경음악 일시정지
-    if (rocketGame.sounds.background) {
-        rocketGame.sounds.background.pause();
-    }
-}
-
-// 게임 오버 (향상된 버전)
-function gameOver() {
-    pauseRocketGame();
-    
-    // 큰 폭발 효과
-    createExplosion(rocketGame.rocket.x + rocketGame.rocket.width/2, rocketGame.rocket.y + rocketGame.rocket.height/2, '#FF6B6B');
-    
-    const expGained = Math.floor(rocketGame.score / 10);
-    gainOwlExp(expGained);
-    
-    // 멋진 게임 오버 알림
-    setTimeout(() => {
-        const message = `🚀 게임 오버! 🚀\n\n` +
-                       `최종 점수: ${rocketGame.score.toLocaleString()}점\n` +
-                       `획득 경험치: +${expGained}\n\n` +
-                       `훌륭한 조종 실력이었습니다!`;
-        alert(message);
-    }, 500);
-}
-
-// 똑부리 쓰다듬기
-function petOwl() {
-    owlData.happiness = Math.min(100, owlData.happiness + 5);
-    gainOwlExp(10);
-    updateOwlDisplay();
-    
-    // 애니메이션 효과
-    var owl = document.querySelector('.owl-character');
-    owl.style.transform = 'scale(1.2)';
-    setTimeout(function() {
-        owl.style.transform = 'scale(1)';
-    }, 200);
-    
-    showMessage('똑부리가 좋아합니다! 행복도 +5, 경험치 +10');
-}
-
-// 똑부리 먹이주기
-function feedOwl() {
-    if (owlData.money >= 50) {
-        owlData.money -= 50;
-        owlData.happiness = Math.min(100, owlData.happiness + 15);
-        gainOwlExp(30);
-        updateOwlDisplay();
-        showMessage('똑부리에게 먹이를 줬습니다! 행복도 +15, 경험치 +30');
-    } else {
-        showMessage('코인이 부족합니다! (필요: 50코인)');
-    }
-}
-
-// 똑부리와 공부하기
-function studyWithOwl() {
-    if (owlData.money >= 100) {
-        owlData.money -= 100;
-        owlData.knowledge = Math.min(100, owlData.knowledge + 8);
-        gainOwlExp(80);
-        updateOwlDisplay();
-        showMessage('똑부리와 함께 공부했습니다! 경제 지식 +8, 경험치 +80');
-    } else {
-        showMessage('코인이 부족합니다! (필요: 100코인)');
-    }
-}
-
-// 똑부리와 투자하기
-function investWithOwl() {
-    if (owlData.money >= 200) {
-        var success = Math.random() > 0.3; // 70% 성공률
-        owlData.money -= 200;
-        
-        if (success) {
-            var profit = Math.floor(Math.random() * 300) + 100;
-            owlData.money += profit;
-            owlData.investment = Math.min(100, owlData.investment + 5);
-            gainOwlExp(100);
-            showMessage('투자 성공! +' + profit + '코인, 투자 실력 +5, 경험치 +100');
-        } else {
-            owlData.investment = Math.min(100, owlData.investment + 2);
-            gainOwlExp(50);
-            showMessage('투자 실패... 하지만 경험은 쌓였습니다! 투자 실력 +2, 경험치 +50');
-        }
-        updateOwlDisplay();
-    } else {
-        showMessage('코인이 부족합니다! (필요: 200코인)');
-    }
-}
-
-// 똑부리 경험치 획득
-function gainOwlExp(amount) {
-    owlData.exp += amount;
-    
-    // 레벨업 체크
-    if (owlData.exp >= owlData.maxExp) {
-        owlData.level++;
-        owlData.exp = 0;
-        owlData.maxExp = owlData.level * 1000;
-        owlData.money += owlData.level * 100;
-        
-        var levelNames = ['초보 투자자', '견습 투자자', '숙련 투자자', '전문 투자자', '투자 마스터'];
-        var levelName = levelNames[Math.min(owlData.level - 1, levelNames.length - 1)];
-        
-        showMessage('레벨업! 레벨 ' + owlData.level + ' - ' + levelName + '\n보너스 코인 +' + (owlData.level * 100));
-    }
-    
-    // 전역 사용자 레벨 시스템에도 경험치 추가
-    if (window.levelManager && window.levelManager.currentUser) {
-        const result = window.levelManager.addExperience(amount);
-        if (result && result.levelUp) {
-            // 전역 레벨업 발생시 축하 메시지
-            window.levelManager.showLevelUpAnimation(result.newLevel);
-        }
-    }
-    
-    updateOwlDisplay();
-    saveOwlData();
-}
-
-// 똑부리 정보 업데이트
-function updateOwlDisplay() {
-    document.getElementById('owlLevel').textContent = '레벨 ' + owlData.level + ' - ' + getLevelName();
-    document.getElementById('owlExp').textContent = '경험치: ' + owlData.exp + ' / ' + owlData.maxExp;
-    document.getElementById('owlExpBar').style.width = (owlData.exp / owlData.maxExp * 100) + '%';
-    
-    document.getElementById('owlKnowledge').textContent = owlData.knowledge;
-    document.getElementById('owlInvestment').textContent = owlData.investment;
-    document.getElementById('owlHappiness').textContent = owlData.happiness;
-    document.getElementById('owlMoney').textContent = owlData.money.toLocaleString();
-}
-
-// 레벨 이름 가져오기
-function getLevelName() {
-    var levelNames = ['초보 투자자', '견습 투자자', '숙련 투자자', '전문 투자자', '투자 마스터'];
-    return levelNames[Math.min(owlData.level - 1, levelNames.length - 1)];
-}
-
-// 메시지 표시
-function showMessage(message) {
-    alert(message);
-}
-
-// 똑부리 데이터 저장
-function saveOwlData() {
-    localStorage.setItem('owlData', JSON.stringify(owlData));
-}
-
-// 게임 새로고침
-function refreshGames() {
-    location.reload();
-}
-
-// 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
-    // 레벨 매니저를 통한 사용자 정보 로드
-    if (window.levelManager) {
-        currentUser = window.levelManager.currentUser;
-        // 레벨 표시 업데이트
-        setTimeout(() => {
-            window.levelManager.updateLevelDisplay();
-        }, 100);
-    }
-    
-    updateOwlDisplay();
-    
-    // 레거시 레벨 표시 (백업용)
-    var levelBadge = document.getElementById('navLevelBadge');
-    if (levelBadge && currentUser && currentUser.level) {
-        var levelInfo = {
-            yellow: 'YELLOW',
-            orange: 'ORANGE', 
-            green: 'GREEN',
-            blue: 'BLUE',
-            brown: 'BROWN',
-            black: 'BLACK',
-            red: 'RED'
-        };
-        levelBadge.textContent = levelInfo[currentUser.level] || 'YELLOW';
-        levelBadge.className = 'level-badge-nav level-' + currentUser.level;
-    }
+    updateLevelDisplay();
+});
+
+// 페이지 언로드 시 데이터 저장
+window.addEventListener('beforeunload', function() {
+    saveUserData();
 });
 </script>
 

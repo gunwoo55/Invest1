@@ -8,15 +8,29 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="cache-buster" content="v2.5.0-20250108160000">
+    <meta name="cache-buster" content="v2.1.0-20241216">
     
     <title>FINE U - 등급 메뉴 (모의투자)</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.5.0-20250108160000" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css?v=2.5.0-20250108160000">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js?v=2.5.0-20250108160000"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.1.0" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- 전역 레벨 관리 시스템 -->
-    <script src="js/levelManager.js?v=2.5.0-20250108160000"></script>
+    <script src="js/levelManager.js"></script>
+    <!-- 개인정보 분리 및 보안 시스템 -->
+    <script src="js/userDataManager.js"></script>
+
+    <script>
+        // Cache busting for local resources
+        (function() {
+            var version = new Date().getTime();
+            var scripts = document.querySelectorAll('script[src^="js/"]');
+            scripts.forEach(function(script) {
+                var src = script.getAttribute('src');
+                script.src = src + '?v=' + version;
+            });
+        })();
+    </script>
     
     <style>
         body {
@@ -57,220 +71,138 @@
             transform: scale(1.02);
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
-        
-        .asset-item.locked {
-            opacity: 0.5;
-            cursor: not-allowed;
+
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 12px 0 8px 0;
+            z-index: 50;
         }
-        
-        .asset-item.locked:hover {
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .expense-item {
-            border-left: 4px solid #EF4444;
-        }
-        
-        .income-item {
-            border-left: 4px solid #10B981;
-        }
-        
-        .chart-container {
+
+        .nav-container {
+            max-width: 28rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            align-items: end;
             position: relative;
-            height: 200px;
+            height: 60px;
         }
-        
-        .portfolio-chart {
-            height: 150px;
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        
-        .investment-section {
-            display: none;
+
+        .nav-item:hover {
+            transform: translateY(-1px);
         }
-        
-        .investment-section.active {
-            display: block;
+
+        .nav-item i {
+            font-size: 20px;
         }
-        
-        .price-positive {
-            color: #10B981;
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
         }
-        
-        .price-negative {
-            color: #EF4444;
+
+        .nav-item.active i, .nav-item.active span {
+            color: #3B82F6;
         }
-        
-        .investment-item {
-            transition: all 0.3s ease;
+
+        .nav-center {
+            grid-column: 3;
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            height: 100%;
+            position: relative;
         }
-        
-        .investment-item:hover {
-            background-color: #F9FAFB;
-        }
-        
-        .modal-content {
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f3f3;
+
+        .level-badge-nav {
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
-            border-top: 2px solid #3498db;
-            animation: spin 1s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            font-size: 11px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
         }
-        
-        @keyframes spin {
+
+        .level-badge-nav::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.35) 40deg, rgba(255,255,255,0) 80deg);
+            animation: badgeShimmer 6s linear infinite;
+            pointer-events: none;
+        }
+
+        .level-badge-nav:hover {
+            transform: translateX(-50%) scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 6px 12px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.3);
+        }
+
+        .level-badge-nav:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        @keyframes badgeShimmer {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        .price-update {
-            transition: all 0.3s ease;
-        }
-        
-        .price-flash-green {
-            background-color: #10B981 !important;
-            color: white !important;
-        }
-        
-        .price-flash-red {
-            background-color: #EF4444 !important;
-            color: white !important;
-        }
-        
-        .notification-toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            max-width: 300px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-        }
-        
-        .notification-toast.show {
-            transform: translateX(0);
-        }
-        
-        .level-progress {
-            transition: width 0.5s ease;
-        }
-        
-        @keyframes bounce {
-            0%, 20%, 60%, 100% {
-                transform: translate(-50%, -50%) translateY(0);
-            }
-            40% {
-                transform: translate(-50%, -50%) translateY(-30px);
-            }
-            80% {
-                transform: translate(-50%, -50%) translateY(-15px);
-            }
-        }
-        
-        .price-trend-up {
-            color: #10B981;
-            font-weight: 600;
-        }
-        
-        .price-trend-down {
-            color: #EF4444;
-            font-weight: 600;
-        }
-        
-        .investment-card {
-            transition: all 0.2s ease;
-        }
-        
-        .investment-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+
+        .level-badge-nav::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
+                radial-gradient(circle at 70% 25%, rgba(255,255,255,0.7) 0 2px, transparent 3px),
+                radial-gradient(circle at 35% 70%, rgba(255,255,255,0.85) 0 2px, transparent 3px),
+                radial-gradient(circle at 80% 65%, rgba(255,255,255,0.6) 0 2px, transparent 3px);
+            mix-blend-mode: screen;
+            animation: sparkleTwinkle 4s linear infinite;
+            pointer-events: none;
         }
 
-        /* V4 Badge Styles - Enhanced design with improved compactness and cache busting */
-        .level-badge-profile-v4 {
-            display: inline-block !important;
-            padding: 4px 8px !important; /* Ultra-compact design */
-            border-radius: 50% !important; /* Circular design restored */
-            font-size: 12px !important;
-            font-weight: 700 !important;
-            color: white !important;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.7) !important;
-            position: relative !important;
-            overflow: hidden !important;
-            letter-spacing: 0.3px !important; /* Minimal spacing */
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 
-                0 3px 12px rgba(0,0,0,0.2) !important, 
-                inset 0 1px 0 rgba(255,255,255,0.4) !important,
-                inset 0 -1px 0 rgba(0,0,0,0.25) !important;
-            border: 1px solid rgba(255,255,255,0.3) !important;
-            text-align: center !important;
-            backdrop-filter: blur(2px) !important;
-            line-height: 1.2 !important;
-            white-space: nowrap !important;
-        }
-
-        .level-badge-nav-v4 {
-            width: 54px !important; /* Optimized proportions */
-            height: 54px !important; /* Balanced design */
-            border-radius: 50% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-weight: 800 !important;
-            color: white !important;
-            font-size: 9px !important;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.8) !important;
-            position: absolute !important;
-            top: -6px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            box-shadow: 
-                0 8px 25px rgba(0,0,0,0.3) !important, 
-                0 4px 8px rgba(0,0,0,0.2) !important, 
-                inset 0 3px 0 rgba(255,255,255,0.4) !important, 
-                inset 0 -3px 0 rgba(0,0,0,0.25) !important,
-                0 0 0 2px rgba(255,255,255,0.1) !important;
-            z-index: 10 !important;
-            cursor: pointer !important;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            border: 2px solid rgba(255,255,255,0.3) !important;
-            position: relative !important;
-            overflow: hidden !important;
-            letter-spacing: 0.2px !important;
-            backdrop-filter: blur(6px) !important; /* Premium effect */
-        }
-
-        .level-badge-profile-v4:hover {
-            transform: translateY(-1px) scale(1.03) !important;
-            box-shadow: 
-                0 4px 15px rgba(0,0,0,0.25) !important, 
-                inset 0 1px 0 rgba(255,255,255,0.5) !important,
-                inset 0 -1px 0 rgba(0,0,0,0.3) !important;
-        }
-
-        .level-badge-nav-v4:hover {
-            transform: translateX(-50%) scale(1.08) rotate(3deg) !important;
-            box-shadow: 
-                0 12px 35px rgba(0,0,0,0.35) !important, 
-                0 6px 15px rgba(0,0,0,0.25) !important, 
-                inset 0 3px 0 rgba(255,255,255,0.5) !important, 
-                inset 0 -3px 0 rgba(0,0,0,0.35) !important,
-                0 0 0 3px rgba(255,255,255,0.15) !important,
-                0 0 20px rgba(255,255,255,0.3) !important;
-        }
-
-        .level-badge-nav-v4:active {
-            transform: translateX(-50%) scale(0.96) !important;
+        @keyframes sparkleTwinkle {
+            0% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
+            25% { opacity: 1; transform: translateY(-1px) scale(1.05); }
+            50% { opacity: 0.4; transform: translateY(1px) scale(0.95); filter: blur(0.3px); }
+            75% { opacity: 0.9; transform: translateY(-1px) scale(1.08); }
+            100% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
         }
     </style>
 </head>
@@ -574,7 +506,7 @@
                     <div class="text-center">
                         <p class="font-semibold text-lg" id="tradeProductName"></p>
                         <p class="text-sm text-gray-600" id="tradeProductType"></p>
-                        <p class="text-xl font-bold mt-2" id="tradeProductPrice"></p>
+                        <p class="text-xl font-bold" id="tradeProductPrice"></p>
                         <p class="text-sm" id="tradeProductChange"></p>
                     </div>
                 </div>

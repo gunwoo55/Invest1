@@ -21,6 +21,18 @@
     <!-- 개인정보 분리 및 보안 시스템 -->
     <script src="js/userDataManager.js?v=2.5.0-20250108160000"></script>
     
+    <script>
+        // Cache busting for local resources
+        (function() {
+            var version = new Date().getTime();
+            var scripts = document.querySelectorAll('script[src^="js/"]');
+            scripts.forEach(function(script) {
+                var src = script.getAttribute('src');
+                script.src = src + '?v=' + version;
+            });
+        })();
+    </script>
+
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -827,8 +839,7 @@ function navigateToPage(page) {
     try {
         // 현재 시간을 이용한 캐시 버스터
         var cacheBuster = '?v=' + new Date().getTime();
-        var currentHost = window.location.origin;
-        var targetUrl = currentHost + '/' + page + cacheBuster;
+        var targetUrl = page + cacheBuster;
         
         // 사용자 데이터 저장
         saveUserData();
