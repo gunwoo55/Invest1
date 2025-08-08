@@ -6,13 +6,13 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="cache-buster" content="v2.2.0-20250108121500">
+    <meta name="cache-buster" content="v2.4.0-20250108151511">
     <title>FINE U - 더보기</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.2.0-20250108121500" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css?v=2.2.0-20250108121500">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.4.0-20250108151511" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css?v=2.4.0-20250108151511">
     
     <!-- 전역 레벨 관리 시스템 -->
-    <script src="js/levelManager.js?v=2.2.0-20250108121500"></script>
+    <script src="js/levelManager.js?v=2.4.0-20250108151511"></script>
     
     <style>
         body {
@@ -126,6 +126,76 @@
                 0 0 20px rgba(255,255,255,0.3) !important;
         }
         .level-badge-nav-v2:active { transform: translateX(-50%) scale(0.96) !important; }
+
+        /* V4 Badge Styles - Enhanced design with improved compactness and cache busting */
+        .level-badge-profile-v4 {
+            display: inline-block !important;
+            padding: 4px 8px !important; /* Ultra-compact design */
+            border-radius: 6px !important; /* Perfect text fitting */
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            color: white !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7) !important;
+            position: relative !important;
+            overflow: hidden !important;
+            letter-spacing: 0.3px !important; /* Minimal spacing */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 
+                0 3px 12px rgba(0,0,0,0.2) !important, 
+                inset 0 1px 0 rgba(255,255,255,0.4) !important,
+                inset 0 -1px 0 rgba(0,0,0,0.25) !important;
+            border: 1px solid rgba(255,255,255,0.3) !important;
+            text-align: center !important;
+            backdrop-filter: blur(2px) !important;
+            line-height: 1.2 !important;
+            white-space: nowrap !important;
+        }
+
+        .level-badge-nav-v4 {
+            width: 54px !important; /* Optimized proportions */
+            height: 54px !important; /* Balanced design */
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-weight: 800 !important;
+            color: white !important;
+            font-size: 9px !important;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.8) !important;
+            position: absolute !important;
+            top: -6px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            box-shadow: 
+                0 8px 25px rgba(0,0,0,0.3) !important, 
+                0 4px 8px rgba(0,0,0,0.2) !important, 
+                inset 0 3px 0 rgba(255,255,255,0.4) !important, 
+                inset 0 -3px 0 rgba(0,0,0,0.25) !important,
+                0 0 0 2px rgba(255,255,255,0.1) !important;
+            z-index: 10 !important;
+            cursor: pointer !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border: 2px solid rgba(255,255,255,0.3) !important;
+            position: relative !important;
+            overflow: hidden !important;
+            letter-spacing: 0.2px !important;
+            backdrop-filter: blur(6px) !important; /* Premium effect */
+        }
+
+        .level-badge-nav-v4:hover {
+            transform: translateX(-50%) scale(1.08) rotate(3deg) !important;
+            box-shadow: 
+                0 12px 35px rgba(0,0,0,0.35) !important, 
+                0 6px 15px rgba(0,0,0,0.25) !important, 
+                inset 0 3px 0 rgba(255,255,255,0.5) !important, 
+                inset 0 -3px 0 rgba(0,0,0,0.35) !important,
+                0 0 0 3px rgba(255,255,255,0.15) !important,
+                0 0 20px rgba(255,255,255,0.3) !important;
+        }
+
+        .level-badge-nav-v4:active {
+            transform: translateX(-50%) scale(0.96) !important;
+        }
 
         @keyframes badgeShimmerEnhanced { 
             0% { transform: rotate(0deg) scale(1); opacity: 0.6; }
@@ -370,7 +440,7 @@
                     <span class="text-gray-400">뉴스</span>
                 </button>
                 <div class="nav-center">
-                    <div onclick="goToGrade()" class="level-badge-nav-v2">
+                    <div onclick="goToGrade()" class="level-badge-nav-v4" style="width: 54px !important; height: 54px !important;">
                         BRONZE
                     </div>
                 </div>
