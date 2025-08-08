@@ -443,7 +443,7 @@ class LevelManager {
         this.generateMetallicCSS();
         
         // 모든 레벨 배지 업데이트
-        const levelElements = document.querySelectorAll('[id*="evelBadge"], [id*="serLevel"], .level-badge-nav, .level-badge-profile');
+        const levelElements = document.querySelectorAll('[id*="evelBadge"], [id*="serLevel"], .level-badge-nav, .level-badge-profile, .level-badge-nav-v2, .level-badge-profile-v2');
         
         levelElements.forEach(element => {
             if (element) {
@@ -451,10 +451,14 @@ class LevelManager {
                 element.className = element.className.replace(/level-\w+/g, '');
                 
                 // 새로운 클래스 적용
-                if (element.className.includes('level-badge-profile')) {
-                    element.className = 'level-badge-profile level-badge-metal ' + level.class;
+                if (element.className.includes('level-badge-profile-v2')) {
+                    element.className = 'level-badge-profile-v2 level-badge-metal ' + level.class;
+                } else if (element.className.includes('level-badge-profile')) {
+                    element.className = 'level-badge-profile-v2 level-badge-metal ' + level.class;
+                } else if (element.className.includes('level-badge-nav-v2')) {
+                    element.className = 'level-badge-nav-v2 level-badge-metal ' + level.class;
                 } else if (element.className.includes('level-badge-nav')) {
-                    element.className = 'level-badge-nav level-badge-metal ' + level.class;
+                    element.className = 'level-badge-nav-v2 level-badge-metal ' + level.class;
                 } else {
                     element.className += ' level-badge-metal ' + level.class;
                 }
@@ -493,7 +497,7 @@ class LevelManager {
     // 레벨업 애니메이션 표시
     showLevelUpAnimation(newLevel) {
         // 레벨 배지에 축하 애니메이션 효과 추가
-        const levelBadges = document.querySelectorAll('.level-badge-nav, .level-badge-profile');
+        const levelBadges = document.querySelectorAll('.level-badge-nav, .level-badge-profile, .level-badge-nav-v2, .level-badge-profile-v2');
         levelBadges.forEach(badge => {
             badge.classList.add('level-celebration');
             setTimeout(() => {
@@ -576,7 +580,7 @@ class LevelManager {
         message.innerHTML = `
             <div class="text-6xl mb-4">🎉</div>
             <h3 class="text-2xl font-bold text-gray-800 mb-2">등급 승급!</h3>
-            <div class="level-badge-profile level-badge-metal ${levelData.class} mx-auto mb-2" style="font-size: 14px; padding: 8px 16px;">${levelData.displayName}</div>
+            <div class="level-badge-profile-v2 level-badge-metal ${levelData.class} mx-auto mb-2" style="font-size: 14px; padding: 8px 16px;">${levelData.displayName}</div>
             <p class="text-gray-600">축하합니다! <strong>${levelData.displayName}</strong> 등급이 되었습니다!</p>
             ${unlockedText}
             <button onclick="this.parentElement.remove()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors">확인</button>

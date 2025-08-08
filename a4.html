@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FINE U - 게임</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <meta name="cache-buster" content="v2.2.0-20250108121500">
+    <title>FINE U - 게임</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.2.0-20250108121500" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css?v=2.2.0-20250108121500">
     
     <!-- 전역 레벨 관리 시스템 -->
-    <script src="js/levelManager.js"></script>
+    <script src="js/levelManager.js?v=2.2.0-20250108121500"></script>
     
     <style>
         body {
@@ -41,23 +42,75 @@
             box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
         }
         
-        .level-badge-nav {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            font-size: 12px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        .level-badge-nav-v2 {
+            width: 54px !important;
+            height: 54px !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-weight: 800 !important;
+            color: white !important;
+            font-size: 9px !important;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.8) !important;
+            position: absolute !important;
+            top: -6px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            box-shadow: 
+                0 8px 25px rgba(0,0,0,0.3) !important, 
+                0 4px 8px rgba(0,0,0,0.2) !important, 
+                inset 0 3px 0 rgba(255,255,255,0.4) !important, 
+                inset 0 -3px 0 rgba(0,0,0,0.25) !important,
+                0 0 0 2px rgba(255,255,255,0.1) !important;
+            z-index: 10 !important;
+            cursor: pointer !important;
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1) !important;
+            border: 2px solid rgba(255,255,255,0.3) !important;
+            position: relative !important;
+            overflow: hidden !important;
+            letter-spacing: 0.2px !important;
+            backdrop-filter: blur(6px) !important;
+        }
+
+        .level-badge-nav-v2::before {
+            content: '';
             position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 10;
+            top: -30%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background: conic-gradient(
+                from 0deg, 
+                rgba(255,255,255,0) 0deg, 
+                rgba(255,255,255,0.5) 30deg, 
+                rgba(255,255,255,0.8) 45deg, 
+                rgba(255,255,255,0.5) 60deg, 
+                rgba(255,255,255,0) 90deg
+            );
+            animation: badgeShimmerEnhanced 5s ease-in-out infinite !important;
+            pointer-events: none;
+        }
+
+        .level-badge-nav-v2:hover {
+            transform: translateX(-50%) scale(1.08) rotate(3deg) !important;
+            box-shadow: 
+                0 12px 35px rgba(0,0,0,0.35) !important, 
+                0 6px 15px rgba(0,0,0,0.25) !important, 
+                inset 0 3px 0 rgba(255,255,255,0.5) !important, 
+                inset 0 -3px 0 rgba(0,0,0,0.35) !important,
+                0 0 0 3px rgba(255,255,255,0.15) !important,
+                0 0 20px rgba(255,255,255,0.3) !important;
+        }
+
+        .level-badge-nav-v2:active {
+            transform: translateX(-50%) scale(0.96) !important;
+        }
+
+        @keyframes badgeShimmerEnhanced {
+            0% { transform: rotate(0deg) scale(1); opacity: 0.6; }
+            50% { transform: rotate(180deg) scale(1.05); opacity: 1; }
+            100% { transform: rotate(360deg) scale(1); opacity: 0.6; }
         }
         
         .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
@@ -683,7 +736,7 @@
                     <span class="text-gray-400">뉴스</span>
                 </button>
                 <div class="nav-center">
-                    <div id="navLevelBadge" class="level-badge-nav" onclick="goToGradePage()">
+                    <div id="navLevelBadge" class="level-badge-nav-v2" onclick="goToGradePage()">
                         BRONZE
                     </div>
                 </div>
