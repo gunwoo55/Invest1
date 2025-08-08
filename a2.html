@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- 캐시 무력화 메타태그 -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="cache-buster" content="v2.5.0-20250108160000">
-    <meta name="cache-buster" content="v2.1.0-20241216">
-    <title>FINE U - 뉴스</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.1.0" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     
-    <!-- 전역 레벨 관리 시스템 -->
+    <title>FINE U - 금융 뉴스 (모의투자)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/levelManager.js"></script>
-    <!-- 개인정보 분리 및 보안 시스템 -->
     <script src="js/userDataManager.js"></script>
 
     <script>
@@ -31,138 +29,8 @@
     
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-            zoom: 1;
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
-        .card-shadow {
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
-        }
-        .level-badge-nav {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            color: white;
-            font-size: 11px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.7);
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
-            z-index: 10;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid rgba(255,255,255,0.2);
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.3px;
-            backdrop-filter: blur(4px);
-        }
-
-        .level-badge-nav::before {
-            content: '';
-            position: absolute;
-            top: -30%;
-            left: -30%;
-            width: 160%;
-            height: 160%;
-            background: conic-gradient(
-                from 0deg, 
-                rgba(255,255,255,0) 0deg, 
-                rgba(255,255,255,0.5) 30deg, 
-                rgba(255,255,255,0.8) 45deg, 
-                rgba(255,255,255,0.5) 60deg, 
-                rgba(255,255,255,0) 90deg
-            );
-            animation: badgeShimmerEnhanced 5s ease-in-out infinite !important;
-            pointer-events: none;
-        }
-        .level-badge-nav-v2::after {
-
-        .level-badge-nav:hover {
-            transform: translateX(-50%) scale(1.1) rotate(5deg);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 6px 12px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.3);
-        }
-
-        .level-badge-nav:active {
-            transform: translateX(-50%) scale(0.95);
-        }
-
-        @keyframes badgeShimmer {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Enhanced metallic level colors with depth and shine */
-        .level-yellow, .level-bronze { 
-            background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 25%, #D97706 50%, #92400E 75%, #F59E0B 100%);
-            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
-        }
-        .level-orange, .level-silver { 
-            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #E2E8F0 100%);
-            box-shadow: 0 8px 24px rgba(148, 163, 184, 0.3);
-        }
-        .level-green, .level-gold { 
-            background: linear-gradient(135deg, #FEF3C7 0%, #FCD34D 25%, #F59E0B 50%, #D97706 75%, #FCD34D 100%);
-            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
-        }
-        .level-blue, .level-platinum { 
-            background: linear-gradient(135deg, #F0F9FF 0%, #DBEAFE 25%, #93C5FD 50%, #3B82F6 75%, #DBEAFE 100%);
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
-        }
-        .level-brown, .level-diamond { 
-            background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 25%, #5EEAD4 50%, #14B8A6 75%, #CCFBF1 100%);
-            box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3);
-        }
-        .level-black, .level-black-diamond { 
-            background: linear-gradient(135deg, #4B5563 0%, #374151 25%, #1F2937 50%, #111827 75%, #374151 100%);
-            box-shadow: 0 8px 24px rgba(17, 24, 39, 0.5);
-        }
-        .level-red, .level-ruby { 
-            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 25%, #F87171 50%, #EF4444 75%, #DC2626 100%);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
-        }
-
-        .level-badge-nav::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(circle at 20% 25%, rgba(255,255,255,0.8) 0 1px, transparent 2px),
-                radial-gradient(circle at 75% 30%, rgba(255,255,255,0.6) 0 1px, transparent 2px),
-                radial-gradient(circle at 40% 75%, rgba(255,255,255,0.7) 0 1px, transparent 2px);
-                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
-                radial-gradient(circle at 70% 25%, rgba(255,255,255,0.7) 0 2px, transparent 3px),
-                radial-gradient(circle at 35% 70%, rgba(255,255,255,0.85) 0 2px, transparent 3px),
-                radial-gradient(circle at 80% 65%, rgba(255,255,255,0.6) 0 2px, transparent 3px);
-            mix-blend-mode: screen;
-            animation: sparkleTwinkleCompact 3s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes sparkleTwinkle {
-            0% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
-            25% { opacity: 1; transform: translateY(-1px) scale(1.05); }
-            50% { opacity: 0.4; transform: translateY(1px) scale(0.95); filter: blur(0.3px); }
-            75% { opacity: 0.9; transform: translateY(-1px) scale(1.08); }
-            100% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
-        }
-
         .bottom-navigation {
             position: fixed;
             bottom: 0;
@@ -209,11 +77,7 @@
             font-weight: 500;
         }
 
-        .nav-item.active i {
-            color: #3B82F6;
-        }
-
-        .nav-item.active span {
+        .nav-item.active i, .nav-item.active span {
             color: #3B82F6;
         }
 
@@ -226,155 +90,92 @@
             position: relative;
         }
 
-        .news-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-left: 4px solid;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .news-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-
-        .news-card.featured {
-            border-left-color: #F59E0B;
-            background: linear-gradient(135deg, #FEF3C7, #FFFFFF);
-        }
-
-        .news-card.normal {
-            border-left-color: #3B82F6;
-        }
-
-        .news-card .icon {
-            width: 40px;
-            height: 40px;
+        .level-badge-nav {
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 12px;
+            font-weight: 800;
             color: white;
-            font-size: 18px;
-        }
-
-        .news-card.featured .icon {
-            background: linear-gradient(135deg, #F59E0B, #D97706);
-        }
-
-        .news-card.normal .icon {
-            background: linear-gradient(135deg, #3B82F6, #2563EB);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            max-width: 400px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            padding: 24px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background-color: #E5E7EB;
-            border-radius: 4px;
+            font-size: 11px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255,255,255,0.2);
+            position: relative;
             overflow: hidden;
-            margin-top: 12px;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #3B82F6, #6B8DC7);
-            border-radius: 4px;
-            transition: width 0.3s ease;
+        .level-badge-nav::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.35) 40deg, rgba(255,255,255,0) 80deg);
+            animation: badgeShimmer 6s linear infinite;
+            pointer-events: none;
         }
 
-        .term-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 4px solid #3B82F6;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .level-badge-nav:hover {
+            transform: translateX(-50%) scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 6px 12px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.3);
         }
 
-        .term-card:hover {
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .level-badge-nav:active {
+            transform: translateX(-50%) scale(0.95);
         }
 
-        .newsletter-item {
-            padding: 16px;
-            border-bottom: 1px solid #E5E7EB;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
+        @keyframes badgeShimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .newsletter-item:hover {
-            background-color: #F9FAFB;
+        .level-badge-nav::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
+                radial-gradient(circle at 70% 25%, rgba(255,255,255,0.7) 0 2px, transparent 3px),
+                radial-gradient(circle at 35% 70%, rgba(255,255,255,0.85) 0 2px, transparent 3px),
+                radial-gradient(circle at 80% 65%, rgba(255,255,255,0.6) 0 2px, transparent 3px);
+            mix-blend-mode: screen;
+            animation: sparkleTwinkle 4s linear infinite;
+            pointer-events: none;
         }
 
-        .newsletter-item:last-child {
-            border-bottom: none;
+        @keyframes sparkleTwinkle {
+            0% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
+            25% { opacity: 1; transform: translateY(-1px) scale(1.05); }
+            50% { opacity: 0.4; transform: translateY(1px) scale(0.95); filter: blur(0.3px); }
+            75% { opacity: 0.9; transform: translateY(-1px) scale(1.08); }
+            100% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
         }
-
-        .card-news-item {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .card-news-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-
-        .card-news-image {
-            width: 100%;
-            height: 120px;
-            background: linear-gradient(135deg, #3B82F6, #6B8DC7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-        }
+        
+        .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
+        .level-orange { background: linear-gradient(135deg, #FB923C, #EA580C); }
+        .level-green { background: linear-gradient(135deg, #34D399, #059669); }
+        .level-blue { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+        .level-brown { background: linear-gradient(135deg, #A16207, #92400E); }
+        .level-black { background: linear-gradient(135deg, #374151, #111827); }
+        .level-red { background: linear-gradient(135deg, #EF4444, #DC2626); }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 pb-24">
 
-<div class="min-h-screen bg-gray-100">
-    <!-- 상단 헤더 -->
+    <!-- Header -->
     <div class="bg-white shadow-sm p-4">
         <div class="flex items-center justify-between max-w-md mx-auto">
             <button onclick="navigateToPage('index.html')" class="text-gray-600">
@@ -387,8 +188,8 @@
         </div>
     </div>
 
-    <!-- 뉴스 콘텐츠 -->
-    <div class="max-w-md mx-auto px-4 py-6 mb-24">
+    <!-- Main Content -->
+    <main class="max-w-md mx-auto px-4 py-6 mb-24">
         <!-- 오늘의 금융 용어 -->
         <div class="news-card featured" onclick="showTodayTerm()">
             <div class="icon">
@@ -448,875 +249,47 @@
                 <div class="progress-fill" style="width: 30%"></div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- 하단 네비게이션 -->
+    <!-- Bottom Navigation -->
     <div class="bottom-navigation">
         <div class="nav-container">
             <button onclick="navigateToPage('index.html')" class="nav-item">
-                <i class="fas fa-home text-gray-400"></i>
-                <span class="text-gray-400">홈</span>
+                <i class="fas fa-home"></i>
+                <span>홈</span>
             </button>
-            <button onclick="showMainScreen()" class="nav-item active">
+            <button onclick="navigateToPage('a2.html')" class="nav-item active">
                 <i class="fas fa-newspaper"></i>
                 <span>뉴스</span>
             </button>
             <div class="nav-center">
-                <div class="level-badge-nav-v4" onclick="location.href='a5.html'" style="width: 54px !important; height: 54px !important;">
-                <div id="navLevelBadge" class="level-badge-nav" onclick="navigateToPage('a5.html')">
-                    BRONZE
+                <div id="levelBadge" class="level-badge-nav" onclick="navigateToPage('a5.html')">
+                    <span id="levelName">BRONZE</span>
                 </div>
             </div>
-            <button onclick="navigateToPage('a4.html')" class="nav-item">
-                <i class="fas fa-gamepad text-gray-400"></i>
-                <span class="text-gray-400">게임</span>
-            </button>
             <button onclick="navigateToPage('a3.html')" class="nav-item">
-                <i class="fas fa-ellipsis-h text-gray-400"></i>
-                <span class="text-gray-400">더보기</span>
+                <i class="fas fa-chart-line"></i>
+                <span>투자</span>
+            </button>
+            <button onclick="navigateToPage('a4.html')" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>내 정보</span>
             </button>
         </div>
     </div>
-</div>
 
-<!-- 오늘의 금융 용어 모달 -->
-<div id="todayTermModal" class="modal">
-    <div class="modal-content">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">오늘의 금융 용어</h3>
-            <button onclick="closeTodayTermModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        
-        <div class="text-center mb-6">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mb-4">
-                <i class="fas fa-star text-white text-2xl"></i>
-            </div>
-            <h4 class="text-2xl font-bold text-gray-800 mb-2" id="todayTermName">복리 (Compound Interest)</h4>
-            <p class="text-gray-600 text-sm">2024년 1월 15일</p>
-        </div>
-
-        <div class="bg-blue-50 rounded-lg p-4 mb-4">
-            <p class="text-gray-700 leading-relaxed" id="todayTermDefinition">
-                원금에 대한 이자가 다시 원금에 더해져서 그 합계에 대해 다음 기간의 이자가 계산되는 방식입니다. 
-                시간이 지날수록 이자가 기하급수적으로 증가하는 '눈덩이 효과'를 가져옵니다.
-            </p>
-        </div>
-
-        <div class="mb-4">
-            <h5 class="font-semibold mb-2">💡 쉬운 예시</h5>
-            <p class="text-sm text-gray-600" id="todayTermExample">
-                100만원을 연 10% 복리로 투자하면:<br>
-                1년 후: 110만원<br>
-                2년 후: 121만원 (110만원 × 1.1)<br>
-                3년 후: 133만원 (121만원 × 1.1)
-            </p>
-        </div>
-
-        <button onclick="completeTodayTerm()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-lg font-semibold">
-            <i class="fas fa-check mr-2"></i>
-            학습 완료 (+50 EXP)
-        </button>
-    </div>
-</div>
-
-<!-- 오늘의 뉴스레터 모달 -->
-<div id="todayNewsletterModal" class="modal">
-    <div class="modal-content">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">오늘의 뉴스레터</h3>
-            <button onclick="closeTodayNewsletterModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        
-        <div class="mb-4">
-            <div class="bg-gradient-to-r from-purple-500 to-blue-500 text-white p-4 rounded-lg mb-4">
-                <h4 class="text-lg font-bold mb-2">📈 오늘의 경제 이슈</h4>
-                <p class="text-sm opacity-90">2024년 1월 15일</p>
-            </div>
-            
-            <div class="space-y-4">
-                <div class="border-l-4 border-red-500 pl-4">
-                    <h5 class="font-semibold text-red-600 mb-1">🔥 주요 뉴스</h5>
-                    <p class="text-sm text-gray-700">미 연준, 기준금리 동결 결정... 증시 상승 마감</p>
-                </div>
-                
-                <div class="border-l-4 border-green-500 pl-4">
-                    <h5 class="font-semibold text-green-600 mb-1">📊 시장 동향</h5>
-                    <p class="text-sm text-gray-700">코스피 2,650선 회복, 외국인 매수세 지속</p>
-                </div>
-                
-                <div class="border-l-4 border-blue-500 pl-4">
-                    <h5 class="font-semibold text-blue-600 mb-1">💰 투자 포인트</h5>
-                    <p class="text-sm text-gray-700">배당주와 성장주의 균형 포트폴리오 추천</p>
-                </div>
-            </div>
-        </div>
-
-        <button onclick="completeTodayNewsletter()" class="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white py-3 rounded-lg font-semibold">
-            <i class="fas fa-check mr-2"></i>
-            읽기 완료 (+100 EXP)
-        </button>
-    </div>
-</div>
-
-<!-- 금융 용어 공부 모달 -->
-<div id="termStudyModal" class="modal">
-    <div class="modal-content">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">금융 용어 공부하기</h3>
-            <button onclick="closeTermStudyModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        
-        <div class="mb-4">
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <button class="bg-blue-100 hover:bg-blue-200 p-3 rounded-lg text-sm font-semibold text-blue-800 transition-colors">
-                    <i class="fas fa-chart-line mb-2"></i><br>
-                    주식 기초
-                </button>
-                <button class="bg-green-100 hover:bg-green-200 p-3 rounded-lg text-sm font-semibold text-green-800 transition-colors">
-                    <i class="fas fa-certificate mb-2"></i><br>
-                    채권 기초
-                </button>
-                <button class="bg-purple-100 hover:bg-purple-200 p-3 rounded-lg text-sm font-semibold text-purple-800 transition-colors">
-                    <i class="fas fa-piggy-bank mb-2"></i><br>
-                    저축 투자
-                </button>
-                <button class="bg-orange-100 hover:bg-orange-200 p-3 rounded-lg text-sm font-semibold text-orange-800 transition-colors">
-                    <i class="fas fa-coins mb-2"></i><br>
-                    암호화폐
-                </button>
-            </div>
-            
-            <div class="space-y-2" id="termList">
-                <div class="term-card" onclick="showTermDetail('PER', 'Price Earnings Ratio', '주가수익비율로, 주가를 주당순이익으로 나눈 값입니다.')">
-                    <h5 class="font-semibold">PER (주가수익비율)</h5>
-                    <p class="text-sm text-gray-600">주식의 가치를 평가하는 지표</p>
-                </div>
-                
-                <div class="term-card" onclick="showTermDetail('ROE', 'Return On Equity', '자기자본이익률로, 기업이 주주의 투자금을 얼마나 효율적으로 사용하는지 나타냅니다.')">
-                    <h5 class="font-semibold">ROE (자기자본이익률)</h5>
-                    <p class="text-sm text-gray-600">기업의 수익성을 측정하는 지표</p>
-                </div>
-                
-                <div class="term-card" onclick="showTermDetail('배당수익률', 'Dividend Yield', '주가 대비 배당금의 비율로, 투자한 금액 대비 얼마의 배당을 받는지 나타냅니다.')">
-                    <h5 class="font-semibold">배당수익률</h5>
-                    <p class="text-sm text-gray-600">배당 투자의 핵심 지표</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 주간 뉴스레터 모달 -->
-<div id="weeklyNewsletterModal" class="modal">
-    <div class="modal-content">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">주간 뉴스레터</h3>
-            <button onclick="closeWeeklyNewsletterModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        
-        <div class="mb-4">
-            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white p-4 rounded-lg mb-4">
-                <h4 class="text-lg font-bold mb-2">📰 이번 주 경제 리뷰</h4>
-                <p class="text-sm opacity-90">2024년 1월 8일 - 1월 14일</p>
-            </div>
-            
-            <div class="space-y-4">
-                <div class="newsletter-item" onclick="showNewsletterDetail('월요일', '미 인플레이션 지표 발표', '소비자물가지수(CPI)가 전년 동월 대비 3.2% 상승하며 예상치를 하회했습니다.')">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h5 class="font-semibold">월요일 - 미 인플레이션 지표</h5>
-                            <p class="text-xs text-gray-500">CPI 3.2% 상승</p>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                </div>
-                
-                <div class="newsletter-item" onclick="showNewsletterDetail('수요일', '한국은행 기준금리 동결', '한국은행이 기준금리를 3.50%로 동결하며 안정적 통화정책을 유지하기로 했습니다.')">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h5 class="font-semibold">수요일 - 한은 금리 동결</h5>
-                            <p class="text-xs text-gray-500">3.50% 유지</p>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                </div>
-                
-                <div class="newsletter-item" onclick="showNewsletterDetail('금요일', '대형 IT 기업 실적 발표', '애플, 마이크로소프트 등 빅테크 기업들의 4분기 실적이 시장 예상을 상회했습니다.')">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h5 class="font-semibold">금요일 - 빅테크 실적</h5>
-                            <p class="text-xs text-gray-500">예상 상회</p>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <button onclick="completeWeeklyNewsletter()" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 rounded-lg font-semibold">
-            <i class="fas fa-check mr-2"></i>
-            주간 리뷰 완료 (+150 EXP)
-        </button>
-    </div>
-</div>
-
-<!-- 카드뉴스 모달 -->
-<div id="cardNewsModal" class="modal">
-    <div class="modal-content">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">카드뉴스로 보는 금융이야기</h3>
-            <button onclick="closeCardNewsModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        
-        <div class="space-y-4">
-            <div class="card-news-item" onclick="showCardNewsDetail('투자 기초', '처음 시작하는 투자')">
-                <div class="card-news-image">
-                    <i class="fas fa-seedling"></i>
-                </div>
-                <div class="p-4">
-                    <h5 class="font-semibold mb-2">투자 기초 가이드</h5>
-                    <p class="text-sm text-gray-600">처음 시작하는 투자, 무엇부터 해야 할까요?</p>
-                </div>
-            </div>
-            
-            <div class="card-news-item" onclick="showCardNewsDetail('분산투자', '리스크 관리의 핵심')">
-                <div class="card-news-image">
-                    <i class="fas fa-chart-pie"></i>
-                </div>
-                <div class="p-4">
-                    <h5 class="font-semibold mb-2">분산투자의 중요성</h5>
-                    <p class="text-sm text-gray-600">계란을 한 바구니에 담지 마라의 진정한 의미</p>
-                </div>
-            </div>
-            
-            <div class="card-news-item" onclick="showCardNewsDetail('복리효과', '시간의 마법')">
-                <div class="card-news-image">
-                    <i class="fas fa-magic"></i>
-                </div>
-                <div class="p-4">
-                    <h5 class="font-semibold mb-2">복리의 마법</h5>
-                    <p class="text-sm text-gray-600">시간이 만들어내는 놀라운 수익의 비밀</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-// 전역 변수
-var userExp = parseInt(localStorage.getItem('userExp')) || 0;
-
-// 콘텐츠 업데이트 관리
-const CONTENT_TYPES = {
-    DAILY_TERM: 'dailyTerm',
-    DAILY_NEWS: 'dailyNews', 
-    WEEKLY_NEWS: 'weeklyNews',
-    TERM_STUDY: 'termStudy',
-    CARD_NEWS: 'cardNews'
-};
-
-const STALE_THRESHOLD_DAYS = 7;
-
-// 날짜 유틸리티 함수들
-function getCurrentDate() {
-    return new Date().toISOString().split('T')[0];
-}
-
-function formatKoreanDate(date) {
-    const d = new Date(date);
-    return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
-}
-
-function isContentStale(contentType) {
-    const lastUpdate = localStorage.getItem(`lastUpdate_${contentType}`);
-    if (!lastUpdate) return true;
-    
-    const lastUpdateDate = new Date(lastUpdate);
-    const currentDate = new Date();
-    const diffTime = Math.abs(currentDate - lastUpdateDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return diffDays >= STALE_THRESHOLD_DAYS;
-}
-
-function updateContentTimestamp(contentType) {
-    localStorage.setItem(`lastUpdate_${contentType}`, getCurrentDate());
-}
-
-// AI 기반 콘텐츠 생성 함수들
-function generateFinancialTerm() {
-    const terms = [
-        {
-            name: "ROI (Return On Investment)",
-            definition: "투자 수익률로, 투자한 금액 대비 얻은 수익의 비율을 나타내는 지표입니다. 투자의 효율성을 측정하는 가장 기본적인 지표 중 하나입니다.",
-            example: "100만원을 투자해서 110만원이 되었다면 ROI는 10%입니다.\n계산법: (110만원 - 100만원) / 100만원 × 100 = 10%"
-        },
-        {
-            name: "PBR (Price-to-Book Ratio)",
-            definition: "주가순자산비율로, 주가를 주당순자산으로 나눈 값입니다. 기업의 자산 대비 주가가 얼마나 비싼지 저렴한지를 판단하는 지표입니다.",
-            example: "주가 10,000원, 주당순자산 5,000원이면 PBR은 2.0입니다.\n PBR이 1 미만이면 자산 대비 저평가, 1 초과면 고평가로 해석됩니다."
-        },
-        {
-            name: "EPS (Earnings Per Share)",
-            definition: "주당순이익으로, 기업의 총 순이익을 발행 주식 수로 나눈 값입니다. 주식 1주가 얼마나 많은 이익을 창출하는지 보여주는 지표입니다.",
-            example: "순이익 100억원, 발행주식 1,000만주라면 EPS는 1,000원입니다.\nEPS가 높을수록 수익성이 좋은 기업으로 평가됩니다."
-        },
-        {
-            name: "배당수익률 (Dividend Yield)",
-            definition: "주가 대비 연간 배당금의 비율로, 투자한 금액 대비 배당으로 얼마의 수익을 얻을 수 있는지 나타내는 지표입니다.",
-            example: "주가 20,000원, 연간 배당금 1,000원이면 배당수익률은 5%입니다.\n은행 예금금리와 비교하여 투자 매력도를 평가할 수 있습니다."
-        },
-        {
-            name: "변동성 (Volatility)",
-            definition: "주가나 자산 가격의 변동 정도를 나타내는 지표입니다. 높은 변동성은 높은 수익 가능성과 동시에 높은 손실 위험을 의미합니다.",
-            example: "일일 변동폭이 ±5%인 주식과 ±1%인 주식 중 전자가 변동성이 높습니다.\n변동성이 높은 자산일수록 리스크 관리가 중요합니다."
-        }
-    ];
-    
-    const randomTerm = terms[Math.floor(Math.random() * terms.length)];
-    return {
-        ...randomTerm,
-        date: getCurrentDate()
-    };
-}
-
-function generateDailyNews() {
-    const newsTemplates = [
-        {
-            type: "주요 뉴스",
-            color: "red",
-            icon: "🔥",
-            topics: [
-                "미 연준, 금리 정책 발표... 시장 주목",
-                "국내 반도체 수출 증가세... 경기 회복 신호",
-                "원/달러 환율 변동... 수출기업 영향 분석",
-                "부동산 정책 변화... 주택시장 반응",
-                "글로벌 인플레이션 동향... 국내 파급효과"
-            ]
-        },
-        {
-            type: "시장 동향", 
-            color: "green",
-            icon: "📊",
-            topics: [
-                "코스피 상승 마감... 외국인 매수세 지속",
-                "테크주 강세... AI 관련주 주목",
-                "바이오 섹터 급등... 신약 개발 소식",
-                "2차전지 관련주 상승... ESG 투자 확산",
-                "금융주 혼조... 금리 정책 영향"
-            ]
-        },
-        {
-            type: "투자 포인트",
-            color: "blue", 
-            icon: "💰",
-            topics: [
-                "분산투자의 중요성... 포트폴리오 리밸런싱",
-                "ESG 투자 트렌드... 지속가능한 투자",
-                "달러 강세 대응... 환율 헷지 전략",
-                "고배당주 투자... 안정적 수익 추구",
-                "성장주 vs 가치주... 시장 상황별 전략"
-            ]
-        }
-    ];
-    
-    const selectedNews = newsTemplates.map(template => ({
-        type: template.type,
-        color: template.color,
-        icon: template.icon,
-        content: template.topics[Math.floor(Math.random() * template.topics.length)]
-    }));
-    
-    return {
-        date: getCurrentDate(),
-        news: selectedNews
-    };
-}
-
-function generateWeeklyNews() {
-    const weeklyEvents = [
-        {
-            day: "월요일",
-            title: "경제지표 발표",
-            details: [
-                "소비자물가지수(CPI) 발표... 인플레이션 안정화 신호",
-                "고용지표 개선... 실업률 하락세 지속", 
-                "제조업 PMI 상승... 경기 회복 조짐",
-                "수출입 통계 발표... 무역수지 개선"
-            ]
-        },
-        {
-            day: "수요일", 
-            title: "통화정책 결정",
-            details: [
-                "한국은행 금리 동결... 경제 안정화 정책",
-                "미 연준 매파 발언... 추가 인상 시사",
-                "ECB 정책 변화... 유로존 경기 부양",
-                "일본은행 완화 유지... 엔화 약세 지속"
-            ]
-        },
-        {
-            day: "금요일",
-            title: "기업 실적 발표", 
-            details: [
-                "대형 IT 기업 실적 호조... 클라우드 성장",
-                "반도체 업체 매출 증가... 메모리 가격 상승",
-                "자동차 산업 회복... 전기차 판매 급증",
-                "금융권 이익 증가... NIM 개선 효과"
-            ]
-        }
-    ];
-    
-    const selectedEvents = weeklyEvents.map(event => ({
-        day: event.day,
-        title: event.title, 
-        content: event.details[Math.floor(Math.random() * event.details.length)]
-    }));
-    
-    return {
-        startDate: getCurrentDate(),
-        events: selectedEvents
-    };
-}
-
-function generateTermStudyContent() {
-    const categories = [
-        {
-            name: "주식 기초",
-            terms: [
-                { name: "시가총액", desc: "회사의 전체 가치를 나타내는 지표" },
-                { name: "PER", desc: "주가수익비율, 주식의 가치평가 지표" },
-                { name: "EPS", desc: "주당순이익, 수익성 측정 지표" },
-                { name: "ROE", desc: "자기자본이익률, 경영효율성 지표" }
-            ]
-        },
-        {
-            name: "채권 기초", 
-            terms: [
-                { name: "만기수익률", desc: "채권을 만기까지 보유시 얻는 수익률" },
-                { name: "신용등급", desc: "채권 발행자의 신용도 평가" },
-                { name: "듀레이션", desc: "금리 변화에 대한 민감도 측정" },
-                { name: "스프레드", desc: "기준금리와의 금리 차이" }
-            ]
-        }
-    ];
-    
-    return {
-        date: getCurrentDate(),
-        categories: categories
-    };
-}
-
-function generateCardNewsContent() {
-    const cardNews = [
-        {
-            title: "투자 기초 가이드",
-            subtitle: "처음 시작하는 투자의 모든 것",
-            icon: "fas fa-seedling",
-            content: "투자 목표 설정부터 리스크 관리까지"
-        },
-        {
-            title: "분산투자의 힘", 
-            subtitle: "계란을 한 바구니에 담지 마라",
-            icon: "fas fa-chart-pie",
-            content: "포트폴리오 다각화로 안정적 수익 추구"
-        },
-        {
-            title: "복리의 마법",
-            subtitle: "시간이 만드는 놀라운 수익",
-            icon: "fas fa-magic", 
-            content: "장기투자와 복리효과의 중요성"
-        },
-        {
-            title: "ESG 투자 트렌드",
-            subtitle: "지속가능한 투자의 미래",
-            icon: "fas fa-leaf",
-            content: "환경, 사회, 지배구조를 고려한 투자"
-        }
-    ];
-    
-    return {
-        date: getCurrentDate(),
-        content: cardNews
-    };
-}
-
-// 콘텐츠 업데이트 및 표시 함수들
-function updateAllContentIfStale() {
-    let updated = false;
-    
-    if (isContentStale(CONTENT_TYPES.DAILY_TERM)) {
-        const newTerm = generateFinancialTerm();
-        localStorage.setItem('dailyTermContent', JSON.stringify(newTerm));
-        updateContentTimestamp(CONTENT_TYPES.DAILY_TERM);
-        updated = true;
-    }
-    
-    if (isContentStale(CONTENT_TYPES.DAILY_NEWS)) {
-        const newNews = generateDailyNews();
-        localStorage.setItem('dailyNewsContent', JSON.stringify(newNews));
-        updateContentTimestamp(CONTENT_TYPES.DAILY_NEWS);
-        updated = true;
-    }
-    
-    if (isContentStale(CONTENT_TYPES.WEEKLY_NEWS)) {
-        const newWeekly = generateWeeklyNews();
-        localStorage.setItem('weeklyNewsContent', JSON.stringify(newWeekly));
-        updateContentTimestamp(CONTENT_TYPES.WEEKLY_NEWS);
-        updated = true;
-    }
-    
-    if (isContentStale(CONTENT_TYPES.TERM_STUDY)) {
-        const newTermStudy = generateTermStudyContent();
-        localStorage.setItem('termStudyContent', JSON.stringify(newTermStudy));
-        updateContentTimestamp(CONTENT_TYPES.TERM_STUDY);
-        updated = true;
-    }
-    
-    if (isContentStale(CONTENT_TYPES.CARD_NEWS)) {
-        const newCardNews = generateCardNewsContent();
-        localStorage.setItem('cardNewsContent', JSON.stringify(newCardNews));
-        updateContentTimestamp(CONTENT_TYPES.CARD_NEWS);
-        updated = true;
-    }
-    
-    if (updated) {
-        showUpdateNotification();
-    }
-}
-
-function showUpdateNotification() {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 80px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: linear-gradient(135deg, #10B981, #059669);
-        color: white;
-        padding: 12px 24px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        z-index: 1001;
-        font-size: 14px;
-        font-weight: 500;
-    `;
-    notification.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>콘텐츠가 업데이트되었습니다!';
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-}
-
-// 뉴스 새로고침
-function refreshNews() {
-    // 강제로 모든 콘텐츠 업데이트
-    Object.values(CONTENT_TYPES).forEach(type => {
-        localStorage.removeItem(`lastUpdate_${type}`);
-    });
-    updateAllContentIfStale();
-    location.reload();
-}
-
-// 오늘의 금융 용어
-function showTodayTerm() {
-    const termData = JSON.parse(localStorage.getItem('dailyTermContent') || '{}');
-    
-    if (termData.name) {
-        document.getElementById('todayTermName').textContent = termData.name;
-        document.getElementById('todayTermDefinition').textContent = termData.definition;
-        document.getElementById('todayTermExample').innerHTML = termData.example.replace(/\n/g, '<br>');
-        
-        // 날짜 업데이트
-        const dateElement = document.querySelector('#todayTermModal .text-gray-600.text-sm');
-        if (dateElement) {
-            dateElement.textContent = formatKoreanDate(termData.date);
-        }
-    }
-    
-    document.getElementById('todayTermModal').classList.add('show');
-}
-
-function closeTodayTermModal() {
-    document.getElementById('todayTermModal').classList.remove('show');
-}
-
-function completeTodayTerm() {
-    addExperience(50);
-    alert('오늘의 금융 용어 학습을 완료했습니다! (+50 EXP)');
-    closeTodayTermModal();
-}
-
-// 오늘의 뉴스레터
-function showTodayNewsletter() {
-    const newsData = JSON.parse(localStorage.getItem('dailyNewsContent') || '{}');
-    
-    if (newsData.news) {
-        // 날짜 업데이트
-        const dateElement = document.querySelector('#todayNewsletterModal .text-sm.opacity-90');
-        if (dateElement) {
-            dateElement.textContent = formatKoreanDate(newsData.date);
-        }
-        
-        // 뉴스 내용 업데이트
-        const newsContainer = document.querySelector('#todayNewsletterModal .space-y-4');
-        if (newsContainer) {
-            newsContainer.innerHTML = newsData.news.map(news => `
-                <div class="border-l-4 border-${news.color}-500 pl-4">
-                    <h5 class="font-semibold text-${news.color}-600 mb-1">${news.icon} ${news.type}</h5>
-                    <p class="text-sm text-gray-700">${news.content}</p>
-                </div>
-            `).join('');
-        }
-    }
-    
-    document.getElementById('todayNewsletterModal').classList.add('show');
-}
-
-function closeTodayNewsletterModal() {
-    document.getElementById('todayNewsletterModal').classList.remove('show');
-}
-
-function completeTodayNewsletter() {
-    addExperience(100);
-    alert('오늘의 뉴스레터 읽기를 완료했습니다! (+100 EXP)');
-    closeTodayNewsletterModal();
-}
-
-// 금융 용어 공부
-function showTermStudy() {
-    const termStudyData = JSON.parse(localStorage.getItem('termStudyContent') || '{}');
-    
-    if (termStudyData.categories) {
-        const termList = document.getElementById('termList');
-        if (termList) {
-            termList.innerHTML = termStudyData.categories.map(category => 
-                category.terms.map(term => `
-                    <div class="term-card" onclick="showTermDetail('${term.name}', '${term.name}', '${term.desc}')">
-                        <h5 class="font-semibold">${term.name}</h5>
-                        <p class="text-sm text-gray-600">${term.desc}</p>
-                    </div>
-                `).join('')
-            ).join('');
-        }
-    }
-    
-    document.getElementById('termStudyModal').classList.add('show');
-}
-
-function closeTermStudyModal() {
-    document.getElementById('termStudyModal').classList.remove('show');
-}
-
-function showTermDetail(term, fullName, description) {
-    alert(`📚 ${term} (${fullName})\n\n${description}\n\n+25 EXP 획득!`);
-    addExperience(25);
-}
-
-// 주간 뉴스레터
-function showWeeklyNewsletter() {
-    const weeklyData = JSON.parse(localStorage.getItem('weeklyNewsContent') || '{}');
-    
-    if (weeklyData.events) {
-        // 날짜 업데이트
-        const dateElement = document.querySelector('#weeklyNewsletterModal .text-sm.opacity-90');
-        if (dateElement) {
-            const endDate = new Date(weeklyData.startDate);
-            endDate.setDate(endDate.getDate() + 6);
-            dateElement.textContent = `${formatKoreanDate(weeklyData.startDate)} - ${formatKoreanDate(endDate.toISOString().split('T')[0])}`;
-        }
-        
-        // 주간 이벤트 업데이트
-        const eventsContainer = document.querySelector('#weeklyNewsletterModal .space-y-4');
-        if (eventsContainer) {
-            eventsContainer.innerHTML = weeklyData.events.map(event => `
-                <div class="newsletter-item" onclick="showNewsletterDetail('${event.day}', '${event.title}', '${event.content}')">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h5 class="font-semibold">${event.day} - ${event.title}</h5>
-                            <p class="text-xs text-gray-500">${event.content.substring(0, 20)}...</p>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                </div>
-            `).join('');
-        }
-    }
-    
-    document.getElementById('weeklyNewsletterModal').classList.add('show');
-}
-
-function closeWeeklyNewsletterModal() {
-    document.getElementById('weeklyNewsletterModal').classList.remove('show');
-}
-
-function showNewsletterDetail(day, title, content) {
-    alert(`📅 ${day}\n${title}\n\n${content}\n\n+30 EXP 획득!`);
-    addExperience(30);
-}
-
-function completeWeeklyNewsletter() {
-    addExperience(150);
-    alert('주간 뉴스레터 읽기를 완료했습니다! (+150 EXP)');
-    closeWeeklyNewsletterModal();
-}
-
-// 카드뉴스
-function showCardNews() {
-    const cardNewsData = JSON.parse(localStorage.getItem('cardNewsContent') || '{}');
-    
-    if (cardNewsData.content) {
-        const cardNewsContainer = document.querySelector('#cardNewsModal .space-y-4');
-        if (cardNewsContainer) {
-            cardNewsContainer.innerHTML = cardNewsData.content.map(card => `
-                <div class="card-news-item" onclick="showCardNewsDetail('${card.title}', '${card.subtitle}')">
-                    <div class="card-news-image">
-                        <i class="${card.icon}"></i>
-                    </div>
-                    <div class="p-4">
-                        <h5 class="font-semibold mb-2">${card.title}</h5>
-                        <p class="text-sm text-gray-600">${card.content}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-    }
-    
-    document.getElementById('cardNewsModal').classList.add('show');
-}
-
-function closeCardNewsModal() {
-    document.getElementById('cardNewsModal').classList.remove('show');
-}
-
-function showCardNewsDetail(title, subtitle) {
-    alert(`🎨 ${title}\n${subtitle}\n\n시각적으로 쉽게 배우는 금융 지식!\n\n+75 EXP 획득!`);
-    addExperience(75);
-}
-
-// 경험치 추가
-function addExperience(amount) {
-    userExp += amount;
-    localStorage.setItem('userExp', userExp);
-    
-    // 메인 페이지에도 경험치 업데이트
-    var mainUserExp = localStorage.getItem('userExp');
-    if (mainUserExp) {
-        localStorage.setItem('userExp', userExp);
-    }
-}
-
-// 페이지 이동 함수 (캐시 무력화 적용)
-function navigateToPage(page) {
-    try {
-        var cacheBuster = '?v=' + new Date().getTime();
-        var targetUrl = page + cacheBuster;
-        saveUserData();
-        window.location.href = targetUrl;
-    } catch (error) {
-        console.error('페이지 이동 오류:', error);
-        window.location.href = page;
-    }
-}
-
-function showMainScreen() {
-    // a2.html에서는 이 함수가 현재 페이지를 새로고침하는 역할을 할 수 있습니다.
-    // 또는 특정 동작을 정의할 수 있습니다. 여기서는 새로고침으로 가정합니다.
-    window.location.reload();
-}
-
-// 사용자 데이터 저장 (userDataManager.js와 연동)
-function saveUserData() {
-    if (window.saveCurrentUser) {
-        window.saveCurrentUser();
-    }
-}
-
-// 레벨 표시 업데이트
-function updateLevelDisplay() {
-    try {
-        var currentUser = JSON.parse(localStorage.getItem('fineu_current_user'));
-        if (!currentUser) return;
-
-        var userLevel = currentUser.level;
-        var level = getLevel(userLevel);
-        
-        var navBadge = document.getElementById('navLevelBadge');
-        if (navBadge) {
-            navBadge.textContent = level.name.toUpperCase();
-            
-            // 기존 레벨 클래스 모두 제거
-            var classesToRemove = Array.from(navBadge.classList).filter(c => c.startsWith('level-'));
-            classesToRemove.forEach(c => navBadge.classList.remove(c));
-
-            // 새로운 레벨 클래스 추가
-            navBadge.classList.add(level.colorClass);
-        }
-    } catch (error) {
-        console.error('레벨 업데이트 오류:', error);
-    }
-}
-
-// 레벨 정보 가져오기 (levelManager.js와 연동)
-function getLevel(level) {
-    return LEVEL_SYSTEM.find(l => level >= l.min && level <= l.max) || LEVEL_SYSTEM[0];
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    updateLevelDisplay();
-});
-
-// 페이지 언로드 시 데이터 저장
-window.addEventListener('beforeunload', function() {
-    saveUserData();
-});
-
-// 모달 외부 클릭시 닫기
-document.addEventListener('click', function(e) {
-    var modals = document.querySelectorAll('.modal');
-    modals.forEach(function(modal) {
-        if (e.target === modal) {
-            modal.classList.remove('show');
-        }
-    });
-});
-
-// 페이지 로드 시 초기화
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('뉴스 페이지 로드 완료');
-    // 콘텐츠 자동 업데이트 확인
-    updateAllContentIfStale();
-    // 레벨 배지 등급 색/텍스트 동기화
-    if (window.levelManager && window.levelManager.currentUser) {
-        window.levelManager.updateLevelDisplay();
-    } else {
-        // 레거시: localStorage에서 fineu_current_user 조회
-        try {
-            var saved = localStorage.getItem('fineu_current_user');
-            if (saved) {
-                var u = JSON.parse(saved);
-                var levelKey = u.level || 'yellow';
-                var badge = document.querySelector('.level-badge-nav');
-                if (badge) {
-                    badge.className = 'level-badge-nav level-' + levelKey;
-                    badge.textContent = (levelKey||'YELLOW').toUpperCase();
-                }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.levelManager) {
+                window.levelManager.updateNavBadge();
             }
-        } catch(e) { console.warn('레거시 레벨 반영 실패', e); }
-    }
-});
-</script>
+        });
+
+        function navigateToPage(page) {
+            var version = new Date().getTime();
+            window.location.href = page + '?v=' + version;
+        }
+    </script>
 
 </body>
 </html>

@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- 캐시 무력화 메타태그 -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="cache-buster" content="v2.1.0-20241216">
-    <title>FINE U - 더보기</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.1.0" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    
-    <!-- 전역 레벨 관리 시스템 -->
+
+    <title>FINE U - 모의투자 (모의투자)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/levelManager.js"></script>
-    <!-- 개인정보 분리 및 보안 시스템 -->
     <script src="js/userDataManager.js"></script>
 
     <script>
@@ -27,146 +27,11 @@
             });
         })();
     </script>
-    
+
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-            zoom: 1;
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
-        .screen {
-            display: none;
-            min-height: 100vh;
-            position: relative;
-        }
-        .screen.active {
-            display: block;
-        }
-        .card-shadow {
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
-        }
-        
-        .level-badge-nav {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            color: white;
-            font-size: 11px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.7);
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
-            z-index: 10;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid rgba(255,255,255,0.2);
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.3px;
-            backdrop-filter: blur(4px);
-        }
-
-        .level-badge-nav::before {
-            content: '';
-            position: absolute;
-            top: -30%;
-            left: -30%;
-            width: 160%;
-            height: 160%;
-            background: conic-gradient(
-                from 0deg, 
-                rgba(255,255,255,0) 0deg, 
-                rgba(255,255,255,0.5) 30deg, 
-                rgba(255,255,255,0.8) 45deg, 
-                rgba(255,255,255,0.5) 60deg, 
-                rgba(255,255,255,0) 90deg
-            );
-            animation: badgeShimmerEnhanced 5s ease-in-out infinite !important;
-            pointer-events: none;
-        }
-
-        .level-badge-nav:hover {
-            transform: translateX(-50%) scale(1.1) rotate(5deg);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 6px 12px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.3);
-        }
-
-        .level-badge-nav:active {
-            transform: translateX(-50%) scale(0.95);
-        }
-
-        @keyframes badgeShimmer {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Enhanced metallic level colors with depth and shine */
-        .level-yellow, .level-bronze { 
-            background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 25%, #D97706 50%, #92400E 75%, #F59E0B 100%);
-            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
-        }
-        .level-orange, .level-silver { 
-            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #E2E8F0 100%);
-            box-shadow: 0 8px 24px rgba(148, 163, 184, 0.3);
-        }
-        .level-green, .level-gold { 
-            background: linear-gradient(135deg, #FEF3C7 0%, #FCD34D 25%, #F59E0B 50%, #D97706 75%, #FCD34D 100%);
-            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
-        }
-        .level-blue, .level-platinum { 
-            background: linear-gradient(135deg, #F0F9FF 0%, #DBEAFE 25%, #93C5FD 50%, #3B82F6 75%, #DBEAFE 100%);
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
-        }
-        .level-brown, .level-diamond { 
-            background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 25%, #5EEAD4 50%, #14B8A6 75%, #CCFBF1 100%);
-            box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3);
-        }
-        .level-black, .level-black-diamond { 
-            background: linear-gradient(135deg, #4B5563 0%, #374151 25%, #1F2937 50%, #111827 75%, #374151 100%);
-            box-shadow: 0 8px 24px rgba(17, 24, 39, 0.5);
-        }
-        .level-red, .level-ruby { 
-            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 25%, #F87171 50%, #EF4444 75%, #DC2626 100%);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
-        }
-
-        .level-badge-nav::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
-                radial-gradient(circle at 70% 25%, rgba(255,255,255,0.7) 0 2px, transparent 3px),
-                radial-gradient(circle at 35% 70%, rgba(255,255,255,0.85) 0 2px, transparent 3px),
-                radial-gradient(circle at 80% 65%, rgba(255,255,255,0.6) 0 2px, transparent 3px);
-            mix-blend-mode: screen;
-            animation: sparkleTwinkleCompact 3s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes sparkleTwinkle {
-            0% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
-            25% { opacity: 1; transform: translateY(-1px) scale(1.05); }
-            50% { opacity: 0.4; transform: translateY(1px) scale(0.95); filter: blur(0.3px); }
-            75% { opacity: 0.9; transform: translateY(-1px) scale(1.08); }
-            100% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
-        }
-        
         .bottom-navigation {
             position: fixed;
             bottom: 0;
@@ -213,11 +78,7 @@
             font-weight: 500;
         }
 
-        .nav-item.active i {
-            color: #3B82F6;
-        }
-
-        .nav-item.active span {
+        .nav-item.active i, .nav-item.active span {
             color: #3B82F6;
         }
 
@@ -230,449 +91,181 @@
             position: relative;
         }
 
-        .service-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+        .level-badge-nav {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            font-size: 11px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
+            z-index: 10;
             cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
         }
 
-        .service-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        .level-badge-nav::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.35) 40deg, rgba(255,255,255,0) 80deg);
+            animation: badgeShimmer 6s linear infinite;
+            pointer-events: none;
         }
 
-        .service-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            margin-bottom: 16px;
+        .level-badge-nav:hover {
+            transform: translateX(-50%) scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 6px 12px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.3);
         }
 
-        .icon-fss { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
-        .icon-consumer { background: linear-gradient(135deg, #10B981, #059669); }
-        .icon-dart { background: linear-gradient(135deg, #F59E0B, #D97706); }
-        .icon-ecenter { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            backdrop-filter: blur(10px);
+        .level-badge-nav:active {
+            transform: translateX(-50%) scale(0.95);
         }
 
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        @keyframes badgeShimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            max-width: 400px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            padding: 24px;
+        .level-badge-nav::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
+                radial-gradient(circle at 70% 25%, rgba(255,255,255,0.7) 0 2px, transparent 3px),
+                radial-gradient(circle at 35% 70%, rgba(255,255,255,0.85) 0 2px, transparent 3px),
+                radial-gradient(circle at 80% 65%, rgba(255,255,255,0.6) 0 2px, transparent 3px);
+            mix-blend-mode: screen;
+            animation: sparkleTwinkle 4s linear infinite;
+            pointer-events: none;
         }
 
-        .external-link {
-            display: inline-block;
-            padding: 8px 16px;
-            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            margin: 8px 8px 8px 0;
-            transition: all 0.2s ease;
+        @keyframes sparkleTwinkle {
+            0% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
+            25% { opacity: 1; transform: translateY(-1px) scale(1.05); }
+            50% { opacity: 0.4; transform: translateY(1px) scale(0.95); filter: blur(0.3px); }
+            75% { opacity: 0.9; transform: translateY(-1px) scale(1.08); }
+            100% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
         }
 
-        .external-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .info-section {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 16px;
-            margin: 16px 0;
-        }
+        .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
+        .level-orange { background: linear-gradient(135deg, #FB923C, #EA580C); }
+        .level-green { background: linear-gradient(135deg, #34D399, #059669); }
+        .level-blue { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+        .level-brown { background: linear-gradient(135deg, #A16207, #92400E); }
+        .level-black { background: linear-gradient(135deg, #374151, #111827); }
+        .level-red { background: linear-gradient(135deg, #EF4444, #DC2626); }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 pb-24">
 
-<!-- 더보기 화면 -->
-<div id="moreScreen" class="screen active">
-    <div class="min-h-screen bg-gray-100">
-        <div class="bg-white shadow-sm p-4">
-            <div class="flex items-center justify-between max-w-md mx-auto">
+    <!-- Header -->
+    <header class="bg-white shadow">
+        <div class="max-w-md mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <h1 class="text-xl font-bold">모의투자</h1>
                 <button onclick="goToHome()" class="text-gray-600">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-xl font-bold">더보기</h1>
-                <div class="w-6"></div>
             </div>
         </div>
+    </header>
 
-        <div class="max-w-md mx-auto px-4 py-6">
-            
-            <!-- 금융감독원 공식 홈페이지 -->
-            <div class="service-card" onclick="openFSSModal()">
-                <div class="service-icon icon-fss">
-                    <i class="fas fa-university"></i>
-                </div>
-                <h3 class="text-lg font-bold mb-2">금융감독원 공식 홈페이지</h3>
-                <p class="text-gray-600 text-sm">금융감독원의 공식 정보와 정책, 공지사항을 확인하세요</p>
-                <div class="flex items-center justify-between mt-3">
-                    <span class="text-blue-500 text-sm font-semibold">바로가기</span>
-                    <i class="fas fa-external-link-alt text-blue-500"></i>
-                </div>
-            </div>
-
-            <!-- 금융 소비자 정보 포털 -->
-            <div class="service-card" onclick="openConsumerModal()">
-                <div class="service-icon icon-consumer">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h3 class="text-lg font-bold mb-2">금융 소비자 정보 포털</h3>
-                <p class="text-gray-600 text-sm">금융상품 비교, 분쟁조정, 소비자 보호 정보를 제공합니다</p>
-                <div class="flex items-center justify-between mt-3">
-                    <span class="text-green-500 text-sm font-semibold">바로가기</span>
-                    <i class="fas fa-external-link-alt text-green-500"></i>
-                </div>
-            </div>
-
-            <!-- 금융감독원 전자공시시스템 -->
-            <div class="service-card" onclick="openDartModal()">
-                <div class="service-icon icon-dart">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <h3 class="text-lg font-bold mb-2">전자공시시스템 (DART)</h3>
-                <p class="text-gray-600 text-sm">상장회사의 공시정보를 검색하고 열람할 수 있습니다</p>
-                <div class="flex items-center justify-between mt-3">
-                    <span class="text-orange-500 text-sm font-semibold">바로가기</span>
-                    <i class="fas fa-external-link-alt text-orange-500"></i>
-                </div>
-            </div>
-
-            <!-- e-금융센터 -->
-            <div class="service-card" onclick="openECenterModal()">
-                <div class="service-icon icon-ecenter">
-                    <i class="fas fa-laptop"></i>
-                </div>
-                <h3 class="text-lg font-bold mb-2">금융감독 e-금융센터</h3>
-                <p class="text-gray-600 text-sm">온라인 금융서비스 및 전자금융업 관련 정보를 제공합니다</p>
-                <div class="flex items-center justify-between mt-3">
-                    <span class="text-purple-500 text-sm font-semibold">바로가기</span>
-                    <i class="fas fa-external-link-alt text-purple-500"></i>
-                </div>
-            </div>
-
-            <div style="height: 100px;"></div>
-        </div>
-
-        <!-- 하단 네비게이션 -->
-        <div class="bottom-navigation">
-            <div class="nav-container">
-                <button onclick="navigateToPage('index.html')" class="nav-item">
-                    <i class="fas fa-home text-gray-400"></i>
-                    <span class="text-gray-400">홈</span>
-                </button>
-                <button onclick="navigateToPage('a2.html')" class="nav-item">
-                    <i class="fas fa-newspaper text-gray-400"></i>
-                    <span class="text-gray-400">뉴스</span>
-                </button>
-                <div class="nav-center">
-                    <div id="navLevelBadge" class="level-badge-nav" onclick="navigateToPage('a5.html')">
-                        BRONZE
-                    </div>
-                </div>
-                <button onclick="navigateToPage('a4.html')" class="nav-item">
-                    <i class="fas fa-gamepad text-gray-400"></i>
-                    <span class="text-gray-400">게임</span>
-                </button>
-                <button onclick="showMainScreen()" class="nav-item active">
-                    <i class="fas fa-ellipsis-h"></i>
-                    <span>더보기</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 금융감독원 모달 -->
-<div id="fssModal" class="modal">
-    <div class="modal-content">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">금융감독원 공식 홈페이지</h3>
-            <button onclick="closeFSSModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        
-        <div class="info-section">
-            <h4 class="font-semibold mb-2">주요 서비스</h4>
-            <ul class="text-sm text-gray-600 space-y-1">
-                <li>• 금융정책 및 규정 정보</li>
-                <li>• 금융기관 감독 현황</li>
-                <li>• 소비자 보호 정책</li>
-                <li>• 공시 및 통계 자료</li>
-            </ul>
-        </div>
-        
-        <div class="text-center">
-            <a href="https://www.fss.or.kr" target="_blank" class="external-link">
-                <i class="fas fa-external-link-alt mr-2"></i>
-                금융감독원 바로가기
+    <!-- Main Content -->
+    <main class="max-w-md mx-auto px-4 py-6">
+        <!-- 투자 정보 카드 -->
+        <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+            <h2 class="text-lg font-semibold mb-2">투자 정보</h2>
+            <p class="text-gray-700 text-sm mb-4">모의투자를 통해 다양한 투자 정보를 확인하고, 나만의 포트폴리오를 관리해 보세요.</p>
+            <a href="javascript:void(0)" onclick="openInvestmentInfo()" class="text-blue-600 text-sm font-semibold">
+                <i class="fas fa-info-circle"></i> 투자 정보 더보기
             </a>
         </div>
-    </div>
-</div>
 
-<!-- 금융 소비자 정보 포털 모달 -->
-<div id="consumerModal" class="modal">
-    <div class="modal-content">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">금융 소비자 정보 포털</h3>
-            <button onclick="closeConsumerModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        
-        <div class="info-section">
-            <h4 class="font-semibold mb-2">주요 서비스</h4>
-            <ul class="text-sm text-gray-600 space-y-1">
-                <li>• 금융상품 통합비교</li>
-                <li>• 금융분쟁 조정신청</li>
-                <li>• 소비자 교육자료</li>
-                <li>• 금융사고 신고센터</li>
-            </ul>
-        </div>
-        
-        <div class="text-center">
-            <a href="https://fine.fss.or.kr" target="_blank" class="external-link">
-                <i class="fas fa-external-link-alt mr-2"></i>
-                소비자포털 바로가기
+        <!-- 포트폴리오 카드 -->
+        <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+            <h2 class="text-lg font-semibold mb-2">내 포트폴리오</h2>
+            <p class="text-gray-700 text-sm mb-4">현재 보유하고 있는 자산과 투자 내역을 확인하세요.</p>
+            <a href="javascript:void(0)" onclick="openMyPortfolio()" class="text-blue-600 text-sm font-semibold">
+                <i class="fas fa-briefcase"></i> 포트폴리오 보기
             </a>
         </div>
-    </div>
-</div>
 
-<!-- DART 모달 -->
-<div id="dartModal" class="modal">
-    <div class="modal-content">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">전자공시시스템 (DART)</h3>
-            <button onclick="closeDartModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        
-        <div class="info-section">
-            <h4 class="font-semibold mb-2">제공 정보</h4>
-            <ul class="text-sm text-gray-600 space-y-1">
-                <li>• 상장회사 공시정보</li>
-                <li>• 사업보고서, 감사보고서</li>
-                <li>• 분기보고서, 반기보고서</li>
-                <li>• 주요사항보고서</li>
-            </ul>
-        </div>
-        
-        <div class="text-center">
-            <a href="https://dart.fss.or.kr" target="_blank" class="external-link">
-                <i class="fas fa-external-link-alt mr-2"></i>
-                DART 바로가기
+        <!-- 투자 시뮬레이션 카드 -->
+        <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+            <h2 class="text-lg font-semibold mb-2">투자 시뮬레이션</h2>
+            <p class="text-gray-700 text-sm mb-4">가상의 자금을 이용해 다양한 투자 전략을 시뮬레이션 해보세요.</p>
+            <a href="javascript:void(0)" onclick="openInvestmentSimulation()" class="text-blue-600 text-sm font-semibold">
+                <i class="fas fa-chart-line"></i> 시뮬레이션 시작하기
             </a>
         </div>
-    </div>
-</div>
 
-<!-- e-금융센터 모달 -->
-<div id="eCenterModal" class="modal">
-    <div class="modal-content">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">금융감독 e-금융센터</h3>
-            <button onclick="closeECenterModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        
-        <div class="info-section">
-            <h4 class="font-semibold mb-2">주요 서비스</h4>
-            <ul class="text-sm text-gray-600 space-y-1">
-                <li>• 전자금융업 등록 신청</li>
-                <li>• 온라인 금융서비스 정보</li>
-                <li>• 전자금융 관련 법규</li>
-                <li>• 핀테크 혁신 지원</li>
-            </ul>
-        </div>
-        
-        <div class="text-center">
-            <a href="https://efinance.fss.or.kr" target="_blank" class="external-link">
-                <i class="fas fa-external-link-alt mr-2"></i>
-                e-금융센터 바로가기
+        <!-- 리포트 카드 -->
+        <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+            <h2 class="text-lg font-semibold mb-2">투자 리포트</h2>
+            <p class="text-gray-700 text-sm mb-4">나의 투자 성과를 분석하고, 맞춤형 리포트를 받아보세요.</p>
+            <a href="javascript:void(0)" onclick="openInvestmentReport()" class="text-blue-600 text-sm font-semibold">
+                <i class="fas fa-file-alt"></i> 리포트 보기
             </a>
         </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-navigation">
+        <div class="nav-container">
+            <button onclick="navigateToPage('index.html')" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>홈</span>
+            </button>
+            <button onclick="navigateToPage('a2.html')" class="nav-item">
+                <i class="fas fa-newspaper"></i>
+                <span>뉴스</span>
+            </button>
+            <div class="nav-center">
+                <div id="levelBadge" class="level-badge-nav" onclick="navigateToPage('a5.html')">
+                    <span id="levelName">BRONZE</span>
+                </div>
+            </div>
+            <button onclick="navigateToPage('a3.html')" class="nav-item active">
+                <i class="fas fa-chart-line"></i>
+                <span>투자</span>
+            </button>
+            <button onclick="navigateToPage('a4.html')" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>내 정보</span>
+            </button>
+        </div>
     </div>
-</div>
 
-<script>
-var currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.levelManager) {
+                window.levelManager.updateNavBadge();
+            }
+        });
 
-// 페이지 이동 함수 (캐시 무력화 적용)
-function navigateToPage(page) {
-    try {
-        var cacheBuster = '?v=' + new Date().getTime();
-        var targetUrl = page + cacheBuster;
-        saveUserData();
-        window.location.href = targetUrl;
-    } catch (error) {
-        console.error('페이지 이동 오류:', error);
-        window.location.href = page;
-    }
-}
-
-function showMainScreen() {
-    // a3.html에서는 이 함수가 현재 페이지를 새로고침하는 역할을 할 수 있습니다.
-    window.location.reload();
-}
-
-// 사용자 데이터 저장 (userDataManager.js와 연동)
-function saveUserData() {
-    if (window.saveCurrentUser) {
-        window.saveCurrentUser();
-    }
-}
-
-// 레벨 표시 업데이트
-function updateLevelDisplay() {
-    try {
-        var currentUser = JSON.parse(localStorage.getItem('fineu_current_user'));
-        if (!currentUser) return;
-
-        var userLevel = currentUser.level;
-        var level = getLevel(userLevel);
-        
-        var navBadge = document.getElementById('navLevelBadge');
-        if (navBadge) {
-            navBadge.textContent = level.name.toUpperCase();
-            
-            var classesToRemove = Array.from(navBadge.classList).filter(c => c.startsWith('level-'));
-            classesToRemove.forEach(c => navBadge.classList.remove(c));
-
-            navBadge.classList.add(level.colorClass);
+        function navigateToPage(page) {
+            var version = new Date().getTime();
+            window.location.href = page + '?v=' + version;
         }
-    } catch (error) {
-        console.error('레벨 업데이트 오류:', error);
-    }
-}
-
-// 레벨 정보 가져오기 (levelManager.js와 연동)
-function getLevel(level) {
-    return LEVEL_SYSTEM.find(l => level >= l.min && level <= l.max) || LEVEL_SYSTEM[0];
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    updateLevelDisplay();
-});
-
-// 페이지 언로드 시 데이터 저장
-window.addEventListener('beforeunload', function() {
-    saveUserData();
-});
-
-// 페이지 이동 함수들
-function goToHome() {
-    window.location.href = 'index.html?v=' + Date.now();
-}
-
-function goToNews() {
-    window.location.href = 'a2.html?v=' + Date.now();
-}
-
-function goToGrade() {
-    window.location.href = 'a5.html?v=' + Date.now();
-}
-
-function goToGame() {
-    window.location.href = 'a4.html?v=' + Date.now();
-}
-
-function goToMore() {
-    // 현재 페이지이므로 아무것도 하지 않음
-}
-
-// 모달 관련 함수들
-function openFSSModal() {
-    document.getElementById('fssModal').classList.add('show');
-}
-
-function closeFSSModal() {
-    document.getElementById('fssModal').classList.remove('show');
-}
-
-function openConsumerModal() {
-    document.getElementById('consumerModal').classList.add('show');
-}
-
-function closeConsumerModal() {
-    document.getElementById('consumerModal').classList.remove('show');
-}
-
-function openDartModal() {
-    document.getElementById('dartModal').classList.add('show');
-}
-
-function closeDartModal() {
-    document.getElementById('dartModal').classList.remove('show');
-}
-
-function openECenterModal() {
-    document.getElementById('eCenterModal').classList.add('show');
-}
-
-function closeECenterModal() {
-    document.getElementById('eCenterModal').classList.remove('show');
-}
-
-// 모달 외부 클릭시 닫기
-document.addEventListener('click', function(e) {
-    var modals = document.querySelectorAll('.modal');
-    modals.forEach(function(modal) {
-        if (e.target === modal) {
-            modal.classList.remove('show');
-        }
-    });
-});
-
-// 페이지 로드시 초기화
-document.addEventListener('DOMContentLoaded', function() {
-    // 사용자 레벨 표시 업데이트
-    if (currentUser) {
-        var levelBadge = document.querySelector('.level-badge-nav');
-        if (levelBadge) {
-            levelBadge.textContent = currentUser.level ? currentUser.level.toUpperCase() : 'YELLOW';
-        }
-    }
-    
-    console.log('더보기 페이지 로드 완료');
-});
-</script>
+    </script>
 
 </body>
 </html>

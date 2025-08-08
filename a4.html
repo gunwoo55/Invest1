@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="cache-buster" content="v2.1.0-20241216">
-    <title>FINE U - 게임</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.1.0" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    
-    <!-- 전역 레벨 관리 시스템 -->
+
+    <!-- 캐시 무력화 메타태그 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <title>FINE U - 내 정보 (모의투자)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/levelManager.js"></script>
-    <!-- 개인정보 분리 및 보안 시스템 -->
     <script src="js/userDataManager.js"></script>
 
     <script>
@@ -24,35 +26,70 @@
             });
         })();
     </script>
-    
+
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-            zoom: 1;
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
-        .screen {
-            display: none;
-            min-height: 100vh;
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 12px 0 8px 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 28rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            align-items: end;
+            position: relative;
+            height: 60px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-1px);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .nav-item.active i, .nav-item.active span {
+            color: #3B82F6;
+        }
+
+        .nav-center {
+            grid-column: 3;
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            height: 100%;
             position: relative;
         }
-        .screen.active {
-            display: block;
-        }
-        .card-shadow {
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
-        }
-        
+
         .level-badge-nav {
             width: 64px;
             height: 64px;
@@ -104,36 +141,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        /* Enhanced metallic level colors with depth and shine */
-        .level-yellow, .level-bronze { 
-            background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 25%, #D97706 50%, #92400E 75%, #F59E0B 100%);
-            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
-        }
-        .level-orange, .level-silver { 
-            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #E2E8F0 100%);
-            box-shadow: 0 8px 24px rgba(148, 163, 184, 0.3);
-        }
-        .level-green, .level-gold { 
-            background: linear-gradient(135deg, #FEF3C7 0%, #FCD34D 25%, #F59E0B 50%, #D97706 75%, #FCD34D 100%);
-            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
-        }
-        .level-blue, .level-platinum { 
-            background: linear-gradient(135deg, #F0F9FF 0%, #DBEAFE 25%, #93C5FD 50%, #3B82F6 75%, #DBEAFE 100%);
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
-        }
-        .level-brown, .level-diamond { 
-            background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 25%, #5EEAD4 50%, #14B8A6 75%, #CCFBF1 100%);
-            box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3);
-        }
-        .level-black, .level-black-diamond { 
-            background: linear-gradient(135deg, #4B5563 0%, #374151 25%, #1F2937 50%, #111827 75%, #374151 100%);
-            box-shadow: 0 8px 24px rgba(17, 24, 39, 0.5);
-        }
-        .level-red, .level-ruby { 
-            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 25%, #F87171 50%, #EF4444 75%, #DC2626 100%);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
-        }
 
         .level-badge-nav::after {
             content: '';
@@ -157,701 +164,124 @@
             100% { opacity: 0.6; transform: translateY(0) scale(1); filter: blur(0px); }
         }
 
-        .bottom-navigation {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.98) 100%);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(59, 130, 246, 0.1);
-            padding: 12px 0 max(8px, env(safe-area-inset-bottom)) 0;
-            z-index: 50;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .nav-container {
-            max-width: 28rem;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-            align-items: end;
-            position: relative;
-            height: 60px;
-            padding: 0 8px;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 4px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 16px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
-            border-radius: 50%;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translate(-50%, -50%);
-        }
-
-        .nav-item:hover::before {
-            width: 100%;
-            height: 100%;
-            border-radius: 16px;
-        }
-
-        .nav-item:hover {
-            transform: translateY(-3px) scale(1.05);
-        }
-
-        .nav-item:active {
-            transform: translateY(-1px) scale(0.98);
-        }
-
-        .nav-item i {
-            font-size: 22px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            z-index: 1;
-            color: #6B7280;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-item span {
-            font-size: 11px;
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
-            color: #6B7280;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            letter-spacing: 0.3px;
-        }
-
-        .nav-item.active i {
-            color: #3B82F6;
-            transform: scale(1.1);
-            text-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-        }
-
-        .nav-item.active span {
-            color: #3B82F6;
-            font-weight: 700;
-            text-shadow: 0 1px 3px rgba(59, 130, 246, 0.2);
-        }
-
-        .nav-item.active::before {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.15));
-            width: 100%;
-            height: 100%;
-            border-radius: 16px;
-        }
-
-        .nav-center {
-            grid-column: 3;
-            display: flex;
-            justify-content: center;
-            align-items: end;
-            height: 100%;
-            position: relative;
-        }
-
-        .level-badge-nav {
-            width: 56px; /* 64px -> 56px로 조정 */
-            height: 56px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            color: white;
-            font-size: 10px; /* 11px -> 10px로 통일 */
-            text-shadow: 0 2px 4px rgba(0,0,0,0.7);
-            position: absolute;
-            top: -8px; /* -12px -> -8px로 조정 */
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 
-                0 6px 20px rgba(0,0,0,0.25), 
-                0 3px 6px rgba(0,0,0,0.15), 
-                inset 0 2px 0 rgba(255,255,255,0.3), 
-                inset 0 -2px 0 rgba(0,0,0,0.2);
-            z-index: 10;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid rgba(255,255,255,0.25);
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.3px; /* 0.4px -> 0.3px로 통일 */
-            backdrop-filter: blur(4px);
-        }
-        /* 회전 광택 */
-        .level-badge-nav::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.35) 40deg, rgba(255,255,255,0) 80deg);
-            animation: badgeShimmer 6s linear infinite;
-            pointer-events: none;
-        }
-        /* 반짝이 */
-        .level-badge-nav::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(circle at 15% 30%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
-                radial-gradient(circle at 70% 25%, rgba(255,255,255,0.7) 0 2px, transparent 3px),
-                radial-gradient(circle at 35% 70%, rgba(255,255,255,0.85) 0 2px, transparent 3px),
-                radial-gradient(circle at 80% 65%, rgba(255,255,255,0.6) 0 2px, transparent 3px);
-            mix-blend-mode: screen;
-            animation: sparkleTwinkle 4s linear infinite;
-            pointer-events: none;
-        }
-        .level-badge-nav:hover { transform: translateX(-50%) scale(1.1) rotate(5deg); }
-        .level-badge-nav:active { transform: translateX(-50%) scale(0.95); }
-        @keyframes badgeShimmer { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes sparkleTwinkle { 0% { opacity:.6; transform:translateY(0) scale(1); filter:blur(0);} 25% { opacity:1; transform:translateY(-1px) scale(1.05);} 50% { opacity:.4; transform:translateY(1px) scale(.95); filter:blur(.3px);} 75% { opacity:.9; transform:translateY(-1px) scale(1.08);} 100% { opacity:.6; transform:translateY(0) scale(1); filter:blur(0);} }
-        
-        /* Enhanced metallic level colors with depth and shine */
-        .level-yellow, .level-bronze { 
-            background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 25%, #D97706 50%, #92400E 75%, #F59E0B 100%);
-            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
-        }
-        .level-orange, .level-silver { 
-            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #E2E8F0 100%);
-            box-shadow: 0 8px 24px rgba(148, 163, 184, 0.3);
-        }
-        .level-green, .level-gold { 
-            background: linear-gradient(135deg, #FEF3C7 0%, #FCD34D 25%, #F59E0B 50%, #D97706 75%, #FCD34D 100%);
-            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
-        }
-        .level-blue, .level-platinum { 
-            background: linear-gradient(135deg, #F0F9FF 0%, #DBEAFE 25%, #93C5FD 50%, #3B82F6 75%, #DBEAFE 100%);
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
-        }
-        .level-brown, .level-diamond { 
-            background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 25%, #5EEAD4 50%, #14B8A6 75%, #CCFBF1 100%);
-            box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3);
-        }
-        .level-black, .level-black-diamond { 
-            background: linear-gradient(135deg, #4B5563 0%, #374151 25%, #1F2937 50%, #111827 75%, #374151 100%);
-            box-shadow: 0 8px 24px rgba(17, 24, 39, 0.5);
-        }
-        .level-red, .level-ruby { 
-            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 25%, #F87171 50%, #EF4444 75%, #DC2626 100%);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
-        }
-
-        .game-card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .game-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-        }
-
-        .game-canvas {
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            background: #f8fafc;
-            margin: 16px 0;
-        }
-
-        .game-button {
-            background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 8px;
-        }
-
-        .game-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
-        }
-
-        .ranking-badge {
-            background: linear-gradient(135deg, #FCD34D, #F59E0B);
-            color: #92400E;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .rocket {
-            width: 40px;
-            height: 60px;
-            background: linear-gradient(135deg, #EF4444, #DC2626);
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            position: absolute;
-            transition: all 0.1s ease;
-        }
-
-        .enemy {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            position: absolute;
-        }
-
-        .bullet {
-            width: 4px;
-            height: 12px;
-            background: #FCD34D;
-            position: absolute;
-            border-radius: 2px;
-        }
-
-        .owl-character {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto;
-            display: block;
-            border-radius: 50%;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-            position: relative;
-        }
-
-        .owl-character:hover {
-            transform: scale(1.1) rotate(5deg);
-            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
-        }
-
-        .owl-character:active {
-            transform: scale(0.95) rotate(-2deg);
-            transition: all 0.1s ease;
-        }
-
-        /* 똑부리 게임 컨테이너 개선 */
-        #owlGameContainer {
-            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-            border-radius: 20px;
-            padding: 24px;
-            margin: 16px 0;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-        }
-
-        /* 반짝이는 효과 */
-        .owl-character::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            right: -5px;
-            bottom: -5px;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            border-radius: 50%;
-            opacity: 0;
-            animation: sparkle 3s infinite;
-        }
-
-        @keyframes sparkle {
-            0%, 100% { opacity: 0; transform: rotate(0deg); }
-            50% { opacity: 1; transform: rotate(180deg); }
-        }
-
-        /* 게임 카드 개선 */
-        .game-card {
-            background: linear-gradient(135deg, #ffffff, #f8fafc);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .game-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .game-card:hover::before {
-            left: 100%;
-        }
-
-        .game-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
-        }
-
-        /* 게임 버튼 개선 */
-        .game-button {
-            background: linear-gradient(135deg, #3B82F6, #1E40AF);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 12px 24px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
-        }
-
-        .game-button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s;
-        }
-
-        .game-button:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .game-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
-        }
-
-        .game-button:active {
-            transform: translateY(0);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        /* 통계 표시 개선 */
-        .stat-item {
-            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-            padding: 16px;
-            border-radius: 12px;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .stat-item:hover {
-            transform: translateY(-2px);
-            background: linear-gradient(135deg, #ffffff, #f1f5f9);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #3B82F6, #1E40AF);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .exp-bar {
-            width: 100%;
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 12px 0;
-        }
-
-        .exp-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #34D399, #059669);
-            transition: width 0.5s ease;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .stat-item {
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
+        .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
+        .level-orange { background: linear-gradient(135deg, #FB923C, #EA580C); }
+        .level-green { background: linear-gradient(135deg, #34D399, #059669); }
+        .level-blue { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+        .level-brown { background: linear-gradient(135deg, #A16207, #92400E); }
+        .level-black { background: linear-gradient(135deg, #374151, #111827); }
+        .level-red { background: linear-gradient(135deg, #EF4444, #DC2626); }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 pb-24">
 
-<!-- 게임 화면 -->
-<div id="gameScreen" class="screen active">
-    <div class="min-h-screen bg-gray-100">
-        <!-- 상단 헤더 -->
-        <div class="bg-white shadow-sm p-4">
-            <div class="flex items-center justify-between max-w-md mx-auto">
-                <button onclick="goToMainPage()" class="text-gray-600">
-                    <i class="fas fa-arrow-left text-xl"></i>
-                </button>
-                <h1 class="text-xl font-bold">게임</h1>
-                <button onclick="refreshGames()" class="text-green-500">
-                    <i class="fas fa-sync-alt text-xl"></i>
-                </button>
+    <!-- Header -->
+    <header class="bg-white shadow">
+        <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+            <h1 class="text-xl font-bold">내 정보</h1>
+            <button onclick="navigateToPage('index.html')" class="text-gray-600">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-md mx-auto px-4 py-6">
+        <!-- 경험치 바 -->
+        <div class="bg-white rounded-lg p-4 mb-6 shadow">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-500">총 경험치</span>
+                <span class="text-sm font-bold" id="totalExp">1,250</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                <div class="bg-blue-600 h-2.5 rounded-full" id="expBar" style="width: 50%"></div>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+                <span id="currentLevel">레벨 1</span>
+                <span id="nextLevelExp" class="font-bold">1,500</span>
             </div>
         </div>
 
-        <div class="max-w-md mx-auto px-4 py-6">
-            
-            <!-- 경제 퀴즈 -->
-            <div class="game-card">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-brain text-3xl text-purple-500"></i>
-                        <div>
-                            <h3 class="text-lg font-bold">경제 퀴즈</h3>
-                            <p class="text-sm text-gray-500">경제 지식을 테스트해보세요</p>
-                        </div>
-                    </div>
-                    <div class="ranking-badge">
-                        <i class="fas fa-crown"></i>
-                        1등: 김경제
-                    </div>
-                </div>
-                
-                <div id="quizContainer">
-                    <div class="text-center py-6">
-                        <i class="fas fa-play-circle text-4xl text-purple-500 mb-4"></i>
-                        <p class="text-gray-600 mb-4">AI가 생성하는 다양한 경제 문제를 풀어보세요!</p>
-                        <button onclick="startEconomicQuiz()" class="game-button">
-                            <i class="fas fa-play mr-2"></i>퀴즈 시작
-                        </button>
-                    </div>
-                </div>
+        <!-- 통계 카드 -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="bg-white rounded-lg p-4 shadow">
+                <div class="text-xs text-gray-500 mb-1">경제 지식</div>
+                <div class="text-lg font-bold" id="knowledgeStat">85</div>
             </div>
-
-            <!-- 로켓빵야 -->
-            <div class="game-card">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-rocket text-3xl text-red-500"></i>
-                        <div>
-                            <h3 class="text-lg font-bold">로켓빵야</h3>
-                            <p class="text-sm text-gray-500">터치로 우주선을 조작하세요</p>
-                        </div>
-                    </div>
-                    <div class="ranking-badge">
-                        <i class="fas fa-crown"></i>
-                        1등: 박투자
-                    </div>
-                </div>
-                
-                <div id="rocketGameContainer">
-                    <canvas id="rocketCanvas" class="game-canvas" width="320" height="400"></canvas>
-                    <div class="text-center">
-                        <p class="text-sm text-gray-600 mb-2">점수: <span id="rocketScore">0</span></p>
-                        <button onclick="startRocketGame()" id="rocketStartBtn" class="game-button">
-                            <i class="fas fa-play mr-2"></i>게임 시작
-                        </button>
-                        <button onclick="pauseRocketGame()" id="rocketPauseBtn" class="game-button" style="display: none;">
-                            <i class="fas fa-pause mr-2"></i>일시정지
-                        </button>
-                    </div>
-                    <div class="text-xs text-gray-500 text-center mt-2">
-                        화면을 터치하여 로켓을 좌우로 움직이세요
-                    </div>
-                </div>
+            <div class="bg-white rounded-lg p-4 shadow">
+                <div class="text-xs text-gray-500 mb-1">투자 실력</div>
+                <div class="text-lg font-bold" id="investmentStat">42</div>
             </div>
-
-            <!-- 똑부리 키우기 -->
-            <div class="game-card mb-24">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-seedling text-3xl text-green-500"></i>
-                        <div>
-                            <h3 class="text-lg font-bold">똑부리 키우기</h3>
-                            <p class="text-sm text-gray-500">경제 지식으로 똑부리를 키워보세요</p>
-                        </div>
-                    </div>
-                    <div class="ranking-badge">
-                        <i class="fas fa-crown"></i>
-                        1등: 이금융
-                    </div>
-                </div>
-                
-                <div id="owlGameContainer" class="text-center">
-                    <img src="IMG_4014.png" 
-                         alt="똑부리" class="owl-character" onclick="petOwl()">
-                    
-                    <div class="mt-4">
-                        <h4 class="font-bold text-lg" id="owlName">똑부리</h4>
-                        <p class="text-sm text-gray-600" id="owlLevel">레벨 1 - 초보 투자자</p>
-                    </div>
-                    
-                    <div class="exp-bar">
-                        <div class="exp-fill" id="owlExpBar" style="width: 30%;"></div>
-                    </div>
-                    <p class="text-xs text-gray-500" id="owlExp">경험치: 300 / 1000</p>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-value" id="owlKnowledge">85</div>
-                            <div class="text-xs text-gray-600">경제 지식</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="owlInvestment">42</div>
-                            <div class="text-xs text-gray-600">투자 실력</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="owlHappiness">78</div>
-                            <div class="text-xs text-gray-600">행복도</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="owlMoney">1,250</div>
-                            <div class="text-xs text-gray-600">보유 코인</div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4 space-x-2">
-                        <button onclick="feedOwl()" class="game-button">
-                            <i class="fas fa-hamburger mr-2"></i>먹이주기
-                        </button>
-                        <button onclick="studyWithOwl()" class="game-button">
-                            <i class="fas fa-book mr-2"></i>공부하기
-                        </button>
-                        <button onclick="investWithOwl()" class="game-button">
-                            <i class="fas fa-chart-line mr-2"></i>투자하기
-                        </button>
-                    </div>
-                </div>
+            <div class="bg-white rounded-lg p-4 shadow">
+                <div class="text-xs text-gray-500 mb-1">행복도</div>
+                <div class="text-lg font-bold" id="happinessStat">78</div>
+            </div>
+            <div class="bg-white rounded-lg p-4 shadow">
+                <div class="text-xs text-gray-500 mb-1">보유 코인</div>
+                <div class="text-lg font-bold" id="moneyStat">1,250</div>
             </div>
         </div>
 
-        <!-- 하단 네비게이션 -->
-        <div class="bottom-navigation">
-            <div class="nav-container">
-                <button onclick="navigateToPage('index.html')" class="nav-item">
-                    <i class="fas fa-home text-gray-400"></i>
-                    <span class="text-gray-400">홈</span>
-                </button>
-                <button onclick="navigateToPage('a2.html')" class="nav-item">
-                    <i class="fas fa-newspaper text-gray-400"></i>
-                    <span class="text-gray-400">뉴스</span>
-                </button>
-                <div class="nav-center">
-                    <div id="navLevelBadge" class="level-badge-nav" onclick="navigateToPage('a5.html')">
-                        BRONZE
-                    </div>
-                </div>
-                <button onclick="showMainScreen()" class="nav-item active">
-                    <i class="fas fa-gamepad"></i>
-                    <span>게임</span>
-                </button>
-                <button onclick="navigateToPage('a3.html')" class="nav-item">
-                    <i class="fas fa-ellipsis-h text-gray-400"></i>
-                    <span class="text-gray-400">더보기</span>
-                </button>
+        <!-- 레벨 배지 -->
+        <div class="flex items-center justify-center mb-6">
+            <div id="levelBadge" class="level-badge-nav" onclick="navigateToPage('a5.html')">
+                <span id="levelName">BRONZE</span>
             </div>
+        </div>
+
+        <!-- 하단 버튼들 -->
+        <div class="flex flex-col gap-4">
+            <button onclick="navigateToPage('a2.html')" class="bg-blue-600 text-white rounded-lg py-3 shadow">
+                <i class="fas fa-newspaper mr-2"></i>뉴스 보기
+            </button>
+            <button onclick="navigateToPage('a3.html')" class="bg-green-600 text-white rounded-lg py-3 shadow">
+                <i class="fas fa-chart-line mr-2"></i>투자하기
+            </button>
+            <button onclick="navigateToPage('index.html')" class="bg-gray-200 text-gray-700 rounded-lg py-3 shadow">
+                <i class="fas fa-home mr-2"></i>홈으로
+            </button>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-navigation">
+        <div class="nav-container">
+            <button onclick="navigateToPage('index.html')" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>홈</span>
+            </button>
+            <button onclick="navigateToPage('a2.html')" class="nav-item">
+                <i class="fas fa-newspaper"></i>
+                <span>뉴스</span>
+            </button>
+            <div class="nav-center">
+                <div id="levelBadge" class="level-badge-nav" onclick="navigateToPage('a5.html')">
+                    <span id="levelName">BRONZE</span>
+                </div>
+            </div>
+            <button onclick="navigateToPage('a3.html')" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>투자</span>
+            </button>
+            <button onclick="navigateToPage('a4.html')" class="nav-item active">
+                <i class="fas fa-user"></i>
+                <span>내 정보</span>
+            </button>
         </div>
     </div>
-</div>
 
-<script>
-// 페이지 이동 함수 (캐시 무력화 적용)
-function navigateToPage(page) {
-    try {
-        var cacheBuster = '?v=' + new Date().getTime();
-        var targetUrl = page + cacheBuster;
-        saveUserData();
-        window.location.href = targetUrl;
-    } catch (error) {
-        console.error('페이지 이동 오류:', error);
-        window.location.href = page;
-    }
-}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.levelManager) {
+                window.levelManager.updateNavBadge();
+            }
+        });
 
-function showMainScreen() {
-    // a4.html에서는 이 함수가 현재 페이지를 새로고침하는 역할을 할 수 있습니다.
-    window.location.reload();
-}
-
-// 사용자 데이터 저장 (userDataManager.js와 연동)
-function saveUserData() {
-    if (window.saveCurrentUser) {
-        window.saveCurrentUser();
-    }
-}
-
-// 레벨 표시 업데이트
-function updateLevelDisplay() {
-    try {
-        var currentUser = JSON.parse(localStorage.getItem('fineu_current_user'));
-        if (!currentUser) return;
-
-        var userLevel = currentUser.level;
-        var level = getLevel(userLevel);
-        
-        var navBadge = document.getElementById('navLevelBadge');
-        if (navBadge) {
-            navBadge.textContent = level.name.toUpperCase();
-            
-            var classesToRemove = Array.from(navBadge.classList).filter(c => c.startsWith('level-'));
-            classesToRemove.forEach(c => navBadge.classList.remove(c));
-
-            navBadge.classList.add(level.colorClass);
+        function navigateToPage(page) {
+            var version = new Date().getTime();
+            window.location.href = page + '?v=' + version;
         }
-    } catch (error) {
-        console.error('레벨 업데이트 오류:', error);
-    }
-}
-
-// 레벨 정보 가져오기 (levelManager.js와 연동)
-function getLevel(level) {
-    return LEVEL_SYSTEM.find(l => level >= l.min && level <= l.max) || LEVEL_SYSTEM[0];
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    updateLevelDisplay();
-});
-
-// 페이지 언로드 시 데이터 저장
-window.addEventListener('beforeunload', function() {
-    saveUserData();
-});
-</script>
+    </script>
 
 </body>
 </html>

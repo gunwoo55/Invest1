@@ -8,7 +8,6 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="cache-buster" content="v2.1.0-20241216">
     
     <title>FINE U - 등급 메뉴 (모의투자)</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css?v=2.1.0" rel="stylesheet">
@@ -692,29 +691,6 @@
 var APP_VERSION = new Date().getTime();
 
 // 전역 변수
-var currentUser = JSON.parse(localStorage.getItem('currentUser')) || {
-    level: 'yellow',
-    exp: 0,
-    transactions: [],
-    virtualBalance: 1000000,
-    portfolio: {
-        deposit: [],
-        stock: [],
-        bond: [],
-        etf: [],
-        crypto: [],
-        commodity: []
-    },
-    tradeHistory: [], // 거래 내역
-    alerts: [], // 알림 설정
-    preferences: { // 사용자 설정
-        autoAccountBook: true, // 예적금 자동 가계부 반영
-        priceAlerts: true, // 가격 알림
-        dividendAlerts: true // 배당 알림
-    },
-    deposits: [] // 예적금 계약 정보
-};
-
 var currentUser = JSON.parse(localStorage.getItem('currentUser')) || {
     level: 'yellow',
     exp: 0,
